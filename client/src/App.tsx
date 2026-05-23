@@ -2,10 +2,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ConfigProvider, theme } from "antd";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout";
-import CategoryPage from "./pages/CategoryPage";
 import { useState } from "react";
-import Onboarding from "./pages/Onboaring";
+import Onboarding from "./pages/Onboarding";
 import HomePage from "./pages/Home";
+import CategoriesPage from "./pages/Categories";
 
 const queryClient = new QueryClient();
 
@@ -41,7 +41,7 @@ const App = () => {
                   <Route path="/" element={<MainLayout />}>
                      <Route index element={<Navigate to="/home" />} />
                      <Route path="home" element={<HomePage />} />
-                     <Route path="categories" element={<CategoryPage />} />
+                     <Route path="categories" element={<CategoriesPage />} />
                   </Route>
                </Routes>
             </BrowserRouter>
