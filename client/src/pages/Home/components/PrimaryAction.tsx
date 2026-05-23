@@ -7,16 +7,12 @@ interface PrimaryActionProps {
 
 const PrimaryAction = ({ onClick }: PrimaryActionProps) => {
    return (
-      <motion.section
-         initial={{ opacity: 0, y: 15 }}
-         animate={{ opacity: 1, y: 0 }}
-         transition={{ delay: 0.1, duration: 0.5 }}
-      >
+      <motion.section initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.5 }}>
          <motion.button
             onClick={onClick}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.96 }}
-            className="w-full h-[72px] bg-gradient-to-r from-[#6f5092] via-[#7b41b4] to-[#c084fc] rounded-2xl shadow-[0_8px_32px_rgba(216,180,254,0.3)] flex items-center justify-center gap-3 relative overflow-hidden group transition-all duration-300"
+            className="w-full h-18 bg-linear-to-r from-[#6f5092] via-[#7b41b4] to-[#c084fc] rounded-2xl shadow-[0_8px_32px_rgba(216,180,254,0.3)] flex items-center justify-center gap-3 relative overflow-hidden group transition-all duration-300"
          >
             {/* Glossy overlay shine effect */}
             <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -27,9 +23,7 @@ const PrimaryAction = ({ onClick }: PrimaryActionProps) => {
                   <Plus size={18} strokeWidth={3} className="transition-transform group-hover:rotate-90 duration-300" />
                   TẠO BUỔI HOST MỚI
                </div>
-               <span className="text-white/80 font-sans text-[11px] font-semibold mt-1 tracking-wide">
-                  Track your badminton session now
-               </span>
+               <span className="text-white/80 font-sans text-[11px] font-semibold mt-1 tracking-wide">Track your badminton session now</span>
             </div>
          </motion.button>
       </motion.section>

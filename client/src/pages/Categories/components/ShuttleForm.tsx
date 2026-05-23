@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect } from "react";
 import { Form, Input, InputNumber, Button } from "antd";
 import type { IShuttle } from "../types";
@@ -22,36 +23,20 @@ const ShuttleForm = ({ initialValues, onFinish, loading }: ShuttleFormProps) => 
    }, [initialValues, form]);
 
    return (
-      <Form
-         form={form}
-         layout="vertical"
-         onFinish={onFinish}
-         className="space-y-4 max-w-md mx-auto"
-      >
+      <Form form={form} layout="vertical" onFinish={onFinish} className="space-y-4 max-w-md mx-auto">
          {/* Form: Shuttle name */}
          <Form.Item
             name="name"
-            label={
-               <span className="font-sans text-xs font-bold text-gray-500 uppercase tracking-wider">
-                  Tên loại cầu
-               </span>
-            }
+            label={<span className="font-sans text-xs font-bold text-gray-500 uppercase tracking-wider">Tên loại cầu</span>}
             rules={[{ required: true, message: "Vui lòng nhập tên loại cầu!" }]}
          >
-            <Input
-               placeholder="VD: Yonex AS-50"
-               className="h-12 rounded-xl border border-gray-200/80 font-sans shadow-sm text-sm"
-            />
+            <Input placeholder="VD: Yonex AS-50" className="h-12 rounded-xl border border-gray-200/80 font-sans shadow-sm text-sm" />
          </Form.Item>
 
          {/* Form: Price per tube */}
          <Form.Item
             name="pricePerTube"
-            label={
-               <span className="font-sans text-xs font-bold text-gray-500 uppercase tracking-wider">
-                  Giá tiền (VNĐ) / Ống
-               </span>
-            }
+            label={<span className="font-sans text-xs font-bold text-gray-500 uppercase tracking-wider">Giá tiền (VNĐ) / Ống</span>}
             rules={[{ required: true, message: "Vui lòng nhập giá ống!" }]}
          >
             <InputNumber
@@ -65,11 +50,7 @@ const ShuttleForm = ({ initialValues, onFinish, loading }: ShuttleFormProps) => 
          {/* Form: Quantity per tube */}
          <Form.Item
             name="quantityPerTube"
-            label={
-               <span className="font-sans text-xs font-bold text-gray-500 uppercase tracking-wider">
-                  Số lượng quả / Ống
-               </span>
-            }
+            label={<span className="font-sans text-xs font-bold text-gray-500 uppercase tracking-wider">Số lượng quả / Ống</span>}
             rules={[{ required: true, message: "Vui lòng nhập số quả!" }]}
          >
             <InputNumber

@@ -55,13 +55,8 @@ const RecentHosts = ({ sessions }: RecentHostsProps) => {
    return (
       <section className="space-y-4">
          <div className="flex justify-between items-center px-1">
-            <h2 className="font-sans text-lg font-extrabold text-[#1a1c1c] tracking-tight">
-               Buổi host gần đây
-            </h2>
-            <a 
-               href="#" 
-               className="font-sans text-[13px] font-bold text-[#7b41b4] hover:text-[#6f5092] transition-colors flex items-center gap-0.5"
-            >
+            <h2 className="font-sans text-lg font-extrabold text-[#1a1c1c] tracking-tight">Buổi host gần đây</h2>
+            <a href="#" className="font-sans text-[13px] font-bold text-[#7b41b4] hover:text-[#6f5092] transition-colors flex items-center gap-0.5">
                Xem tất cả
                <ChevronRight size={14} strokeWidth={2.5} />
             </a>
@@ -83,23 +78,17 @@ const RecentHosts = ({ sessions }: RecentHostsProps) => {
                      variants={cardVariants}
                      whileHover={{ y: -3, scale: 1.01 }}
                      whileTap={{ scale: 0.99 }}
-                     className="min-w-[280px] w-[280px] glass-card rounded-2xl p-4 flex flex-col gap-3 shrink-0 transition-shadow hover:shadow-[0_12px_24px_rgba(216,180,254,0.2)]"
+                     className="min-w-70 w-70 glass-card rounded-2xl p-4 flex flex-col gap-3 shrink-0 transition-shadow hover:shadow-[0_12px_24px_rgba(216,180,254,0.2)]"
                   >
                      <div className="flex justify-between items-start">
                         <div>
-                           <div className="font-sans text-[11px] font-semibold text-gray-400 mb-1">
-                              {session.date}
-                           </div>
-                           <div className="font-sans text-sm font-extrabold text-gray-800 tracking-tight">
-                              {session.courtName}
-                           </div>
+                           <div className="font-sans text-[11px] font-semibold text-gray-400 mb-1">{session.date}</div>
+                           <div className="font-sans text-sm font-extrabold text-gray-800 tracking-tight">{session.courtName}</div>
                         </div>
 
                         <span
                            className={`font-sans text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider select-none shrink-0 ${
-                              isComplete
-                                 ? "bg-[#FB7185]/10 text-[#FB7185]"
-                                 : "bg-red-50 text-red-500"
+                              isComplete ? "bg-[#FB7185]/10 text-[#FB7185]" : "bg-red-50 text-red-500"
                            }`}
                         >
                            {isComplete ? "Hoàn tất" : "Đã hủy"}
@@ -108,9 +97,7 @@ const RecentHosts = ({ sessions }: RecentHostsProps) => {
 
                      <div className="flex justify-between items-end mt-2">
                         <div className="flex flex-col">
-                           <span className="font-sans text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">
-                              Lợi nhuận
-                           </span>
+                           <span className="font-sans text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Lợi nhuận</span>
                            <span className="font-sans text-lg font-extrabold text-emerald-600 tracking-tight leading-none">
                               +{session.profit.toLocaleString("vi-VN")}đ
                            </span>
@@ -131,12 +118,7 @@ const RecentHosts = ({ sessions }: RecentHostsProps) => {
                               }}
                            >
                               {playerAvatars.map((url, idx) => (
-                                 <Avatar
-                                    key={idx}
-                                    src={url}
-                                    style={{ border: "2px solid #ffffff" }}
-                                    className="shadow-sm"
-                                 />
+                                 <Avatar key={idx} src={url} style={{ border: "2px solid #ffffff" }} className="shadow-sm" />
                               ))}
                            </Avatar.Group>
                         </div>

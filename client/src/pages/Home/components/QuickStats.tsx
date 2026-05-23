@@ -46,12 +46,7 @@ const itemVariants = {
 
 const QuickStats = ({ stats }: QuickStatsProps) => {
    return (
-      <motion.section
-         variants={containerVariants}
-         initial="hidden"
-         animate="show"
-         className="grid grid-cols-2 gap-4"
-      >
+      <motion.section variants={containerVariants} initial="hidden" animate="show" className="grid grid-cols-2 gap-4">
          {stats.map((stat) => {
             const IconComponent = iconMap[stat.icon] || Activity;
             const colorClass = iconColorMap[stat.icon] || "text-[#6f5092] bg-purple-50";
@@ -62,26 +57,18 @@ const QuickStats = ({ stats }: QuickStatsProps) => {
                   variants={itemVariants}
                   whileHover={{ y: -4, scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="glass-card rounded-2xl p-4 flex flex-col justify-between min-h-[105px] transition-shadow hover:shadow-[0_12px_24px_rgba(216,180,254,0.25)]"
+                  className="glass-card rounded-2xl p-4 flex flex-col justify-between min-h-26.25 transition-shadow hover:shadow-[0_12px_24px_rgba(216,180,254,0.25)]"
                >
                   <div className="flex items-center gap-2 mb-2">
                      <div className={`p-1.5 rounded-lg ${colorClass} flex items-center justify-center shrink-0`}>
                         <IconComponent size={16} strokeWidth={2.5} />
                      </div>
-                     <span className="font-sans text-[11px] font-bold text-gray-500 uppercase tracking-wider">
-                        {stat.label}
-                     </span>
+                     <span className="font-sans text-[11px] font-bold text-gray-500 uppercase tracking-wider">{stat.label}</span>
                   </div>
-                  
+
                   <div className="font-sans text-xl font-extrabold text-[#6f5092] tracking-tight leading-none mt-auto">
-                     {typeof stat.value === "number" 
-                        ? stat.value.toLocaleString("vi-VN") 
-                        : stat.value}
-                     {stat.unit && (
-                        <span className="text-xs font-semibold text-gray-400 ml-1 lowercase">
-                           {stat.unit}
-                        </span>
-                     )}
+                     {typeof stat.value === "number" ? stat.value.toLocaleString("vi-VN") : stat.value}
+                     {stat.unit && <span className="text-xs font-semibold text-gray-400 ml-1 lowercase">{stat.unit}</span>}
                   </div>
                </motion.div>
             );
