@@ -1,11 +1,14 @@
 import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface PrimaryActionProps {
    onClick?: () => void;
 }
 
 const PrimaryAction = ({ onClick }: PrimaryActionProps) => {
+   const navigate = useNavigate();
+
    return (
       <motion.section initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.5 }}>
          <motion.button
@@ -18,7 +21,7 @@ const PrimaryAction = ({ onClick }: PrimaryActionProps) => {
             <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-linear-to-r from-transparent via-white/20 to-transparent opacity-40 group-hover:animate-shine" />
 
-            <div className="flex flex-col items-center justify-center z-10 select-none">
+            <div className="flex flex-col items-center justify-center z-10 select-none" onClick={() => navigate("/host")}>
                <div className="flex items-center gap-2 text-white font-sans text-sm font-extrabold tracking-wider uppercase">
                   <Plus size={18} strokeWidth={3} className="transition-transform group-hover:rotate-90 duration-300" />
                   TẠO BUỔI HOST MỚI

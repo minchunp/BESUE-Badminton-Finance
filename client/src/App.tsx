@@ -6,6 +6,7 @@ import { useState } from "react";
 import Onboarding from "./pages/Onboarding";
 import HomePage from "./pages/Home";
 import CategoriesPage from "./pages/Categories";
+import HostPage from "./pages/Host";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const AppContent = () => {
                   <Route index element={<Navigate to="/home" />} />
                   <Route path="home" element={<HomePage />} />
                   <Route path="categories" element={<CategoriesPage />} />
+                  <Route path="host" element={<HostPage />} />
                </Route>
             </>
          )}

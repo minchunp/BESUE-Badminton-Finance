@@ -49,9 +49,10 @@ const MainLayout = () => {
          <nav className="fixed bottom-3 left-0 right-0 z-50 px-6 pointer-events-none">
             <div className="max-w-md mx-auto relative pointer-events-auto">
                <motion.button
+                  onClick={() => navigate("/host")}
                   whileTap={{ scale: 0.9 }}
                   whileHover={{ scale: 1.05 }}
-                  className="absolute left-1/2 -translate-x-1/2 -top-4 z-20 w-14 h-14 bg-linear-to-br from-[#D8B4FE] to-[#C084FC] rounded-full shadow-[0_8px_20px_rgba(216,180,254,0.4)] flex items-center justify-center text-white border-4 border-[#FDFCFE]"
+                  className="absolute left-1/2 -translate-x-1/2 -top-4 z-20 w-14 h-14 bg-linear-to-br from-[#D8B4FE] to-[#C084FC] rounded-full shadow-[0_8px_20px_rgba(216,180,254,0.4)] flex items-center justify-center text-white border-4 border-[#FDFCFE] cursor-pointer"
                >
                   <Plus size={26} strokeWidth={2.5} />
                </motion.button>

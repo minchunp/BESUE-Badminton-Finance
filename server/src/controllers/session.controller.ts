@@ -1,58 +1,89 @@
 import type { Request, Response } from "express";
-import session from "../models/session.js";
+import Session from "../models/session.js";
+
+const calculateSessionFinance = (sessionData: any) => {
+   let totalRevenue = 0;
+   let totalCash = 0;
+   let totalTransfer = 0;
+
+   sessionData.players.forEach((player: any) => {
+      const playerTotal = player.maleCount * sessionData.feeSettings.male + player.femaleCount * sessionData.feeSettings.female;
+
+      if (player.isPaid) {
+         totalRevenue += playerTotal;
+         if (player.paymentMethod === "cash") totalCash += playerTotal;
+         if (player.paymentMethod === "transfer") totalTransfer += playerTotal;
+      }
+   });
+
+   const courtCost = sessionData.court.pricePerHour * sessionData.court.hours * sessionData.court.numberOfCourts;
+   const shuttleCost = sessionData.shuttle.pricePerPiece * sessionData.shuttle.usedQuantity;
+   const profit = totalRevenue - (courtCost + shuttleCost);
+
+   return { totalRevenue, totalCash, totalTransfer, courtCost, shuttleCost, profit };
+};
 
 export const createSession = async (req: Request, res: Response) => {
    try {
-      const { date, court, shuttle, players, feeSettings } = req.body;
+      const { date, court, shuttle, feeSettings } = req.body;
 
-      let totalRevenue = 0;
-      let totalCast = 0;
-      let totalTransfer = 0;
-
-      players.forEach((player: any) => {
-         if (player.isPresent) {
-            const fee = player.gender === "male" ? feeSettings.male : feeSettings.female;
-            const playTotal = fee * (player.quantity || 1);
-
-            totalRevenue += playTotal;
-            if (player.paymentMethod === "cash") totalCast += playTotal;
-            else totalTransfer += playTotal;
-         }
-      });
-
-      const courtCost = court.pricePerHour * court.hours * court.numberOfCourts;
-      const shuttleCost = shuttle.pricePerPiece * shuttle.usedQuantity;
-      const profit = totalRevenue - (courtCost + shuttleCost);
-
-      const newSession = new session({
+      const newSession = new Session({
+         status: "active",
          date,
          court,
          shuttle,
-         players,
          feeSettings,
-         summary: {
-            totalRevenue,
-            totalCast,
-            totalTransfer,
-            courtCost,
-            shuttleCost,
-            profit,
-         },
+         players: [],
       });
-      await newSession.save();
 
-      res.status(201).json({ message: "Save the game session successfully!", data: newSession });
+      newSession.summary.courtCost = court.pricePerHour * court.hours * court.numberOfCourts;
+      newSession.summary.profit = -newSession.summary.courtCost;
+
+      await newSession.save();
+      res.status(201).json({ success: true, data: newSession });
    } catch (error) {
-      res.status(500).json({ message: "Error in calculating and saving the game session: ", error });
+      res.status(500).json({ success: false, message: "Lỗi khởi tạo buổi host", error });
    }
 };
 
-export const getSessions = async (req: Request, res: Response) => {
+export const updateSessionPlayers = async (req: Request, res: Response) => {
    try {
-      const sessions = await session.find().sort({ date: -1 });
+      const { id } = req.params;
+      const { players } = req.body;
 
-      res.status(200).json(sessions);
+      const currentSession = await Session.findById(id);
+      if (!currentSession) return res.status(404).json({ success: false, message: "Không tìm thấy buổi host" });
+
+      currentSession.players = players;
+
+      const updatedSummary = calculateSessionFinance(currentSession);
+      currentSession.summary = updatedSummary;
+
+      await currentSession.save();
+      res.status(200).json({ success: true, data: currentSession });
    } catch (error) {
-      res.status(500).json({ message: "Error retrieving history: ", error });
+      res.status(500).json({ success: false, message: "Lỗi cập nhật danh sách người chơi", error });
+   }
+};
+
+export const completeSession = async (req: Request, res: Response) => {
+   try {
+      const { id } = req.params;
+      const { usedQuantity, notes } = req.body;
+
+      const currentSession = await Session.findById(id);
+      if (!currentSession) return res.status(404).json({ success: false, message: "Không tìm thấy buổi host" });
+
+      currentSession.shuttle.usedQuantity = usedQuantity;
+      currentSession.notes = notes;
+      currentSession.status = "completed";
+
+      const finalSummary = calculateSessionFinance(currentSession);
+      currentSession.summary = finalSummary;
+
+      await currentSession.save();
+      res.status(200).json({ success: true, data: currentSession });
+   } catch (error) {
+      res.status(500).json({ success: false, message: "Lỗi chốt báo cáo tài chính", error });
    }
 };

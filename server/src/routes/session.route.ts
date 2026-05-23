@@ -1,9 +1,10 @@
 import { Router } from "express";
-import { createSession, getSessions } from "../controllers/session.controller.js";
+import { createSession, updateSessionPlayers, completeSession } from "../controllers/session.controller.js";
 
 const router = Router();
 
-router.get("/", getSessions);
 router.post("/", createSession);
+router.put("/:id/players", updateSessionPlayers);
+router.put("/:id/complete", completeSession);
 
 export default router;

@@ -1,15 +1,17 @@
 import mongoose, { Schema, type Document } from "mongoose";
 
 export interface IPlayer {
+   _id?: string;
    name: string;
-   gender: "male" | "female";
-   quantity: number;
-   isPresent: boolean;
-   paymentMethod: "cash" | "transfer";
-   matchCount: number;
+   maleCount: number;
+   femaleCount: number;
+   isCheckedIn: boolean;
+   isPaid: boolean;
+   paymentMethod?: "cash" | "transfer";
 }
 
 export interface ISession extends Document {
+   status: "draft" | "active" | "completed";
    date: Date;
    court: {
       courtId: mongoose.Types.ObjectId;
@@ -25,23 +27,25 @@ export interface ISession extends Document {
       usedQuantity: number;
    };
    players: IPlayer[];
+   feeSettings: {
+      male: number;
+      female: number;
+   };
+   notes?: string;
    summary: {
       totalRevenue: number;
-      totalCast: number;
+      totalCash: number;
       totalTransfer: number;
       courtCost: number;
       shuttleCost: number;
       profit: number;
    };
-   feeSettings: {
-      male: number;
-      female: number;
-   };
 }
 
 const SessionSchema: Schema = new Schema(
    {
-      date: { type: Date, default: Date.now },
+      status: { type: String, enum: ["draft", "active", "completed"], default: "draft" },
+      date: { type: Date, required: true },
       court: {
          courtId: { type: Schema.Types.ObjectId, ref: "Court" },
          name: String,
@@ -57,25 +61,26 @@ const SessionSchema: Schema = new Schema(
       },
       players: [
          {
-            name: String,
-            gender: { type: String, enum: ["male", "female"] },
-            quantity: { type: Number, default: 1 },
-            isPresent: { type: Boolean, default: true },
-            paymentMethod: { type: String, enum: ["cash", "transfer"], default: "transfer" },
-            matchCount: { type: Number, default: 0 },
+            name: { type: String, required: true },
+            maleCount: { type: Number, default: 0 },
+            femaleCount: { type: Number, default: 0 },
+            isCheckedIn: { type: Boolean, default: false },
+            isPaid: { type: Boolean, default: false },
+            paymentMethod: { type: String, enum: ["cash", "transfer"] },
          },
       ],
-      summary: {
-         totalRevenue: Number,
-         totalCash: Number,
-         totalTransfer: Number,
-         courtCost: Number,
-         shuttleCost: Number,
-         profit: Number,
-      },
       feeSettings: {
          male: { type: Number, default: 65000 },
          female: { type: Number, default: 55000 },
+      },
+      notes: { type: String },
+      summary: {
+         totalRevenue: { type: Number, default: 0 },
+         totalCash: { type: Number, default: 0 },
+         totalTransfer: { type: Number, default: 0 },
+         courtCost: { type: Number, default: 0 },
+         shuttleCost: { type: Number, default: 0 },
+         profit: { type: Number, default: 0 },
       },
    },
    { timestamps: true },
