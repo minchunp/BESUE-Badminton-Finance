@@ -1,18 +1,35 @@
 import mongoose, { Schema, type Document } from "mongoose";
 
+export interface ITimeSlot {
+   startHour: string;
+   endHour: string;
+   pricePerHour: number;
+}
+
 export interface ICourt extends Document {
    name: string;
-   pricePerHour: number;
+   address?: string;
+   timeSlots: ITimeSlot[];
    description?: string;
 }
 
-const CourtSchema: Schema = new Schema(
+const TimeSlotSchema = new Schema<ITimeSlot>(
+   {
+      startHour: { type: String, required: true },
+      endHour: { type: String, required: true },
+      pricePerHour: { type: Number, required: true },
+   },
+   { _id: false }
+);
+
+const CourtSchema = new Schema<ICourt>(
    {
       name: { type: String, required: true },
-      pricePerHour: { type: Number, required: true },
+      address: { type: String },
+      timeSlots: { type: [TimeSlotSchema], default: [] },
       description: { type: String },
    },
-   { timestamps: true },
+   { timestamps: true }
 );
 
 export default mongoose.model<ICourt>("Court", CourtSchema);
