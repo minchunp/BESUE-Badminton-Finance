@@ -1,0 +1,57 @@
+@import "tailwindcss";
+
+@layer utilities {
+   .bg-mesh-0 {
+      background-color: #f9f9f9;
+      background-image:
+         radial-gradient(at 0% 0%, hsla(280, 100%, 74%, 0.2) 0, transparent 50%),
+         radial-gradient(at 100% 0%, hsla(330, 100%, 71%, 0.2) 0, transparent 50%);
+   }
+
+   .bg-mesh-1 {
+      background-color: #fafafa;
+      background-image:
+         radial-gradient(at 80% 0%, hsla(289, 100%, 88%, 0.5) 0px, transparent 50%),
+         radial-gradient(at 0% 50%, hsla(339, 100%, 88%, 0.5) 0px, transparent 50%),
+         radial-gradient(at 80% 100%, hsla(289, 100%, 88%, 0.5) 0px, transparent 50%);
+   }
+
+   .bg-mesh-2 {
+      background-color: #fafafa;
+      background-image:
+         radial-gradient(at 10% 10%, hsla(271, 70%, 85%, 0.6) 0px, transparent 50%),
+         radial-gradient(at 90% 90%, hsla(330, 70%, 85%, 0.6) 0px, transparent 50%),
+         radial-gradient(at 50% 50%, hsla(271, 70%, 95%, 0.4) 0px, transparent 50%);
+   }
+
+   .glass-card {
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(255, 255, 255, 0.4);
+      border-left: 1px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 8px 32px rgba(216, 180, 254, 0.15);
+   }
+
+   @keyframes float {
+      0%,
+      100% {
+         transform: translateY(0);
+      }
+      50% {
+         transform: translateY(-10px);
+      }
+   }
+   .animate-float {
+      animation: float 6s ease-in-out infinite;
+   }
+
+   @keyframes shine {
+      100% {
+         left: 200%;
+      }
+   }
+   .animate-shine {
+      animation: shine 1.5s ease-in-out infinite;
+   }
+}
