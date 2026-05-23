@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ConfigProvider, theme } from "antd";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout";
 import { useState } from "react";
 import Onboarding from "./pages/Onboarding";
@@ -9,7 +9,8 @@ import CategoriesPage from "./pages/Categories";
 
 const queryClient = new QueryClient();
 
-const App = () => {
+const AppContent = () => {
+   const navigate = useNavigate();
    const [isFirstVisit, setIsFirstVisit] = useState<boolean>(() => {
       const visited = localStorage.getItem("besue_visited");
       return !visited;
@@ -18,12 +19,27 @@ const App = () => {
    const handleOnboardingComplete = () => {
       localStorage.setItem("besue_visited", "true");
       setIsFirstVisit(false);
+      navigate("/home");
    };
 
-   if (isFirstVisit) {
-      return <Onboarding onComplete={handleOnboardingComplete} />;
-   }
+   return (
+      <Routes>
+         {isFirstVisit ? (
+            <Route path="*" element={<Onboarding onComplete={handleOnboardingComplete} />} />
+         ) : (
+            <>
+               <Route path="/" element={<MainLayout />}>
+                  <Route index element={<Navigate to="/home" />} />
+                  <Route path="home" element={<HomePage />} />
+                  <Route path="categories" element={<CategoriesPage />} />
+               </Route>
+            </>
+         )}
+      </Routes>
+   );
+};
 
+const App = () => {
    return (
       <QueryClientProvider client={queryClient}>
          <ConfigProvider
@@ -37,13 +53,7 @@ const App = () => {
             }}
          >
             <BrowserRouter>
-               <Routes>
-                  <Route path="/" element={<MainLayout />}>
-                     <Route index element={<Navigate to="/home" />} />
-                     <Route path="home" element={<HomePage />} />
-                     <Route path="categories" element={<CategoriesPage />} />
-                  </Route>
-               </Routes>
+               <AppContent />
             </BrowserRouter>
          </ConfigProvider>
       </QueryClientProvider>
