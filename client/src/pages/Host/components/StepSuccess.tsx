@@ -31,17 +31,17 @@ const StepSuccess = ({ date, sessionData, onFinish }: StepSuccessProps) => {
          </motion.div>
 
          <div className="space-y-2">
-            <h2 className="font-sans text-xl font-extrabold text-gray-800 tracking-tight leading-tight">Tạo buổi host thành công!</h2>
+            <h2 className="font-sans text-2xl font-extrabold text-gray-800 tracking-tight leading-tight">Lưu buổi host thành công!</h2>
             <p className="font-sans text-xs font-semibold text-gray-400 max-w-70">
-               Báo cáo tài chính buổi host đã được đồng bộ hóa và lưu vĩnh viễn trên cơ sở dữ liệu.
+               Báo cáo tài chính buổi host đã được đồng bộ hóa và lưu vĩnh viễn.
             </p>
          </div>
 
          {/* Completed details card */}
          <div className="glass-card rounded-3xl p-5 w-full text-left shadow-glass border border-white/50 space-y-3 font-sans">
-            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Thông số tổng kết buổi chơi:</span>
+            <span className="text-[12px] font-bold text-gray-400 uppercase tracking-wider block">Thông số tổng kết buổi chơi:</span>
 
-            <div className="grid grid-cols-2 gap-4 text-xs font-semibold text-gray-500">
+            <div className="grid grid-cols-2 gap-4 text-[16px] font-semibold text-gray-500">
                <div>
                   <p className="text-[10px] text-gray-400 uppercase tracking-wider font-bold">Ngày chơi</p>
                   <p className="font-bold text-gray-700 mt-0.5">{getFormattedDate(date)}</p>

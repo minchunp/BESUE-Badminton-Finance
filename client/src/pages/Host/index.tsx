@@ -17,7 +17,16 @@ import StepSuccess from "./components/StepSuccess";
 
 import { courtApi, shuttleApi } from "../../api/services/categories.api";
 import { sessionApi } from "../../api/services/session.api";
-import type { IPlayer, ISession } from "../../api/services/session.api";
+import type { IPlayer, ISession, IPersonPayment } from "../../api/services/session.api";
+import {
+   initIndividualMatches,
+   resizeIndividualMatches,
+   updateIndividualMatch,
+   initIndividualPayments,
+   resizeIndividualPayments,
+   deriveGroupPaymentStatus,
+   calcCollectedRevenue,
+} from "../../utils/playerUtils";
 
 type WizardStep = 1 | 2 | 3 | 4 | 5;
 
@@ -251,16 +260,37 @@ const HostPage = () => {
    };
 
    const handleSavePlayer = (playerValues: any) => {
+      const newMaleCount = playerValues.maleCount || 0;
+      const newFemaleCount = playerValues.femaleCount || 0;
+
+      // Preserve or resize individualMatches/individualPayments when editing
+      let individualMatches: number[];
+      let individualPayments: IPersonPayment[];
+      if (editingPlayerIndex !== null) {
+         const existingMatches = playersList[editingPlayerIndex].individualMatches ?? [];
+         individualMatches = resizeIndividualMatches(existingMatches, newMaleCount, newFemaleCount);
+
+         const existingPayments = playersList[editingPlayerIndex].individualPayments ?? [];
+         individualPayments = resizeIndividualPayments(existingPayments, newMaleCount, newFemaleCount);
+      } else {
+         individualMatches = initIndividualMatches(newMaleCount, newFemaleCount);
+         individualPayments = initIndividualPayments(newMaleCount, newFemaleCount);
+      }
+
+      const { isPaid, paymentMethod } = deriveGroupPaymentStatus(individualPayments);
+
       const playerObj: IPlayer = {
          name: playerValues.name,
-         maleCount: playerValues.maleCount || 0,
-         femaleCount: playerValues.femaleCount || 0,
+         maleCount: newMaleCount,
+         femaleCount: newFemaleCount,
          isCheckedIn: editingPlayerIndex !== null ? playersList[editingPlayerIndex].isCheckedIn : false,
-         isPaid: editingPlayerIndex !== null ? playersList[editingPlayerIndex].isPaid : false,
-         paymentMethod: editingPlayerIndex !== null ? playersList[editingPlayerIndex].paymentMethod : undefined,
+         isPaid: editingPlayerIndex !== null ? isPaid : false,
+         paymentMethod: editingPlayerIndex !== null ? paymentMethod : undefined,
+         individualMatches,
+         individualPayments,
       };
 
-      let newList = [...playersList];
+      const newList = [...playersList];
       if (editingPlayerIndex !== null) {
          newList[editingPlayerIndex] = playerObj;
       } else {
@@ -274,18 +304,15 @@ const HostPage = () => {
       }
    };
 
-   const handleTogglePlayerStatus = (
-      index: number,
-      isCheckedIn: boolean,
-      isPaid: boolean,
-      paymentMethod?: "cash" | "transfer"
-   ) => {
+   const handleConfirmPayment = (index: number, isCheckedIn: boolean, payments: IPersonPayment[]) => {
       const newList = [...playersList];
+      const { isPaid, paymentMethod } = deriveGroupPaymentStatus(payments);
       newList[index] = {
          ...newList[index],
          isCheckedIn,
          isPaid,
          paymentMethod,
+         individualPayments: payments,
       };
       setPlayersList(newList);
 
@@ -297,6 +324,20 @@ const HostPage = () => {
    const handleDeletePlayer = (index: number) => {
       const newList = [...playersList];
       newList.splice(index, 1);
+      setPlayersList(newList);
+
+      if (sessionId) {
+         autoSavePlayersMutation.mutate({ id: sessionId, players: newList });
+      }
+   };
+
+   const handleUpdateMatches = (playerIdx: number, personIdx: number, delta: number) => {
+      const newList = [...playersList];
+      const existing = newList[playerIdx].individualMatches ?? [];
+      newList[playerIdx] = {
+         ...newList[playerIdx],
+         individualMatches: updateIndividualMatch(existing, personIdx, delta),
+      };
       setPlayersList(newList);
 
       if (sessionId) {
@@ -335,10 +376,7 @@ const HostPage = () => {
    // ==========================================
    const totalPlayersCount = playersList.reduce((acc, curr) => acc + curr.maleCount + curr.femaleCount, 0);
    const totalExpectedRevenue = playersList.reduce((acc, curr) => acc + curr.maleCount * feeMale + curr.femaleCount * feeFemale, 0);
-   const totalCollectedRevenue = playersList.reduce(
-      (acc, curr) => (curr.isPaid ? acc + curr.maleCount * feeMale + curr.femaleCount * feeFemale : acc),
-      0,
-   );
+   const totalCollectedRevenue = calcCollectedRevenue(playersList, feeMale, feeFemale);
    const selectedPlayersCount = playersList.filter((p) => p.isCheckedIn).reduce((acc, curr) => acc + curr.maleCount + curr.femaleCount, 0);
 
    const currentCourtCost = activeCourt ? (activeCourt.timeSlots?.[0]?.pricePerHour || 80000) * hours * numberOfCourts : 0;
@@ -466,7 +504,8 @@ const HostPage = () => {
                         onAddPlayer={handleAddPlayerOpen}
                         onEditPlayer={handleEditPlayerOpen}
                         onDeletePlayer={handleDeletePlayer}
-                        onTogglePlayerStatus={handleTogglePlayerStatus}
+                        onConfirmPayment={handleConfirmPayment}
+                        onUpdateMatches={handleUpdateMatches}
                         onNext={handleNextStep2}
                         isPending={updatePlayersMutation.isPending}
                      />

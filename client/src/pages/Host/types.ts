@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { IPlayer, ISession } from "../../api/services/session.api";
+import type { IPlayer, ISession, IPersonPayment } from "../../api/services/session.api";
 import type { ICourt, IShuttle } from "../Categories/types";
 
 export interface StepBasicInfoProps {
@@ -39,7 +39,8 @@ export interface StepPlayerListProps {
    onAddPlayer: () => void;
    onEditPlayer: (index: number) => void;
    onDeletePlayer: (index: number) => void;
-   onTogglePlayerStatus: (index: number, isCheckedIn: boolean, isPaid: boolean, paymentMethod?: "cash" | "transfer") => void;
+   onConfirmPayment: (index: number, isCheckedIn: boolean, payments: IPersonPayment[]) => void;
+   onUpdateMatches: (playerIdx: number, personIdx: number, delta: number) => void;
    onNext: () => void;
    isPending: boolean;
 }

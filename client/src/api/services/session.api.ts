@@ -1,5 +1,10 @@
 import axiosInstance from "../axios";
 
+export interface IPersonPayment {
+   isPaid: boolean;
+   paymentMethod?: "cash" | "transfer";
+}
+
 export interface IPlayer {
    _id?: string;
    name: string;
@@ -8,6 +13,8 @@ export interface IPlayer {
    isCheckedIn: boolean;
    isPaid: boolean;
    paymentMethod?: "cash" | "transfer";
+   individualMatches: number[];
+   individualPayments: IPersonPayment[];
 }
 
 export interface ISession {
@@ -74,11 +81,7 @@ export const sessionApi = {
       return response.data;
    },
 
-   updatePlayers: async (
-      id: string,
-      players: Omit<IPlayer, "_id">[],
-      currentStep?: number
-   ): Promise<ApiResponse<ISession>> => {
+   updatePlayers: async (id: string, players: Omit<IPlayer, "_id">[], currentStep?: number): Promise<ApiResponse<ISession>> => {
       const response = await axiosInstance.put<ApiResponse<ISession>>(`/sessions/${id}/players`, {
          players,
          currentStep,
@@ -91,7 +94,7 @@ export const sessionApi = {
       data: {
          usedQuantity: number;
          notes?: string;
-      }
+      },
    ): Promise<ApiResponse<ISession>> => {
       const response = await axiosInstance.put<ApiResponse<ISession>>(`/sessions/${id}/complete`, data);
       return response.data;

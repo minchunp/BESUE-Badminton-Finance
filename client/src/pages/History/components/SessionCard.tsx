@@ -1,13 +1,14 @@
 import { motion } from "framer-motion";
-import { CheckCircle, RefreshCw, FileText, MapPin, Users, Layers, ArrowRight, ChevronRight } from "lucide-react";
+import { CheckCircle, RefreshCw, FileText, MapPin, Users, Layers, ArrowRight, ChevronRight, Swords } from "lucide-react";
 import type { HistorySession } from "../types";
-
+import { expandPlayers } from "../../../utils/playerUtils";
 interface SessionCardProps {
    session: HistorySession;
    formatSessionDate: (dateStr: string) => string;
    formatAmount: (value: number, showSign?: boolean) => string;
    isToday: (dateStr: string) => boolean;
    onCardClick: (session: HistorySession) => void;
+   onViewMatchStats?: (session: HistorySession) => void;
 }
 
 const cardVariants = {
@@ -15,16 +16,16 @@ const cardVariants = {
    show: {
       opacity: 1,
       y: 0,
-      transition: {
-         type: "spring" as const,
-         stiffness: 100,
-         damping: 15,
-      },
+      transition: { type: "spring" as const, stiffness: 100, damping: 15 },
    },
 };
 
-const SessionCard = ({ session, formatSessionDate, formatAmount, isToday, onCardClick }: SessionCardProps) => {
+const SessionCard = ({ session, formatSessionDate, formatAmount, isToday, onCardClick, onViewMatchStats }: SessionCardProps) => {
    const totalPlayers = session.players ? session.players.reduce((sum, p) => sum + (p.maleCount || 0) + (p.femaleCount || 0), 0) : 0;
+
+   // Check if this session has any match data recorded
+   const totalMatchesRecorded = session.players ? expandPlayers(session.players).reduce((acc, p) => acc + p.matches, 0) : 0;
+   const hasMatchData = totalMatchesRecorded > 0;
 
    const formattedDate = formatSessionDate(session.date);
    const isLive = session.status === "active";
@@ -39,6 +40,7 @@ const SessionCard = ({ session, formatSessionDate, formatAmount, isToday, onCard
             isLive ? "border-purple-200/80 shadow-[0_8px_30px_rgba(123,65,180,0.1)]" : "shadow-xs"
          }`}
       >
+         {/* Top row: icon + title + status badge */}
          <div className="flex justify-between items-start">
             <div className="flex items-center gap-3.5 min-w-0">
                {isCompleted && (
@@ -87,7 +89,7 @@ const SessionCard = ({ session, formatSessionDate, formatAmount, isToday, onCard
             </div>
          </div>
 
-         {/* Middle Info Details */}
+         {/* Middle info row */}
          {!isDraft && (
             <div className="flex gap-4 py-3 border-y border-gray-100/50 select-none">
                <div className="flex items-center gap-1.5">
@@ -98,10 +100,17 @@ const SessionCard = ({ session, formatSessionDate, formatAmount, isToday, onCard
                   <Layers size={14} className="text-[#7b41b4]/70" />
                   <span className="font-sans text-xs font-bold text-gray-600">{session.shuttle?.usedQuantity || 0} quả cầu</span>
                </div>
+               {/* Show match count badge if data exists */}
+               {isCompleted && hasMatchData && (
+                  <div className="flex items-center gap-1.5">
+                     <Swords size={14} className="text-[#a93349]/70" />
+                     <span className="font-sans text-xs font-bold text-[#a93349]">{totalMatchesRecorded} trận</span>
+                  </div>
+               )}
             </div>
          )}
 
-         {/* In Progress Progress bar */}
+         {/* Progress bar for in-progress sessions */}
          {isLive && (
             <div className="space-y-1.5 pt-1.5">
                <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
@@ -117,7 +126,7 @@ const SessionCard = ({ session, formatSessionDate, formatAmount, isToday, onCard
             </div>
          )}
 
-         {/* Bottom Financial / Navigation Actions */}
+         {/* Bottom: financial info + action buttons */}
          <div className="flex justify-between items-center select-none pt-1">
             {isCompleted ? (
                <div className="flex flex-col">
@@ -137,20 +146,39 @@ const SessionCard = ({ session, formatSessionDate, formatAmount, isToday, onCard
                </div>
             )}
 
-            <div>
+            {/* Action buttons */}
+            <div className="flex items-center gap-2">
+               {/* Match stats button — only for completed sessions */}
+               {isCompleted && onViewMatchStats && (
+                  <button
+                     onClick={(e) => {
+                        e.stopPropagation();
+                        onViewMatchStats(session);
+                     }}
+                     className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl font-sans text-[10px] font-extrabold uppercase tracking-wide transition-all cursor-pointer border ${
+                        hasMatchData
+                           ? "bg-purple-50 text-[#7b41b4] border-purple-100 hover:bg-purple-100"
+                           : "bg-gray-50 text-gray-400 border-gray-100 hover:bg-gray-100"
+                     }`}
+                  >
+                     <Swords size={11} strokeWidth={2.5} />
+                     Số trận
+                  </button>
+               )}
+
                {isCompleted && (
                   <button className="font-sans text-xs font-bold text-[#7b41b4] flex items-center gap-0.5 hover:underline cursor-pointer bg-transparent border-none p-0">
-                     Xem chi tiết báo cáo <ArrowRight size={13} strokeWidth={2.5} />
+                     Báo cáo <ArrowRight size={13} strokeWidth={2.5} />
                   </button>
                )}
                {isLive && (
                   <button className="font-sans text-xs font-bold bg-linear-to-r from-[#c185fd] to-[#7b41b4] text-white px-4 py-2 rounded-xl flex items-center gap-1 shadow-sm hover:opacity-90 active:scale-95 transition-all cursor-pointer border-none">
-                     Tiếp tục buổi host <ChevronRight size={13} strokeWidth={2.5} />
+                     Tiếp tục <ChevronRight size={13} strokeWidth={2.5} />
                   </button>
                )}
                {isDraft && (
                   <button className="font-sans text-xs font-bold text-gray-500 flex items-center gap-0.5 hover:text-[#7b41b4] transition-colors cursor-pointer bg-transparent border-none p-0">
-                     Tiếp tục chỉnh sửa <ArrowRight size={13} strokeWidth={2.5} />
+                     Chỉnh sửa <ArrowRight size={13} strokeWidth={2.5} />
                   </button>
                )}
             </div>

@@ -1,7 +1,5 @@
 import axiosInstance from "../axios";
 import type { IShuttle, ICourt } from "../../pages/Categories/types";
-
-// Dynamic response wrapper
 interface ApiResponse<T> {
    success: boolean;
    message: string;

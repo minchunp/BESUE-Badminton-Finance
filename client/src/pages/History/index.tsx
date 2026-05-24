@@ -7,20 +7,22 @@ import { SlidersHorizontal, FileText } from "lucide-react";
 import dayjs from "dayjs";
 
 import { sessionApi } from "../../api/services/session.api";
+import type { ISession } from "../../api/services/session.api";
 import type { HistoryFilterType, HistorySession } from "./types";
 
 import HistoryHeader from "./components/HistoryHeader";
 import FilterTabs from "./components/FilterTabs";
 import MonthlyStatsCard from "./components/MonthlyStatsCard";
 import SessionCard from "./components/SessionCard";
+import MatchStatsModal from "./components/MatchStatsModal";
+
+import { formatAmount, formatAmountFull, formatSessionDate, isToday } from "../../utils/playerUtils";
 
 const containerVariants = {
    hidden: { opacity: 0 },
    show: {
       opacity: 1,
-      transition: {
-         staggerChildren: 0.08,
-      },
+      transition: { staggerChildren: 0.08 },
    },
 };
 
@@ -31,6 +33,7 @@ const HistoryPage = () => {
    const [searchOpen, setSearchOpen] = useState(false);
    const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
    const [selectedMonth, setSelectedMonth] = useState<dayjs.Dayjs | null>(null);
+   const [matchStatsSession, setMatchStatsSession] = useState<ISession | null>(null);
 
    // ==========================================
    // 1. FETCH DATA WITH TANSTACK QUERY v5
@@ -61,7 +64,6 @@ const HistoryPage = () => {
       const completedCount = monthSessions.length;
       const totalRevenue = monthSessions.reduce((sum, s) => sum + (s.summary?.totalRevenue || 0), 0);
       const totalProfit = monthSessions.reduce((sum, s) => sum + (s.summary?.profit || 0), 0);
-
       const monthLabel = `Tháng ${targetMonth + 1}/${targetYear}`;
 
       return { completedCount, totalRevenue, totalProfit, monthLabel };
@@ -110,7 +112,7 @@ const HistoryPage = () => {
       });
    }, [sessions, filter, searchQuery, sortOrder, selectedMonth]);
 
-   // Tab sizes for badges
+   // Tab badge counts
    const counts = useMemo(() => {
       const all = sessions.length;
       const completed = sessions.filter((s) => s.status === "completed").length;
@@ -120,52 +122,7 @@ const HistoryPage = () => {
    }, [sessions]);
 
    // ==========================================
-   // 4. FORMATTERS
-   // ==========================================
-   const formatAmount = (value: number, showSign = false) => {
-      const prefix = showSign && value > 0 ? "+" : "";
-      if (Math.abs(value) >= 1000000) {
-         return `${prefix}${(value / 1000000).toFixed(1)}M`;
-      }
-      if (Math.abs(value) >= 1000) {
-         return `${prefix}${(value / 1000).toFixed(0)}k`;
-      }
-      return `${prefix}${value.toLocaleString("vi-VN")}đ`;
-   };
-
-   const formatAmountFull = (value: number) => {
-      if (value >= 1000000) {
-         return `${(value / 1000000).toFixed(1)}M đ`;
-      }
-      return `${value.toLocaleString("vi-VN")}đ`;
-   };
-
-   const formatSessionDate = (dateStr: string) => {
-      try {
-         const d = new Date(dateStr);
-         const days = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
-         const dayName = days[d.getDay()];
-         const day = String(d.getDate()).padStart(2, "0");
-         const month = String(d.getMonth() + 1).padStart(2, "0");
-         const year = d.getFullYear();
-         return `${dayName}, ${day}/${month}/${year}`;
-      } catch {
-         return dateStr;
-      }
-   };
-
-   const isToday = (dateStr: string) => {
-      try {
-         const today = new Date();
-         const d = new Date(dateStr);
-         return today.getDate() === d.getDate() && today.getMonth() === d.getMonth() && today.getFullYear() === d.getFullYear();
-      } catch {
-         return false;
-      }
-   };
-
-   // ==========================================
-   // 5. NAVIGATION LOGIC
+   // 4. NAVIGATION HANDLERS
    // ==========================================
    const handleCardClick = (session: HistorySession) => {
       if (session.status === "completed") {
@@ -179,6 +136,13 @@ const HistoryPage = () => {
       }
    };
 
+   const handleViewMatchStats = (session: HistorySession) => {
+      setMatchStatsSession(session);
+   };
+
+   // ==========================================
+   // 5. LOADING STATE
+   // ==========================================
    if (isLoading) {
       return (
          <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
@@ -191,17 +155,14 @@ const HistoryPage = () => {
    return (
       <ConfigProvider
          theme={{
-            token: {
-               colorPrimary: "#7b41b4",
-               borderRadius: 16,
-            },
+            token: { colorPrimary: "#7b41b4", borderRadius: 16 },
          }}
       >
          <div className="space-y-6 pb-28 select-none font-sans">
-            {/* Header Title with search */}
+            {/* Header with search */}
             <HistoryHeader searchQuery={searchQuery} setSearchQuery={setSearchQuery} searchOpen={searchOpen} setSearchOpen={setSearchOpen} />
 
-            {/* Filter Tabs */}
+            {/* Status Filter Tabs */}
             <FilterTabs filter={filter} setFilter={setFilter} counts={counts} />
 
             {/* Monthly Stats Card */}
@@ -213,7 +174,7 @@ const HistoryPage = () => {
                formatAmountFull={formatAmountFull}
             />
 
-            {/* List Header */}
+            {/* List header with month filter + sort */}
             <div className="flex justify-between items-center pt-2 px-1">
                <h4 className="font-sans text-[14px] font-extrabold text-gray-500 uppercase tracking-wider">
                   {filteredAndSortedSessions.length} buổi host
@@ -241,7 +202,7 @@ const HistoryPage = () => {
                </div>
             </div>
 
-            {/* Session Cards List */}
+            {/* Session Cards */}
             {filteredAndSortedSessions.length === 0 ? (
                <div className="py-16 bg-white/40 backdrop-blur-md rounded-3xl border border-gray-100/50 flex flex-col items-center justify-center text-center">
                   <FileText size={36} className="text-gray-300 mb-2" />
@@ -257,11 +218,15 @@ const HistoryPage = () => {
                         formatAmount={formatAmount}
                         isToday={isToday}
                         onCardClick={handleCardClick}
+                        onViewMatchStats={handleViewMatchStats}
                      />
                   ))}
                </motion.div>
             )}
          </div>
+
+         {/* Match Stats Modal */}
+         <MatchStatsModal session={matchStatsSession} onClose={() => setMatchStatsSession(null)} />
       </ConfigProvider>
    );
 };

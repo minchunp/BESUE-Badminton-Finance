@@ -7,12 +7,25 @@ const calculateSessionFinance = (sessionData: any) => {
    let totalTransfer = 0;
 
    sessionData.players.forEach((player: any) => {
-      const playerTotal = player.maleCount * sessionData.feeSettings.male + player.femaleCount * sessionData.feeSettings.female;
-
-      if (player.isPaid) {
-         totalRevenue += playerTotal;
-         if (player.paymentMethod === "cash") totalCash += playerTotal;
-         if (player.paymentMethod === "transfer") totalTransfer += playerTotal;
+      const individualPayments = player.individualPayments || [];
+      if (individualPayments.length > 0) {
+         // Per-individual calculation
+         individualPayments.forEach((p: any, personIdx: number) => {
+            if (p.isPaid) {
+               const fee = personIdx < player.maleCount ? sessionData.feeSettings.male : sessionData.feeSettings.female;
+               totalRevenue += fee;
+               if (p.paymentMethod === "cash") totalCash += fee;
+               if (p.paymentMethod === "transfer") totalTransfer += fee;
+            }
+         });
+      } else {
+         // Fallback legacy calculation
+         const playerTotal = player.maleCount * sessionData.feeSettings.male + player.femaleCount * sessionData.feeSettings.female;
+         if (player.isPaid) {
+            totalRevenue += playerTotal;
+            if (player.paymentMethod === "cash") totalCash += playerTotal;
+            if (player.paymentMethod === "transfer") totalTransfer += playerTotal;
+         }
       }
    });
 

@@ -1,5 +1,10 @@
 import mongoose, { Schema, type Document } from "mongoose";
 
+export interface IPersonPayment {
+   isPaid: boolean;
+   paymentMethod?: "cash" | "transfer";
+}
+
 export interface IPlayer {
    _id?: string;
    name: string;
@@ -8,6 +13,10 @@ export interface IPlayer {
    isCheckedIn: boolean;
    isPaid: boolean;
    paymentMethod?: "cash" | "transfer";
+   /** Per-person match count. Length = maleCount + femaleCount */
+   individualMatches: number[];
+   /** Per-person payment info. Length = maleCount + femaleCount */
+   individualPayments: IPersonPayment[];
 }
 
 export interface ISession extends Document {
@@ -68,6 +77,16 @@ const SessionSchema: Schema = new Schema(
             isCheckedIn: { type: Boolean, default: false },
             isPaid: { type: Boolean, default: false },
             paymentMethod: { type: String, enum: ["cash", "transfer"] },
+            individualMatches: { type: [Number], default: [] },
+            individualPayments: {
+               type: [
+                  {
+                     isPaid: { type: Boolean, default: false },
+                     paymentMethod: { type: String, enum: ["cash", "transfer"] },
+                  },
+               ],
+               default: [],
+            },
          },
       ],
       feeSettings: {
