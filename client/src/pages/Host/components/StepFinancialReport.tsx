@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Award, Check } from "lucide-react";
 import type { StepFinancialReportProps } from "../types";
 
-const StepFinancialReport = ({ sessionData, notes, onFinish }: StepFinancialReportProps) => {
+const StepFinancialReport = ({ sessionData, notes, onFinish, isViewOnly }: StepFinancialReportProps) => {
    return (
       <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }} className="space-y-5">
          {/* Progress */}
@@ -37,16 +37,16 @@ const StepFinancialReport = ({ sessionData, notes, onFinish }: StepFinancialRepo
 
          {/* Detailed breakdown list */}
          <div className="glass-card rounded-3xl p-4 space-y-4 shadow-xs border border-white/50 animate-fade-in">
-            <h3 className="font-sans text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100 pb-2 mb-1 px-1">
+            <h3 className="font-sans text-[12px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100 pb-2 mb-1 px-1">
                Chi tiết tài chính
             </h3>
 
-            <div className="space-y-3 font-sans text-xs font-semibold text-gray-500 px-1">
+            <div className="space-y-2 font-sans text-[15px] font-semibold text-gray-500 px-1">
                <div className="flex justify-between items-center">
                   <span>🏟️ Chi phí tiền sân:</span>
                   <span className="font-bold text-gray-700">{sessionData.summary.courtCost.toLocaleString("vi-VN")}đ</span>
                </div>
-               <div className="px-3 text-[10px] text-gray-400 font-bold border-l-2 border-purple-200">
+               <div className="px-3 text-[12px] text-gray-400 font-bold border-l-2 border-purple-200">
                   {sessionData.court.name} • {sessionData.court.numberOfCourts} sân • {sessionData.court.hours} giờ
                </div>
 
@@ -54,7 +54,7 @@ const StepFinancialReport = ({ sessionData, notes, onFinish }: StepFinancialRepo
                   <span>📦 Chi phí tiền cầu:</span>
                   <span className="font-bold text-gray-700">{sessionData.summary.shuttleCost.toLocaleString("vi-VN")}đ</span>
                </div>
-               <div className="px-3 text-[10px] text-gray-400 font-bold border-l-2 border-purple-200">
+               <div className="px-3 text-[12px] text-gray-400 font-bold border-l-2 border-purple-200">
                   {sessionData.shuttle.name} • {sessionData.shuttle.usedQuantity} quả
                </div>
 
@@ -64,9 +64,13 @@ const StepFinancialReport = ({ sessionData, notes, onFinish }: StepFinancialRepo
                   <span className="font-extrabold uppercase tracking-wide">Doanh thu thu được:</span>
                   <span className="font-extrabold text-sm">{sessionData.summary.totalRevenue.toLocaleString("vi-VN")}đ</span>
                </div>
-               <div className="px-3 text-[10px] text-gray-400 font-bold border-l-2 border-emerald-200 flex justify-between">
-                  <span>Tiền mặt: {sessionData.summary.totalCash.toLocaleString("vi-VN")}đ</span>
-                  <span>Chuyển khoản: {sessionData.summary.totalTransfer.toLocaleString("vi-VN")}đ</span>
+               <div className="px-3 text-[12px] text-gray-400 font-bold border-l-2 border-emerald-200 flex justify-between">
+                  <span>
+                     Tiền mặt: <span className="text-[#7b41b4]">{sessionData.summary.totalCash.toLocaleString("vi-VN")}đ</span>
+                  </span>
+                  <span>
+                     Chuyển khoản: <span className="text-[#7b41b4]">{sessionData.summary.totalTransfer.toLocaleString("vi-VN")}đ</span>
+                  </span>
                </div>
 
                {notes && (
@@ -84,12 +88,12 @@ const StepFinancialReport = ({ sessionData, notes, onFinish }: StepFinancialRepo
          </div>
 
          {/* Sticky Bottom Actions */}
-         <div className="pt-4">
+         <div className="pt-0">
             <button
                onClick={onFinish}
                className="w-full h-12 bg-linear-to-r from-[#c185fd] to-[#7b41b4] text-white rounded-xl font-sans text-xs font-bold flex items-center justify-center gap-1.5 shadow-md shadow-[#7b41b4]/20 hover:opacity-90 active:scale-98 transition-transform select-none cursor-pointer"
             >
-               Hoàn tất & Lưu Buổi Host
+               {isViewOnly ? "Quay lại Lịch sử" : "Hoàn tất & Lưu Buổi Host"}
                <Check size={14} strokeWidth={2.5} className="ml-0.5" />
             </button>
          </div>

@@ -1,13 +1,15 @@
 import mongoose, { type Document } from "mongoose";
 export interface IPlayer {
+    _id?: string;
     name: string;
-    gender: "male" | "female";
-    quantity: number;
-    isPresent: boolean;
-    paymentMethod: "cash" | "transfer";
-    matchCount: number;
+    maleCount: number;
+    femaleCount: number;
+    isCheckedIn: boolean;
+    isPaid: boolean;
+    paymentMethod?: "cash" | "transfer";
 }
 export interface ISession extends Document {
+    status: "draft" | "active" | "completed";
     date: Date;
     court: {
         courtId: mongoose.Types.ObjectId;
@@ -23,17 +25,19 @@ export interface ISession extends Document {
         usedQuantity: number;
     };
     players: IPlayer[];
+    feeSettings: {
+        male: number;
+        female: number;
+    };
+    notes?: string;
+    currentStep?: number;
     summary: {
         totalRevenue: number;
-        totalCast: number;
+        totalCash: number;
         totalTransfer: number;
         courtCost: number;
         shuttleCost: number;
         profit: number;
-    };
-    feeSettings: {
-        male: number;
-        female: number;
     };
 }
 declare const _default: mongoose.Model<ISession, {}, {}, {}, mongoose.Document<unknown, {}, ISession, {}, mongoose.DefaultSchemaOptions> & ISession & Required<{

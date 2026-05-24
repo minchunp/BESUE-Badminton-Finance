@@ -134,13 +134,13 @@ const CourtForm = ({ initialValues, onFinish, loading }: CourtFormProps) => {
          </div>
 
          {/* Submit controls */}
-         <div className="pt-6">
+         <div className="pt-0">
             <Button
                type="primary"
                htmlType="submit"
                loading={loading}
                block
-               className="h-12 rounded-xl text-sm font-bold shadow-md shadow-[#7b41b4]/20 bg-[#7b41b4] border-none text-white flex items-center justify-center active:scale-98 transition-transform"
+               className="h-12! rounded-xl text-sm font-bold shadow-md shadow-[#7b41b4]/20 bg-linear-to-r! from-[#c185fd] to-[#7b41b4] border-none text-white flex items-center justify-center active:scale-98 transition-transform"
             >
                Lưu thông tin
             </Button>

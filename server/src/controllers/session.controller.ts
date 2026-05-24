@@ -34,6 +34,7 @@ export const createSession = async (req: Request, res: Response) => {
          shuttle,
          feeSettings,
          players: [],
+         currentStep: 2,
       });
 
       newSession.summary.courtCost = court.pricePerHour * court.hours * court.numberOfCourts;
@@ -55,6 +56,11 @@ export const updateSessionPlayers = async (req: Request, res: Response) => {
       if (!currentSession) return res.status(404).json({ success: false, message: "Không tìm thấy buổi host" });
 
       currentSession.players = players;
+      if (req.body.currentStep !== undefined) {
+         currentSession.currentStep = req.body.currentStep;
+      } else {
+         currentSession.currentStep = 3;
+      }
 
       const updatedSummary = calculateSessionFinance(currentSession);
       currentSession.summary = updatedSummary;
@@ -77,6 +83,7 @@ export const completeSession = async (req: Request, res: Response) => {
       currentSession.shuttle.usedQuantity = usedQuantity;
       currentSession.notes = notes;
       currentSession.status = "completed";
+      currentSession.currentStep = 5;
 
       const finalSummary = calculateSessionFinance(currentSession);
       currentSession.summary = finalSummary;
@@ -85,5 +92,29 @@ export const completeSession = async (req: Request, res: Response) => {
       res.status(200).json({ success: true, data: currentSession });
    } catch (error) {
       res.status(500).json({ success: false, message: "Lỗi chốt báo cáo tài chính", error });
+   }
+};
+
+export const getSessionById = async (req: Request, res: Response) => {
+   try {
+      const { id } = req.params;
+      const foundSession = await Session.findById(id);
+
+      if (!foundSession) {
+         return res.status(404).json({ success: false, message: "Không tìm thấy buổi host" });
+      }
+
+      res.status(200).json({ success: true, data: foundSession });
+   } catch (error) {
+      res.status(500).json({ success: false, message: "Lỗi lấy chi tiết buổi host", error });
+   }
+};
+
+export const getAllSessions = async (req: Request, res: Response) => {
+   try {
+      const sessions = await Session.find().sort({ createdAt: -1 });
+      res.status(200).json({ success: true, data: sessions });
+   } catch (error) {
+      res.status(500).json({ success: false, message: "Lỗi lấy danh sách buổi host", error });
    }
 };

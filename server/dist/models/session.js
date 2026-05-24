@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 const SessionSchema = new Schema({
-    date: { type: Date, default: Date.now },
+    status: { type: String, enum: ["draft", "active", "completed"], default: "draft" },
+    date: { type: Date, required: true },
     court: {
         courtId: { type: Schema.Types.ObjectId, ref: "Court" },
         name: String,
@@ -16,26 +17,28 @@ const SessionSchema = new Schema({
     },
     players: [
         {
-            name: String,
-            gender: { type: String, enum: ["male", "female"] },
-            quantity: { type: Number, default: 1 },
-            isPresent: { type: Boolean, default: true },
-            paymentMethod: { type: String, enum: ["cash", "transfer"], default: "transfer" },
-            matchCount: { type: Number, default: 0 },
+            name: { type: String, required: true },
+            maleCount: { type: Number, default: 0 },
+            femaleCount: { type: Number, default: 0 },
+            isCheckedIn: { type: Boolean, default: false },
+            isPaid: { type: Boolean, default: false },
+            paymentMethod: { type: String, enum: ["cash", "transfer"] },
         },
     ],
-    summary: {
-        totalRevenue: Number,
-        totalCash: Number,
-        totalTransfer: Number,
-        courtCost: Number,
-        shuttleCost: Number,
-        profit: Number,
-    },
     feeSettings: {
         male: { type: Number, default: 65000 },
         female: { type: Number, default: 55000 },
     },
+    notes: { type: String },
+    summary: {
+        totalRevenue: { type: Number, default: 0 },
+        totalCash: { type: Number, default: 0 },
+        totalTransfer: { type: Number, default: 0 },
+        courtCost: { type: Number, default: 0 },
+        shuttleCost: { type: Number, default: 0 },
+        profit: { type: Number, default: 0 },
+    },
+    currentStep: { type: Number, default: 1, enum: [1, 2, 3, 4, 5] },
 }, { timestamps: true });
 export default mongoose.model("Session", SessionSchema);
 //# sourceMappingURL=session.js.map

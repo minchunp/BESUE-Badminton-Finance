@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Spin, message, ConfigProvider } from "antd";
 import { ChevronLeft, HelpCircle, Share2, Plus } from "lucide-react";
 
@@ -23,6 +23,13 @@ type WizardStep = 1 | 2 | 3 | 4 | 5;
 
 const HostPage = () => {
    const navigate = useNavigate();
+   const { id: routeId } = useParams<{ id: string }>();
+   const [searchParams] = useSearchParams();
+   const queryId = searchParams.get("id");
+   const queryStep = searchParams.get("step");
+
+   const activeId = routeId || queryId || null;
+   const isViewOnly = !!routeId;
 
    // ==========================================
    // 1. WIZARD CORE STATE
@@ -66,6 +73,12 @@ const HostPage = () => {
       queryFn: shuttleApi.getAll,
    });
 
+   const { data: fetchedSessionResponse, isLoading: isLoadingSession } = useQuery({
+      queryKey: ["session", activeId],
+      queryFn: () => sessionApi.getById(activeId!),
+      enabled: !!activeId,
+   });
+
    const courts = courtsResponse?.data || [];
    const shuttles = shuttlesResponse?.data || [];
 
@@ -74,16 +87,72 @@ const HostPage = () => {
 
    // Auto-select first elements in lists if nothing selected yet
    useEffect(() => {
-      if (courts.length > 0 && !selectedCourtId) {
+      if (courts.length > 0 && !selectedCourtId && !activeId) {
          setSelectedCourtId(courts[0]._id!);
       }
-   }, [courts, selectedCourtId]);
+   }, [courts, selectedCourtId, activeId]);
 
    useEffect(() => {
-      if (shuttles.length > 0 && !selectedShuttleId) {
+      if (shuttles.length > 0 && !selectedShuttleId && !activeId) {
          setSelectedShuttleId(shuttles[0]._id!);
       }
-   }, [shuttles, selectedShuttleId]);
+   }, [shuttles, selectedShuttleId, activeId]);
+
+   // Load and populate existing session if activeId is present
+   useEffect(() => {
+      if (fetchedSessionResponse?.data) {
+         const session = fetchedSessionResponse.data;
+         setSessionId(session._id!);
+         setSessionData(session);
+
+         if (session.date) {
+            setDate(new Date(session.date).toISOString().split("T")[0]);
+         }
+         if (session.court?.courtId) {
+            setSelectedCourtId(String(session.court.courtId));
+         }
+         if (session.court?.numberOfCourts) {
+            setNumberOfCourts(session.court.numberOfCourts);
+         }
+         if (session.court?.hours) {
+            setHours(session.court.hours);
+         }
+         if (session.shuttle?.shuttleId) {
+            setSelectedShuttleId(String(session.shuttle.shuttleId));
+         }
+         if (session.feeSettings?.male) {
+            setFeeMale(session.feeSettings.male);
+         }
+         if (session.feeSettings?.female) {
+            setFeeFemale(session.feeSettings.female);
+         }
+         if (session.players) {
+            setPlayersList(session.players);
+         }
+         if (session.shuttle?.usedQuantity !== undefined) {
+            const quantityPerTube = activeShuttle?.quantityPerTube || 12;
+            const tubes = Math.floor(session.shuttle.usedQuantity / quantityPerTube);
+            const pieces = session.shuttle.usedQuantity % quantityPerTube;
+            setUsedTubes(tubes);
+            setUsedPieces(pieces);
+         }
+         if (session.notes) {
+            setSessionNotes(session.notes);
+         }
+
+         if (routeId) {
+            setStep(4);
+         } else if (queryStep) {
+            setStep(Number(queryStep) as any);
+         } else if (session.currentStep) {
+            setStep(session.currentStep as any);
+         } else if (session.status === "completed") {
+            setStep(4);
+         } else {
+            setStep(2);
+         }
+      }
+   }, [fetchedSessionResponse, activeShuttle, routeId, queryStep]);
 
    // ==========================================
    // 3. MUTATIONS (TanStack Query)
@@ -101,13 +170,23 @@ const HostPage = () => {
    });
 
    const updatePlayersMutation = useMutation({
-      mutationFn: ({ id, players }: { id: string; players: Omit<IPlayer, "_id">[] }) => sessionApi.updatePlayers(id, players),
+      mutationFn: ({ id, players }: { id: string; players: Omit<IPlayer, "_id">[] }) => sessionApi.updatePlayers(id, players, 3),
       onSuccess: (res) => {
          setSessionData(res.data);
          setStep(3);
       },
       onError: (err: any) => {
          message.error(err.response?.data?.message || "Lỗi cập nhật người chơi");
+      },
+   });
+
+   const autoSavePlayersMutation = useMutation({
+      mutationFn: ({ id, players }: { id: string; players: Omit<IPlayer, "_id">[] }) => sessionApi.updatePlayers(id, players, 2),
+      onSuccess: (res) => {
+         setSessionData(res.data);
+      },
+      onError: (err: any) => {
+         console.error("Lỗi tự động lưu danh sách người chơi:", err);
       },
    });
 
@@ -181,14 +260,18 @@ const HostPage = () => {
          paymentMethod: editingPlayerIndex !== null ? playersList[editingPlayerIndex].paymentMethod : undefined,
       };
 
+      let newList = [...playersList];
       if (editingPlayerIndex !== null) {
-         const newList = [...playersList];
          newList[editingPlayerIndex] = playerObj;
-         setPlayersList(newList);
       } else {
-         setPlayersList([...playersList, playerObj]);
+         newList.push(playerObj);
       }
+      setPlayersList(newList);
       setIsPlayerDrawerOpen(false);
+
+      if (sessionId) {
+         autoSavePlayersMutation.mutate({ id: sessionId, players: newList });
+      }
    };
 
    const handleTogglePlayerStatus = (
@@ -205,12 +288,20 @@ const HostPage = () => {
          paymentMethod,
       };
       setPlayersList(newList);
+
+      if (sessionId) {
+         autoSavePlayersMutation.mutate({ id: sessionId, players: newList });
+      }
    };
 
    const handleDeletePlayer = (index: number) => {
       const newList = [...playersList];
       newList.splice(index, 1);
       setPlayersList(newList);
+
+      if (sessionId) {
+         autoSavePlayersMutation.mutate({ id: sessionId, players: newList });
+      }
    };
 
    const handleNextStep2 = () => {
@@ -256,11 +347,11 @@ const HostPage = () => {
       : 0;
    const currentShuttleCost = currentShuttlePricePerPiece * (usedTubes * (activeShuttle?.quantityPerTube || 12) + usedPieces);
 
-   if (isLoadingCourts || isLoadingShuttles) {
+   if (isLoadingCourts || isLoadingShuttles || (activeId && isLoadingSession)) {
       return (
          <div className="flex flex-col items-center justify-center min-h-screen gap-3">
             <Spin size="large" className="text-[#7b41b4]" />
-            <span className="text-sm font-semibold text-gray-400">Đang khởi tạo thuật thuật wizard...</span>
+            <span className="text-sm font-semibold text-gray-400">Đang tải thông tin buổi host...</span>
          </div>
       );
    }
@@ -291,11 +382,17 @@ const HostPage = () => {
                      </button>
                   ) : (
                      <button
-                        onClick={() => setStep((step - 1) as WizardStep)}
+                        onClick={() => {
+                           if (isViewOnly) {
+                              navigate("/history");
+                           } else {
+                              setStep((step - 1) as WizardStep);
+                           }
+                        }}
                         className="flex items-center text-[#7b41b4] font-sans text-sm font-bold hover:opacity-85 transition-all select-none cursor-pointer"
                      >
                         <ChevronLeft size={16} strokeWidth={2.5} className="mr-0.5" />
-                        Quay lại
+                        {isViewOnly ? "Lịch sử" : "Quay lại"}
                      </button>
                   )}
 
@@ -393,7 +490,14 @@ const HostPage = () => {
                      />
                   )}
 
-                  {step === 4 && sessionData && <StepFinancialReport sessionData={sessionData} notes={sessionNotes} onFinish={() => setStep(5)} />}
+                  {step === 4 && sessionData && (
+                     <StepFinancialReport
+                        sessionData={sessionData}
+                        notes={sessionNotes}
+                        onFinish={isViewOnly ? () => navigate("/history") : () => setStep(5)}
+                        isViewOnly={isViewOnly}
+                     />
+                  )}
 
                   {step === 5 && sessionData && <StepSuccess date={date} sessionData={sessionData} onFinish={() => navigate("/home")} />}
                </AnimatePresence>

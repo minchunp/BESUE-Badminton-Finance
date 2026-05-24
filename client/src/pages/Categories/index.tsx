@@ -228,7 +228,7 @@ const CategoriesPage = () => {
                placement="bottom"
                onClose={handleCloseDrawer}
                open={isDrawerOpen}
-               size="85%"
+               size="65%"
                styles={{
                   body: {
                      paddingTop: 16,

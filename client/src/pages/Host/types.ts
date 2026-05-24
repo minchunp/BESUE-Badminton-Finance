@@ -72,6 +72,7 @@ export interface StepFinancialReportProps {
    sessionData: ISession;
    notes?: string;
    onFinish: () => void;
+   isViewOnly?: boolean;
 }
 
 export interface StepSuccessProps {

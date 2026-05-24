@@ -32,6 +32,7 @@ export interface ISession extends Document {
       female: number;
    };
    notes?: string;
+   currentStep?: number;
    summary: {
       totalRevenue: number;
       totalCash: number;
@@ -82,6 +83,7 @@ const SessionSchema: Schema = new Schema(
          shuttleCost: { type: Number, default: 0 },
          profit: { type: Number, default: 0 },
       },
+      currentStep: { type: Number, default: 1, enum: [1, 2, 3, 4, 5] },
    },
    { timestamps: true },
 );

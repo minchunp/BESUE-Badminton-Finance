@@ -33,6 +33,7 @@ export interface ISession {
       female: number;
    };
    notes?: string;
+   currentStep?: number;
    summary: {
       totalRevenue: number;
       totalCash: number;
@@ -75,10 +76,12 @@ export const sessionApi = {
 
    updatePlayers: async (
       id: string,
-      players: Omit<IPlayer, "_id">[]
+      players: Omit<IPlayer, "_id">[],
+      currentStep?: number
    ): Promise<ApiResponse<ISession>> => {
       const response = await axiosInstance.put<ApiResponse<ISession>>(`/sessions/${id}/players`, {
          players,
+         currentStep,
       });
       return response.data;
    },
@@ -91,6 +94,16 @@ export const sessionApi = {
       }
    ): Promise<ApiResponse<ISession>> => {
       const response = await axiosInstance.put<ApiResponse<ISession>>(`/sessions/${id}/complete`, data);
+      return response.data;
+   },
+
+   getAll: async (): Promise<ApiResponse<ISession[]>> => {
+      const response = await axiosInstance.get<ApiResponse<ISession[]>>("/sessions");
+      return response.data;
+   },
+
+   getById: async (id: string): Promise<ApiResponse<ISession>> => {
+      const response = await axiosInstance.get<ApiResponse<ISession>>(`/sessions/${id}`);
       return response.data;
    },
 };
