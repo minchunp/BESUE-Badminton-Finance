@@ -1,11 +1,13 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Layout } from "antd";
-import { LayoutGrid, PlayCircle, History, BarChart3, Plus, Bell } from "lucide-react";
+import { LayoutGrid, PlayCircle, History, BarChart3, Plus, Bell, LogOut } from "lucide-react";
 import { motion } from "framer-motion";
+import { useAuth } from "../contexts/AuthContext";
 
 const MainLayout = () => {
    const location = useLocation();
    const navigate = useNavigate();
+   const { user, logout } = useAuth();
 
    const navItems = [
       { path: "/categories", icon: LayoutGrid, label: "Danh mục" },
@@ -15,28 +17,56 @@ const MainLayout = () => {
       { path: "/stats", icon: BarChart3, label: "Thống kê" },
    ];
 
+   // Generate dynamic initials for the user avatar
+   const getInitials = (name: string) => {
+      if (!name) return "🏆";
+      const parts = name.split(" ");
+      return parts
+         .map((p) => p[0])
+         .slice(0, 2)
+         .join("")
+         .toUpperCase();
+   };
+
    return (
       <Layout className="min-h-screen bg-[#FDFCFE] font-sans relative overflow-hidden">
+         {/* Top gradient glow bloby */}
          <div className="absolute! top-0 right-0 w-125 h-125 bg-linear-to-br from-[#BAE6FD]/20 to-[#F3E8FF]/60 rounded-full blur-3xl opacity-80 pointer-events-none -translate-y-1/2 translate-x-1/3" />
 
          <header className="sticky top-0 z-50 bg-white/70 backdrop-blur-xl px-6 py-5 border-b border-gray-100">
             <div className="max-w-md mx-auto flex justify-between items-center relative z-10">
                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-white shadow-sm border border-gray-100 rounded-full flex items-center justify-center overflow-hidden">
-                     <span className="text-xl">👋</span>
+                  <div
+                     onClick={() => navigate("/home")}
+                     className="w-10 h-10 bg-linear-to-br from-[#D8B4FE] to-[#C084FC] shadow-sm rounded-full flex items-center justify-center overflow-hidden border border-white/50"
+                  >
+                     <span className="text-white font-sans text-xs font-black select-none">{getInitials(user?.fullName || "Suee Nguyen")}</span>
                   </div>
                   <div>
-                     <p className="text-[13px] text-gray-500 font-medium">Good Morning,</p>
-                     <h1 className="text-lg font-black text-gray-900 leading-tight tracking-tight">Suee Nguyen</h1>
+                     <p className="text-[13px] text-gray-500 font-medium leading-none mb-1">Chào buổi sáng,</p>
+                     <h1 className="text-sm font-black text-gray-900 leading-none tracking-tight">{user?.fullName || "Suee Nguyen"}</h1>
                   </div>
                </div>
-               <motion.button
-                  whileTap={{ scale: 0.95 }}
-                  className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm border border-gray-100 relative text-gray-600 hover:text-[#C084FC] transition-colors"
-               >
-                  <Bell size={20} strokeWidth={2} />
-                  <span className="absolute top-2 right-2.5 w-2 h-2 bg-rose-500 border-2 border-white rounded-full" />
-               </motion.button>
+
+               <div className="flex items-center gap-2">
+                  {/* Notifications bell button */}
+                  <motion.button
+                     whileTap={{ scale: 0.95 }}
+                     className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm border border-gray-100 relative text-gray-600 hover:text-[#C084FC] transition-colors cursor-pointer"
+                  >
+                     <Bell size={20} strokeWidth={2} />
+                     <span className="absolute top-2 right-2.5 w-2 h-2 bg-rose-500 border-2 border-white rounded-full" />
+                  </motion.button>
+
+                  {/* Elegant dynamic Logout button */}
+                  <motion.button
+                     onClick={logout}
+                     whileTap={{ scale: 0.95 }}
+                     className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm border border-gray-100 text-rose-500 hover:text-rose-600 hover:bg-rose-50/50 transition-colors cursor-pointer"
+                  >
+                     <LogOut size={16} strokeWidth={2.5} />
+                  </motion.button>
+               </div>
             </div>
          </header>
 
@@ -68,7 +98,7 @@ const MainLayout = () => {
                         <motion.button
                            key={item.path}
                            onClick={() => navigate(item.path)}
-                           className="relative flex flex-col items-center justify-center gap-1 w-16 h-14 rounded-2xl"
+                           className="relative flex flex-col items-center justify-center gap-1 w-16 h-14 rounded-2xl cursor-pointer"
                            whileTap={{ scale: 0.95 }}
                         >
                            {isActive && (

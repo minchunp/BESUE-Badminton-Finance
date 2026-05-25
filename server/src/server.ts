@@ -7,6 +7,7 @@ import courtRoutes from "./routes/court.route.js";
 import shuttleRoutes from "./routes/shuttle.route.js";
 import sessionRoutes from "./routes/session.route.js";
 import statsRoutes from "./routes/stats.route.js";
+import authRoutes from "./routes/auth.route.js";
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ mongoose
    .then(() => console.log("The MongoDB connection has been successfully established!"))
    .catch((err) => console.error("MongoDB connection error: ", err));
 
+app.use("/api/auth", authRoutes);
 app.use("/api/courts", courtRoutes);
 app.use("/api/shuttles", shuttleRoutes);
 app.use("/api/sessions", sessionRoutes);
