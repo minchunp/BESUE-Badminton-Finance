@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Avatar } from "antd";
 import { ChevronRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import type { RecentSession } from "../types";
 
 interface RecentHostsProps {
@@ -41,6 +42,8 @@ const cardVariants = {
 };
 
 const RecentHosts = ({ sessions }: RecentHostsProps) => {
+   const navigate = useNavigate();
+
    // Helper function to generate an array of avatars based on player count
    const getAvatarsForPlayerCount = (count: number, sessionId: string) => {
       const avatars: string[] = [];
@@ -56,77 +59,85 @@ const RecentHosts = ({ sessions }: RecentHostsProps) => {
       <section className="space-y-4">
          <div className="flex justify-between items-center px-1">
             <h2 className="font-sans text-lg font-extrabold text-[#1a1c1c] tracking-tight">Buổi host gần đây</h2>
-            <a href="#" className="font-sans text-[13px] font-bold text-[#7b41b4] hover:text-[#6f5092] transition-colors flex items-center gap-0.5">
+            <button
+               onClick={() => navigate("/history")}
+               className="font-sans text-[13px] font-bold text-[#7b41b4] hover:text-[#6f5092] transition-colors flex items-center gap-0.5 cursor-pointer bg-transparent border-none p-0 outline-none"
+            >
                Xem tất cả
                <ChevronRight size={14} strokeWidth={2.5} />
-            </a>
+            </button>
          </div>
 
-         <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="show"
-            className="flex gap-4 overflow-x-auto hide-scrollbar pb-3 -mx-6 px-6"
-         >
-            {sessions.map((session) => {
-               const playerAvatars = getAvatarsForPlayerCount(session.quantityPlayer, session.id);
-               const isComplete = session.status === "complete";
+         {sessions.length === 0 ? (
+            <div className="glass-card rounded-2xl p-6 text-center text-gray-400 font-sans text-xs">Chưa có buổi host hoàn tất nào gần đây</div>
+         ) : (
+            <motion.div
+               variants={containerVariants}
+               initial="hidden"
+               animate="show"
+               className="flex gap-4 overflow-x-auto hide-scrollbar pb-3 -mx-6 px-6"
+            >
+               {sessions.map((session) => {
+                  const playerAvatars = getAvatarsForPlayerCount(session.quantityPlayer, session.id);
+                  const isComplete = session.status === "complete";
 
-               return (
-                  <motion.div
-                     key={session.id}
-                     variants={cardVariants}
-                     whileHover={{ y: -3, scale: 1.01 }}
-                     whileTap={{ scale: 0.99 }}
-                     className="min-w-70 w-70 glass-card rounded-2xl p-4 flex flex-col gap-3 shrink-0 transition-shadow hover:shadow-[0_12px_24px_rgba(216,180,254,0.2)]"
-                  >
-                     <div className="flex justify-between items-start">
-                        <div>
-                           <div className="font-sans text-[11px] font-semibold text-gray-400 mb-1">{session.date}</div>
-                           <div className="font-sans text-sm font-extrabold text-gray-800 tracking-tight">{session.courtName}</div>
-                        </div>
+                  return (
+                     <motion.div
+                        key={session.id}
+                        variants={cardVariants}
+                        whileHover={{ y: -3, scale: 1.01 }}
+                        whileTap={{ scale: 0.99 }}
+                        onClick={() => navigate(`/host/report/${session.id}`)}
+                        className="min-w-70 w-70 glass-card rounded-2xl p-4 flex flex-col gap-3 shrink-0 cursor-pointer transition-shadow hover:shadow-[0_12px_24px_rgba(216,180,254,0.2)]"
+                     >
+                        <div className="flex justify-between items-start">
+                           <div>
+                              <div className="font-sans text-[11px] font-semibold text-gray-400 mb-1">{session.date}</div>
+                              <div className="font-sans text-sm font-extrabold text-gray-800 tracking-tight line-clamp-1">{session.courtName}</div>
+                           </div>
 
-                        <span
-                           className={`font-sans text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider select-none shrink-0 ${
-                              isComplete ? "bg-[#FB7185]/10 text-[#FB7185]" : "bg-red-50 text-red-500"
-                           }`}
-                        >
-                           {isComplete ? "Hoàn tất" : "Đã hủy"}
-                        </span>
-                     </div>
-
-                     <div className="flex justify-between items-end mt-2">
-                        <div className="flex flex-col">
-                           <span className="font-sans text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Lợi nhuận</span>
-                           <span className="font-sans text-lg font-extrabold text-emerald-600 tracking-tight leading-none">
-                              +{session.profit.toLocaleString("vi-VN")}đ
+                           <span
+                              className={`font-sans text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider select-none shrink-0 ${
+                                 isComplete ? "bg-[#FB7185]/10 text-[#FB7185]" : "bg-red-50 text-red-500"
+                              }`}
+                           >
+                              {isComplete ? "Hoàn tất" : "Đã hủy"}
                            </span>
                         </div>
 
-                        {/* Ant Design Avatar.Group for beautiful profile representation */}
-                        <div className="flex select-none">
-                           <Avatar.Group
-                              max={{
-                                 count: 3,
-                                 style: {
-                                    color: "#7b41b4",
-                                    backgroundColor: "#f0dbff",
-                                    fontSize: "11px",
-                                    fontWeight: "bold",
-                                    border: "2px solid #ffffff",
-                                 },
-                              }}
-                           >
-                              {playerAvatars.map((url, idx) => (
-                                 <Avatar key={idx} src={url} style={{ border: "2px solid #ffffff" }} className="shadow-sm" />
-                              ))}
-                           </Avatar.Group>
+                        <div className="flex justify-between items-end mt-2">
+                           <div className="flex flex-col">
+                              <span className="font-sans text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Lợi nhuận</span>
+                              <span className="font-sans text-lg font-extrabold text-emerald-600 tracking-tight leading-none">
+                                 +{session.profit.toLocaleString("vi-VN")}đ
+                              </span>
+                           </div>
+
+                           {/* Ant Design Avatar.Group for beautiful profile representation */}
+                           <div className="flex select-none">
+                              <Avatar.Group
+                                 max={{
+                                    count: 3,
+                                    style: {
+                                       color: "#7b41b4",
+                                       backgroundColor: "#f0dbff",
+                                       fontSize: "11px",
+                                       fontWeight: "bold",
+                                       border: "2px solid #ffffff",
+                                    },
+                                 }}
+                              >
+                                 {playerAvatars.map((url, idx) => (
+                                    <Avatar key={idx} src={url} style={{ border: "2px solid #ffffff" }} className="shadow-sm" />
+                                 ))}
+                              </Avatar.Group>
+                           </div>
                         </div>
-                     </div>
-                  </motion.div>
-               );
-            })}
-         </motion.div>
+                     </motion.div>
+                  );
+               })}
+            </motion.div>
+         )}
       </section>
    );
 };

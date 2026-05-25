@@ -3,77 +3,7 @@ import GreetingCard from "./components/GreetingCard";
 import QuickStats from "./components/QuickStats";
 import PrimaryAction from "./components/PrimaryAction";
 import RecentHosts from "./components/RecentHosts";
-import type { HomePageData } from "./types";
-
-// High-fidelity Mock Data complying strictly with HomePageData interface from types.ts
-const mockHomePageData: HomePageData = {
-   userName: "Suee Nguyen",
-   scheduledHostsCount: 2,
-   stats: [
-      {
-         id: "stat-revenue",
-         icon: "revenue",
-         label: "Thu nhập",
-         value: 12500000,
-         unit: "đ",
-      },
-      {
-         id: "stat-sessions",
-         icon: "sessions",
-         label: "Buổi host",
-         value: 24,
-         unit: "buổi",
-      },
-      {
-         id: "stat-shuttles",
-         icon: "shuttles",
-         label: "Cầu đã dùng",
-         value: 48,
-         unit: "ống",
-      },
-      {
-         id: "stat-hours",
-         icon: "hours",
-         label: "Giờ đã host",
-         value: 96,
-         unit: "giờ",
-      },
-   ],
-   recentSessions: [
-      {
-         id: "session-1",
-         date: "12 Tháng 10, 2023",
-         courtName: "Sân Olympic",
-         profit: 450000,
-         status: "complete",
-         quantityPlayer: 8,
-      },
-      {
-         id: "session-2",
-         date: "10 Tháng 10, 2023",
-         courtName: "Sân Viettel",
-         profit: 320000,
-         status: "complete",
-         quantityPlayer: 5,
-      },
-      {
-         id: "session-3",
-         date: "08 Tháng 10, 2023",
-         courtName: "Sân Thống Nhất",
-         profit: 180000,
-         status: "complete",
-         quantityPlayer: 3,
-      },
-      {
-         id: "session-4",
-         date: "05 Tháng 10, 2023",
-         courtName: "Sân Bình Thạnh",
-         profit: 290000,
-         status: "complete",
-         quantityPlayer: 6,
-      },
-   ],
-};
+import { useHomeData } from "./hooks/useHomeData";
 
 const pageContainerVariants = {
    hidden: { opacity: 0 },
@@ -85,25 +15,78 @@ const pageContainerVariants = {
    },
 };
 
+const HomeSkeleton = () => (
+   <div className="flex flex-col gap-6 w-full animate-pulse p-1">
+      {/* Greeting Skeleton */}
+      <div className="h-35 rounded-2xl bg-gray-200" />
+      
+      {/* Quick Stats Grid Skeleton */}
+      <div className="grid grid-cols-2 gap-4">
+         {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-26.25 rounded-2xl bg-gray-100" />
+         ))}
+      </div>
+      
+      {/* Action Button Skeleton */}
+      <div className="h-18 rounded-2xl bg-gray-200" />
+      
+      {/* Recent Sessions Skeleton */}
+      <div className="space-y-4">
+         <div className="flex justify-between items-center px-1">
+            <div className="h-6 w-36 bg-gray-200 rounded-md" />
+            <div className="h-4 w-16 bg-gray-100 rounded-md" />
+         </div>
+         <div className="flex gap-4 overflow-x-auto pb-3">
+            {[1, 2].map((i) => (
+               <div key={i} className="min-w-70 w-70 h-32 bg-gray-100 rounded-2xl shrink-0" />
+            ))}
+         </div>
+      </div>
+   </div>
+);
+
 const HomePage = () => {
-   const handleCreateHost = () => {
-      console.log("Navigating to create new badminton host session...");
-      // In a real application, we would navigate to a form or open a modal
-   };
+   const { data, isLoading, error } = useHomeData();
+
+   if (isLoading) {
+      return <HomeSkeleton />;
+   }
+
+   if (error || !data) {
+      return (
+         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-center px-4">
+            <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center text-red-500 font-bold text-xl">
+               !
+            </div>
+            <h3 className="font-sans font-black text-gray-800 text-base">Đã xảy ra lỗi tải dữ liệu</h3>
+            <p className="font-sans text-xs text-gray-400 max-w-xs">
+               Vui lòng kiểm tra lại kết nối mạng hoặc khởi động lại server.
+            </p>
+         </div>
+      );
+   }
 
    return (
-      <motion.div variants={pageContainerVariants} initial="hidden" animate="show" className="flex flex-col gap-6 w-full">
+      <motion.div
+         variants={pageContainerVariants}
+         initial="hidden"
+         animate="show"
+         className="flex flex-col gap-6 w-full"
+      >
          {/* Greeting Section */}
-         <GreetingCard userName={mockHomePageData.userName} scheduledHostsCount={mockHomePageData.scheduledHostsCount} />
+         <GreetingCard
+            userName={data.userName}
+            scheduledHostsCount={data.scheduledHostsCount}
+         />
 
          {/* Quick Statistics Grid */}
-         <QuickStats stats={mockHomePageData.stats} />
+         <QuickStats stats={data.stats} />
 
          {/* Primary Call to Action */}
-         <PrimaryAction onClick={handleCreateHost} />
+         <PrimaryAction />
 
          {/* Recent Host Sessions list */}
-         <RecentHosts sessions={mockHomePageData.recentSessions} />
+         <RecentHosts sessions={data.recentSessions} />
       </motion.div>
    );
 };
