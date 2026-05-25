@@ -8,6 +8,7 @@ import HomePage from "./pages/Home";
 import CategoriesPage from "./pages/Categories";
 import HostPage from "./pages/Host";
 import HistoryPage from "./pages/History";
+import StatsPage from "./pages/Stats";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ const AppContent = () => {
                   <Route path="host/create" element={<HostPage />} />
                   <Route path="host/report/:id" element={<HostPage />} />
                   <Route path="history" element={<HistoryPage />} />
+                  <Route path="stats" element={<StatsPage />} />
                </Route>
             </>
          )}
