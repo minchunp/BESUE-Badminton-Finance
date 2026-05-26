@@ -2,9 +2,10 @@ import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Spin, ConfigProvider, DatePicker } from "antd";
+import { Spin, ConfigProvider, DatePicker, theme } from "antd";
 import { SlidersHorizontal, FileText } from "lucide-react";
 import dayjs from "dayjs";
+import { useTheme } from "../../contexts/ThemeContext";
 
 import { sessionApi } from "../../api/services/session.api";
 import type { ISession } from "../../api/services/session.api";
@@ -27,6 +28,7 @@ const containerVariants = {
 };
 
 const HistoryPage = () => {
+   const { isDarkMode } = useTheme();
    const navigate = useNavigate();
    const [filter, setFilter] = useState<HistoryFilterType>("all");
    const [searchQuery, setSearchQuery] = useState("");
@@ -155,6 +157,7 @@ const HistoryPage = () => {
    return (
       <ConfigProvider
          theme={{
+            algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
             token: { colorPrimary: "#7b41b4", borderRadius: 16 },
          }}
       >

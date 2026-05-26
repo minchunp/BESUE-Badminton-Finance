@@ -23,6 +23,16 @@ const SessionSchema = new Schema({
             isCheckedIn: { type: Boolean, default: false },
             isPaid: { type: Boolean, default: false },
             paymentMethod: { type: String, enum: ["cash", "transfer"] },
+            individualMatches: { type: [Number], default: [] },
+            individualPayments: {
+                type: [
+                    {
+                        isPaid: { type: Boolean, default: false },
+                        paymentMethod: { type: String, enum: ["cash", "transfer"] },
+                    },
+                ],
+                default: [],
+            },
         },
     ],
     feeSettings: {

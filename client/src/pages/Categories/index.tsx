@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Drawer, message, ConfigProvider } from "antd";
+import { Drawer, message, ConfigProvider, theme } from "antd";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus, ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTheme } from "../../contexts/ThemeContext";
 
 import ShuttleTab from "./components/ShuttleTab";
 import CourtTab from "./components/CourtTab";
@@ -17,6 +18,7 @@ import type { IShuttle, ICourt } from "./types";
 type TabType = "shuttle" | "court";
 
 const CategoriesPage = () => {
+   const { isDarkMode } = useTheme();
    const navigate = useNavigate();
    const queryClient = useQueryClient();
 
@@ -130,6 +132,7 @@ const CategoriesPage = () => {
    return (
       <ConfigProvider
          theme={{
+            algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
             token: {
                colorPrimary: "#7b41b4",
                borderRadius: 16,
@@ -233,10 +236,10 @@ const CategoriesPage = () => {
                   body: {
                      paddingTop: 16,
                      paddingBottom: 40,
-                     backgroundColor: "#f9f9f9",
+                     backgroundColor: isDarkMode ? "#18181b" : "#f9f9f9",
                   },
                   header: {
-                     borderBottom: "1px solid rgba(0,0,0,0.05)",
+                     borderBottom: isDarkMode ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(0,0,0,0.05)",
                      paddingTop: 20,
                      paddingBottom: 16,
                   },

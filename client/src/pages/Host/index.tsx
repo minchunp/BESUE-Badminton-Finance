@@ -5,8 +5,9 @@ import { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { Spin, message, ConfigProvider } from "antd";
+import { Spin, message, ConfigProvider, theme } from "antd";
 import { ChevronLeft, HelpCircle, Share2, Plus } from "lucide-react";
+import { useTheme } from "../../contexts/ThemeContext";
 
 import StepBasicInfo from "./components/StepBasicInfo";
 import StepPlayerList from "./components/StepPlayerList";
@@ -31,6 +32,7 @@ import {
 type WizardStep = 1 | 2 | 3 | 4 | 5;
 
 const HostPage = () => {
+   const { isDarkMode } = useTheme();
    const navigate = useNavigate();
    const { id: routeId } = useParams<{ id: string }>();
    const [searchParams] = useSearchParams();
@@ -397,6 +399,7 @@ const HostPage = () => {
    return (
       <ConfigProvider
          theme={{
+            algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
             token: {
                colorPrimary: "#7b41b4",
                borderRadius: 16,

@@ -1,8 +1,10 @@
 import { useEffect } from "react";
 import { Drawer, Form, Input, InputNumber, Button } from "antd";
 import type { PlayerFormDrawerProps } from "../types";
+import { useTheme } from "../../../contexts/ThemeContext";
 
 const PlayerFormDrawer = ({ isOpen, onClose, editingIndex, onSave, initialValues }: PlayerFormDrawerProps) => {
+   const { isDarkMode } = useTheme();
    const [form] = Form.useForm();
 
    useEffect(() => {
@@ -29,10 +31,10 @@ const PlayerFormDrawer = ({ isOpen, onClose, editingIndex, onSave, initialValues
             body: {
                paddingTop: 16,
                paddingBottom: 40,
-               backgroundColor: "#f9f9f9",
+               backgroundColor: isDarkMode ? "#18181b" : "#f9f9f9",
             },
             header: {
-               borderBottom: "1px solid rgba(0,0,0,0.05)",
+               borderBottom: isDarkMode ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(0,0,0,0.05)",
                paddingTop: 20,
                paddingBottom: 16,
             },

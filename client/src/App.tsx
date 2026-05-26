@@ -11,10 +11,30 @@ import HistoryPage from "./pages/History";
 import StatsPage from "./pages/Stats";
 import Login from "./pages/Auth/Login";
 import Register from "./pages/Auth/Register";
+import NotesPage from "./pages/Notes";
 import AuthGuard from "./components/AuthGuard";
 import { AuthProvider } from "./contexts/AuthContext";
+import { ThemeProvider, useTheme } from "./contexts/ThemeContext";
 
 const queryClient = new QueryClient();
+
+const AppThemeWrapper = ({ children }: { children: React.ReactNode }) => {
+   const { isDarkMode } = useTheme();
+   return (
+      <ConfigProvider
+         theme={{
+            token: {
+               colorPrimary: "#D8B4FE",
+               borderRadius: 16,
+               fontFamily: "Inter, system-ui, sans-serif",
+            },
+            algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
+         }}
+      >
+         {children}
+      </ConfigProvider>
+   );
+};
 
 const AppContent = () => {
    const navigate = useNavigate();
@@ -56,6 +76,7 @@ const AppContent = () => {
                   <Route path="host/report/:id" element={<HostPage />} />
                   <Route path="history" element={<HistoryPage />} />
                   <Route path="stats" element={<StatsPage />} />
+                  <Route path="notes" element={<NotesPage />} />
                </Route>
             </>
          )}
@@ -67,20 +88,13 @@ const App = () => {
    return (
       <QueryClientProvider client={queryClient}>
          <AuthProvider>
-            <ConfigProvider
-               theme={{
-                  token: {
-                     colorPrimary: "#D8B4FE",
-                     borderRadius: 16,
-                     fontFamily: "Inter, system-ui, sans-serif",
-                  },
-                  algorithm: theme.defaultAlgorithm,
-               }}
-            >
+            <ThemeProvider>
                <BrowserRouter>
-                  <AppContent />
+                  <AppThemeWrapper>
+                     <AppContent />
+                  </AppThemeWrapper>
                </BrowserRouter>
-            </ConfigProvider>
+            </ThemeProvider>
          </AuthProvider>
       </QueryClientProvider>
    );

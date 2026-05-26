@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import * as echarts from "echarts";
 import type { CostBreakdown } from "../types";
 import { formatAmountFull } from "../../../utils/playerUtils";
+import { useTheme } from "../../../contexts/ThemeContext";
 
 interface CostBreakdownCardProps {
    data: CostBreakdown | null;
@@ -13,6 +14,7 @@ interface CostBreakdownCardProps {
 const COLORS = ["#7b41b4", "#ffadb5"];
 
 const CostBreakdownCard = ({ data, isLoading }: CostBreakdownCardProps) => {
+   const { isDarkMode } = useTheme();
    const chartRef = useRef<HTMLDivElement>(null);
    const chartInstanceRef = useRef<echarts.ECharts | null>(null);
 
@@ -36,24 +38,24 @@ const CostBreakdownCard = ({ data, isLoading }: CostBreakdownCardProps) => {
          fontFamily: "Inter, sans-serif",
          tooltip: {
             trigger: "item",
-            backgroundColor: "rgba(255, 255, 255, 0.98)",
+            backgroundColor: isDarkMode ? "rgba(24, 24, 27, 0.98)" : "rgba(255, 255, 255, 0.98)",
             borderRadius: 12,
             borderWidth: 1,
-            borderColor: "#f3f4f6",
+            borderColor: isDarkMode ? "#27272a" : "#f3f4f6",
             shadowBlur: 15,
             shadowColor: "rgba(0,0,0,0.05)",
             padding: [8, 10],
             textStyle: {
                fontFamily: "Inter, sans-serif",
-               color: "#1f2937",
+               color: isDarkMode ? "#e4e4e7" : "#1f2937",
                fontSize: 11,
             },
             formatter: (params: any) => {
                const item = params.data;
                let html = `<div style="font-family: Inter, sans-serif;">`;
-               html += `<div style="font-weight: bold; color: #4b5563; margin-bottom: 2px;">${params.name}</div>`;
+               html += `<div style="font-weight: bold; color: ${isDarkMode ? "#ffffff" : "#4b5563"}; margin-bottom: 2px;">${params.name}</div>`;
                html += `<div style="color: #7b41b4; font-weight: 800; font-size: 12px; margin-bottom: 2px;">${formatAmountFull(params.value)}đ</div>`;
-               html += `<div style="color: #9ca3af; font-size: 10px;">Tỷ lệ: ${item.pct}%</div>`;
+               html += `<div style="color: ${isDarkMode ? "#71717a" : "#9ca3af"}; font-size: 10px;">Tỷ lệ: ${item.pct}%</div>`;
                html += `</div>`;
                return html;
             },
@@ -66,7 +68,7 @@ const CostBreakdownCard = ({ data, isLoading }: CostBreakdownCardProps) => {
                avoidLabelOverlap: false,
                itemStyle: {
                   borderRadius: 6,
-                  borderColor: "#fff",
+                  borderColor: isDarkMode ? "#18181b" : "#fff",
                   borderWidth: 2,
                },
                label: { show: false },
@@ -92,7 +94,7 @@ const CostBreakdownCard = ({ data, isLoading }: CostBreakdownCardProps) => {
          chartInstance.dispose();
          window.removeEventListener("resize", handleResize);
       };
-   }, [data, isLoading]);
+   }, [data, isLoading, isDarkMode]);
 
    if (isLoading) {
       return (

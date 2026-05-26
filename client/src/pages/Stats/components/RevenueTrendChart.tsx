@@ -5,6 +5,7 @@ import * as echarts from "echarts";
 import type { RevenueTrendPoint, StatPeriod } from "../types";
 import { formatAmountFull } from "../../../utils/playerUtils";
 import dayjs from "dayjs";
+import { useTheme } from "../../../contexts/ThemeContext";
 
 interface RevenueTrendChartProps {
    data: RevenueTrendPoint[];
@@ -41,6 +42,7 @@ const ShimmerChart = () => (
 );
 
 const RevenueTrendChart = ({ data, isLoading, period }: RevenueTrendChartProps) => {
+   const { isDarkMode } = useTheme();
    const chartRef = useRef<HTMLDivElement>(null);
    const chartInstanceRef = useRef<echarts.ECharts | null>(null);
 
@@ -70,23 +72,23 @@ const RevenueTrendChart = ({ data, isLoading, period }: RevenueTrendChartProps) 
          },
          tooltip: {
             trigger: "axis",
-            backgroundColor: "rgba(255, 255, 255, 0.98)",
+            backgroundColor: isDarkMode ? "rgba(24, 24, 27, 0.98)" : "rgba(255, 255, 255, 0.98)",
             borderRadius: 16,
             borderWidth: 1,
-            borderColor: "#f3f4f6",
+            borderColor: isDarkMode ? "#27272a" : "#f3f4f6",
             shadowBlur: 20,
             shadowColor: "rgba(0,0,0,0.06)",
             padding: [10, 12],
             textStyle: {
                fontFamily: "Inter, sans-serif",
-               color: "#1f2937",
+               color: isDarkMode ? "#e4e4e7" : "#1f2937",
                fontSize: 11,
             },
             formatter: (params: any) => {
                if (!params || !params.length) return "";
                const label = params[0].axisValue;
                let html = `<div style="font-family: Inter, sans-serif; min-width: 130px;">`;
-               html += `<div style="font-size: 10px; font-weight: bold; color: #9ca3af; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.05em;">${label}</div>`;
+               html += `<div style="font-size: 10px; font-weight: bold; color: ${isDarkMode ? "#71717a" : "#9ca3af"}; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.05em;">${label}</div>`;
                params.forEach((param: any) => {
                   const color = param.color;
                   const name = param.seriesName;
@@ -94,9 +96,9 @@ const RevenueTrendChart = ({ data, isLoading, period }: RevenueTrendChartProps) 
                   html += `<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 4px;">`;
                   html += `  <div style="display: flex; align-items: center; gap: 6px;">`;
                   html += `    <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: ${color};"></span>`;
-                  html += `    <span style="font-size: 11px; font-weight: 600; color: #4b5563;">${name}</span>`;
+                  html += `    <span style="font-size: 11px; font-weight: 600; color: ${isDarkMode ? "#e4e4e7" : "#4b5563"};">${name}</span>`;
                   html += `  </div>`;
-                  html += `  <span style="font-size: 11px; font-weight: 800; color: #111827;">${formatAmountFull(value)}đ</span>`;
+                  html += `  <span style="font-size: 11px; font-weight: 800; color: ${isDarkMode ? "#ffffff" : "#111827"};">${formatAmountFull(value)}đ</span>`;
                   html += `</div>`;
                });
                html += `</div>`;
@@ -113,7 +115,7 @@ const RevenueTrendChart = ({ data, isLoading, period }: RevenueTrendChartProps) 
                fontFamily: "Inter, sans-serif",
                fontSize: 9,
                fontWeight: 600,
-               color: "#9ca3af",
+               color: isDarkMode ? "#a1a1aa" : "#9ca3af",
                margin: 10,
             },
          },
@@ -124,14 +126,14 @@ const RevenueTrendChart = ({ data, isLoading, period }: RevenueTrendChartProps) 
             splitLine: {
                lineStyle: {
                   type: "solid",
-                  color: "#f3f4f6",
+                  color: isDarkMode ? "#27272a" : "#f3f4f6",
                },
             },
             axisLabel: {
                fontFamily: "Inter, sans-serif",
                fontSize: 9,
                fontWeight: 600,
-               color: "#9ca3af",
+               color: isDarkMode ? "#a1a1aa" : "#9ca3af",
                formatter: (value: number) => formatVND(value),
             },
          },
@@ -191,7 +193,7 @@ const RevenueTrendChart = ({ data, isLoading, period }: RevenueTrendChartProps) 
          chartInstance.dispose();
          window.removeEventListener("resize", handleResize);
       };
-   }, [data, period, isLoading]);
+   }, [data, period, isLoading, isDarkMode]);
 
    if (isLoading)
       return (

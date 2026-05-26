@@ -1,4 +1,5 @@
-import { Modal, ConfigProvider } from "antd";
+import { Modal, ConfigProvider, theme } from "antd";
+import { useTheme } from "../../../contexts/ThemeContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { Swords, Trophy, User, X, MapPin, Clock } from "lucide-react";
 import type { ISession } from "../../../api/services/session.api";
@@ -60,6 +61,7 @@ const EmptyMatchState = () => (
 // ================================================================
 
 const MatchStatsModal = ({ session, onClose }: MatchStatsModalProps) => {
+   const { isDarkMode } = useTheme();
    if (!session) return null;
 
    const expanded = expandPlayers(session.players || []);
@@ -73,7 +75,12 @@ const MatchStatsModal = ({ session, onClose }: MatchStatsModalProps) => {
    const maxMatches = Math.max(...expanded.map((p) => p.matches), 1);
 
    return (
-      <ConfigProvider theme={{ token: { colorPrimary: "#7b41b4", borderRadius: 20 } }}>
+      <ConfigProvider
+         theme={{
+            algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
+            token: { colorPrimary: "#7b41b4", borderRadius: 20 },
+         }}
+      >
          <Modal
             open={!!session}
             onCancel={onClose}
@@ -81,12 +88,11 @@ const MatchStatsModal = ({ session, onClose }: MatchStatsModalProps) => {
             centered
             width={400}
             closable={false}
+            className="transparent-modal"
             styles={{
                body: {
-                  borderRadius: 16,
                   padding: 0,
-                  overflow: "hidden",
-                  background: "transparent",
+                  backgroundColor: "transparent",
                },
             }}
          >

@@ -1,4 +1,8 @@
 import mongoose, { type Document } from "mongoose";
+export interface IPersonPayment {
+    isPaid: boolean;
+    paymentMethod?: "cash" | "transfer";
+}
 export interface IPlayer {
     _id?: string;
     name: string;
@@ -7,6 +11,10 @@ export interface IPlayer {
     isCheckedIn: boolean;
     isPaid: boolean;
     paymentMethod?: "cash" | "transfer";
+    /** Per-person match count. Length = maleCount + femaleCount */
+    individualMatches: number[];
+    /** Per-person payment info. Length = maleCount + femaleCount */
+    individualPayments: IPersonPayment[];
 }
 export interface ISession extends Document {
     status: "draft" | "active" | "completed";

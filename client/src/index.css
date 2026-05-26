@@ -1,45 +1,88 @@
 @import "tailwindcss";
+@variant dark (&:where(.dark, .dark *));
+
+/* ================================================================
+   1. Theme System (Light & Dark variables)
+   ================================================================ */
+:root {
+   --bg-primary: #fdfcfe;
+   --bg-card: rgba(255, 255, 255, 0.7);
+   --border-card: rgba(255, 255, 255, 0.4);
+   --text-primary: #1a1c1c;
+   --text-secondary: #6b7280;
+   --text-heading: #111827;
+   --bg-header: rgba(255, 255, 255, 0.7);
+   --bg-input: rgba(249, 250, 251, 0.5);
+   --border-input: #f3f4f6;
+   --bg-mesh-glow:
+      radial-gradient(at 0% 0%, hsla(280, 100%, 74%, 0.15) 0, transparent 50%),
+      radial-gradient(at 100% 0%, hsla(330, 100%, 71%, 0.15) 0, transparent 50%);
+}
+
+.dark {
+   --bg-primary: #09090b; /* zinc-950 */
+   --bg-card: rgba(24, 24, 27, 0.85); /* zinc-900 */
+   --border-card: rgba(63, 63, 70, 0.35); /* zinc-700 */
+   --text-primary: #e4e4e7; /* zinc-200 */
+   --text-secondary: #a1a1aa; /* zinc-400 */
+   --text-heading: #ffffff;
+   --bg-header: rgba(9, 9, 11, 0.8); /* zinc-950 */
+   --bg-input: rgba(39, 39, 42, 0.6); /* zinc-800 */
+   --border-input: #27272a;
+   --bg-mesh-glow:
+      radial-gradient(at 0% 0%, hsla(280, 100%, 65%, 0.08) 0, transparent 50%),
+      radial-gradient(at 100% 0%, hsla(330, 100%, 65%, 0.08) 0, transparent 50%);
+}
+
+/* ================================================================
+   2. Core HTML & Global Overrides
+   ================================================================ */
+body {
+   background-color: var(--bg-primary);
+   color: var(--text-primary);
+   transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
+}
 
 @layer utilities {
    .bg-mesh-0 {
-      background-color: #f9f9f9;
-      background-image:
-         radial-gradient(at 0% 0%, hsla(280, 100%, 74%, 0.2) 0, transparent 50%),
-         radial-gradient(at 100% 0%, hsla(330, 100%, 71%, 0.2) 0, transparent 50%);
+      background-color: var(--bg-primary);
+      background-image: var(--bg-mesh-glow);
+      transition: background-color 0.3s ease;
    }
 
    .bg-mesh-1 {
-      background-color: #fafafa;
-      background-image:
-         radial-gradient(at 80% 0%, hsla(289, 100%, 88%, 0.5) 0px, transparent 50%),
-         radial-gradient(at 0% 50%, hsla(339, 100%, 88%, 0.5) 0px, transparent 50%),
-         radial-gradient(at 80% 100%, hsla(289, 100%, 88%, 0.5) 0px, transparent 50%);
+      background-color: var(--bg-primary);
+      background-image: var(--bg-mesh-glow);
+      transition: background-color 0.3s ease;
    }
 
    .bg-mesh-2 {
-      background-color: #fafafa;
-      background-image:
-         radial-gradient(at 10% 10%, hsla(271, 70%, 85%, 0.6) 0px, transparent 50%),
-         radial-gradient(at 90% 90%, hsla(330, 70%, 85%, 0.6) 0px, transparent 50%),
-         radial-gradient(at 50% 50%, hsla(271, 70%, 95%, 0.4) 0px, transparent 50%);
+      background-color: var(--bg-primary);
+      background-image: var(--bg-mesh-glow);
+      transition: background-color 0.3s ease;
    }
 
    .glass-card {
-      background: rgba(255, 255, 255, 0.7);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border-top: 1px solid rgba(255, 255, 255, 0.4);
-      border-left: 1px solid rgba(255, 255, 255, 0.4);
-      box-shadow: 0 8px 32px rgba(216, 180, 254, 0.15);
+      background: var(--bg-card) !important;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--border-card) !important;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04) !important;
+      transition:
+         background 0.3s ease,
+         border 0.3s ease,
+         box-shadow 0.3s ease;
    }
 
    .hide-scrollbar {
-      -ms-overflow-style: none;  /* IE and Edge */
-      scrollbar-width: none;  /* Firefox */
+      -ms-overflow-style: none;
+      scrollbar-width: none;
    }
 
    .hide-scrollbar::-webkit-scrollbar {
-      display: none; /* Chrome, Safari and Opera */
+      display: none;
    }
 
    @keyframes float {
@@ -64,3 +107,386 @@
       animation: shine 1.5s ease-in-out infinite;
    }
 }
+
+/* ================================================================
+   3. Centralized Dark Mode Elements Overrides (Giao diện êm dịu, không chói)
+   ================================================================ */
+.dark body {
+   background-color: #09090b !important;
+}
+
+.dark .bg-\[\#FDFCFE\],
+.dark .bg-white,
+.dark .bg-\[\#F9F9F9\] {
+   background-color: #18181b !important; /* zinc-900 */
+   transition: background-color 0.3s ease;
+}
+
+.dark .bg-white\/90,
+.dark .bg-white\/80,
+.dark .bg-white\/70,
+.dark .bg-white\/50,
+.dark .bg-white\/45,
+.dark .bg-white\/40,
+.dark .bg-white\/30 {
+   background-color: rgba(24, 24, 27, 0.85) !important; /* zinc-900 translucent */
+   border-color: rgba(63, 63, 70, 0.3) !important;
+   transition:
+      background-color 0.3s ease,
+      border-color 0.3s ease;
+}
+
+.dark header {
+   background-color: rgba(24, 24, 27, 0.8) !important; /* zinc-900 with glass */
+   border-bottom: 1px solid rgba(63, 63, 70, 0.3) !important;
+}
+
+.dark .text-gray-900,
+.dark .text-slate-900,
+.dark h1,
+.dark h2,
+.dark h3 {
+   color: #ffffff !important;
+}
+
+.dark .text-gray-800 {
+   color: #f4f4f5 !important; /* zinc-100 */
+}
+
+.dark .text-gray-700 {
+   color: #e4e4e7 !important; /* zinc-200 */
+}
+
+.dark .text-gray-600 {
+   color: #d4d4d8 !important; /* zinc-300 */
+}
+
+.dark .text-gray-500 {
+   color: #a1a1aa !important; /* zinc-400 */
+}
+
+.dark .text-gray-400 {
+   color: #71717a !important; /* zinc-500 */
+}
+
+/* Ant Design components override in Dark Mode */
+.dark .ant-layout {
+   background-color: #09090b !important;
+}
+
+.dark .ant-avatar-group .ant-avatar,
+.dark .ant-avatar {
+   border-color: #18181b !important;
+   background-color: #27272a !important;
+   color: #dbb8ff !important;
+}
+
+.dark .border-gray-100,
+.dark .border-gray-50,
+.dark .border-gray-200,
+.dark .border-gray-300,
+.dark .border-gray-200\/60,
+.dark .border-purple-100,
+.dark .border-purple-200,
+.dark .border-purple-100\/60,
+.dark .border-purple-100\/40,
+.dark .border-amber-200\/60,
+.dark .border-emerald-100\/50,
+.dark .border-emerald-100,
+.dark .border-blue-100\/50,
+.dark .border-blue-100 {
+   border-color: rgba(63, 63, 70, 0.3) !important;
+}
+
+.dark .bg-gray-50,
+.dark .bg-gray-50\/50,
+.dark .bg-gray-50\/80,
+.dark .bg-gray-100,
+.dark .bg-gray-100\/80,
+.dark .bg-gray-150\/50 {
+   background-color: #27272a !important; /* zinc-800 */
+}
+
+/* Inputs and Forms styling overrides */
+.dark input,
+.dark select,
+.dark textarea {
+   background-color: #27272a !important;
+   border-color: #3f3f46 !important;
+   color: #ffffff !important;
+}
+
+.dark input::placeholder {
+   color: #71717a !important;
+}
+
+/* Floating mesh opacity reduction in Dark Mode to be very gentle */
+.dark .absolute.top-0.right-0.bg-linear-to-br {
+   opacity: 0.25 !important;
+}
+
+/* Ant Design Modal / Drawer / Popover overrides in Dark Mode */
+.dark .ant-modal-content,
+.dark .ant-modal-header,
+.dark .ant-modal-body,
+.dark .ant-modal-footer,
+.dark .ant-drawer-content,
+.dark .ant-drawer-header,
+.dark .ant-drawer-body,
+.dark .ant-drawer-footer {
+   background-color: #18181b !important;
+   color: #e4e4e7 !important;
+   border-color: rgba(63, 63, 70, 0.3) !important;
+}
+
+.dark .ant-modal-title,
+.dark .ant-drawer-title {
+   background-color: #18181b !important;
+   color: #ffffff !important;
+}
+
+.dark .ant-modal-close-icon,
+.dark .ant-drawer-close {
+   color: #a1a1aa !important;
+}
+
+.dark .ant-modal-close-icon:hover,
+.dark .ant-drawer-close:hover {
+   color: #ffffff !important;
+}
+
+.dark .ant-drawer-mask,
+.dark .ant-modal-mask {
+   background-color: rgba(9, 9, 11, 0.6) !important;
+   backdrop-filter: blur(4px) !important;
+}
+
+.dark .ant-btn {
+   background-color: #27272a !important;
+   border-color: rgba(63, 63, 70, 0.4) !important;
+   color: #e4e4e7 !important;
+}
+
+.dark .ant-btn:hover {
+   background-color: #3f3f46 !important;
+   color: #ffffff !important;
+}
+
+/* Tables in Dark Mode */
+.dark .ant-table {
+   background: #18181b !important;
+   color: #e4e4e7 !important;
+}
+
+.dark .ant-table-thead > tr > th {
+   background: #27272a !important;
+   color: #ffffff !important;
+   border-bottom: 1px solid #3f3f46 !important;
+}
+
+.dark .ant-table-tbody > tr > td {
+   border-bottom: 1px solid #27272a !important;
+}
+
+.dark .ant-table-tbody > tr:hover > td {
+   background: #27272a !important;
+}
+
+/* Ant Design Dropdown, Select & DatePicker dark mode overrides */
+.dark .ant-select-dropdown,
+.dark .ant-picker-dropdown,
+.dark .ant-picker-panel-container {
+   background-color: #18181b !important;
+   color: #ffffff !important;
+   border: 1px solid rgba(63, 63, 70, 0.4) !important;
+   box-shadow:
+      0 10px 25px -5px rgba(0, 0, 0, 0.3),
+      0 8px 10px -6px rgba(0, 0, 0, 0.3) !important;
+}
+
+.dark .ant-select-item {
+   color: #d4d4d8 !important; /* zinc-300 */
+}
+
+.dark .ant-select-item-option-selected {
+   background-color: #27272a !important; /* zinc-800 */
+   color: #ffffff !important;
+   font-weight: 700 !important;
+}
+
+.dark .ant-select-item-option-active {
+   background-color: #27272a !important;
+   color: #ffffff !important;
+}
+
+.dark .ant-picker-cell {
+   color: #52525b !important; /* zinc-600 */
+}
+
+.dark .ant-picker-cell-in-view {
+   color: #e4e4e7 !important; /* zinc-200 */
+}
+
+.dark .ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner {
+   background-color: #7b41b4 !important;
+   color: #ffffff !important;
+}
+
+.dark .ant-picker-ok button {
+   background-color: #7b41b4 !important;
+   border-color: #7b41b4 !important;
+}
+
+.dark .ant-picker-ok button:hover {
+   background-color: #6f5092 !important;
+}
+
+.dark .ant-picker-cell-in-view.ant-picker-cell-today .ant-picker-cell-inner::before {
+   border-color: #7b41b4 !important;
+}
+
+.dark .ant-picker-cell:hover .ant-picker-cell-inner {
+   background-color: #27272a !important;
+}
+
+.dark .ant-picker-header button {
+   color: #a1a1aa !important;
+}
+
+.dark .ant-picker-header button:hover {
+   color: #ffffff !important;
+}
+
+.dark .ant-picker-content th {
+   color: #a1a1aa !important;
+}
+
+.dark .ant-picker-time-panel-column > li.ant-picker-time-panel-cell-selected .ant-picker-time-panel-cell-inner {
+   background-color: #27272a !important;
+}
+
+/* ================================================================
+   4. Hardcoded Color Interceptors for Dark Mode
+   ================================================================ */
+.dark .text-\[\#7b41b4\],
+.dark .text-\[\#7b41b4\]\/10 {
+   color: #c084fc !important;
+}
+
+.dark .text-\[\#6f5092\] {
+   color: #dbb8ff !important;
+}
+
+.dark .text-\[\#1a1c1c\] {
+   color: #ffffff !important;
+}
+
+.dark .text-emerald-700,
+.dark .text-emerald-600 {
+   color: #34d399 !important;
+}
+
+.dark .text-blue-700,
+.dark .text-blue-600 {
+   color: #60a5fa !important;
+}
+
+.dark .text-indigo-600 {
+   color: #818cf8 !important;
+}
+
+.dark .text-\[\#a93349\] {
+   color: #f87171 !important;
+}
+
+.dark .text-amber-800,
+.dark .text-amber-600,
+.dark .text-amber-500 {
+   color: #fbe044 !important;
+}
+
+.dark .text-rose-500 {
+   color: #f87171 !important;
+}
+
+.dark .bg-purple-50,
+.dark .bg-purple-50\/70,
+.dark .bg-purple-100,
+.dark .bg-\[\#efdbff\],
+.dark .bg-\[\#f0dbff\],
+.dark .bg-\[\#efdbff\]\/30,
+.dark .bg-\[\#dbb8ff\]\/30,
+.dark .bg-\[\#f0dbff\]\/30 {
+   background-color: rgba(192, 132, 252, 0.15) !important;
+   color: #c084fc !important;
+}
+
+.dark .bg-indigo-50,
+.dark .bg-indigo-100 {
+   background-color: rgba(99, 102, 241, 0.15) !important;
+}
+
+.dark .bg-emerald-50,
+.dark .bg-emerald-50\/80,
+.dark .bg-emerald-100 {
+   background-color: rgba(52, 211, 153, 0.15) !important;
+}
+
+.dark .bg-blue-50,
+.dark .bg-blue-50\/80,
+.dark .bg-blue-100 {
+   background-color: rgba(96, 165, 250, 0.15) !important;
+}
+
+.dark .bg-amber-50,
+.dark .bg-amber-100,
+.dark .bg-yellow-50 {
+   background-color: rgba(245, 158, 11, 0.15) !important;
+}
+
+.dark .bg-rose-50,
+.dark .bg-rose-100 {
+   background-color: rgba(244, 63, 94, 0.15) !important;
+}
+
+/* Outer layout dark colors overrides */
+.dark .bg-\[\#f8f7fb\],
+.dark .bg-\[\#f6f4fa\] {
+   background-color: #09090b !important;
+}
+
+.dark .hover\:bg-purple-50\/30:hover {
+   background-color: rgba(192, 132, 252, 0.1) !important;
+}
+
+.dark .divide-gray-100 > :not([hidden]) ~ :not([hidden]) {
+   border-color: rgba(63, 63, 70, 0.3) !important;
+}
+
+.dark .from-amber-50 {
+   --tw-gradient-from: rgba(245, 158, 11, 0.15) !important;
+}
+
+.dark .to-yellow-50 {
+   --tw-gradient-to: rgba(234, 179, 8, 0.05) !important;
+}
+
+.dark .from-\[\#efdbff\] {
+   --tw-gradient-from: rgba(192, 132, 252, 0.15) !important;
+}
+
+.dark .to-\[\#ddb8ff\] {
+   --tw-gradient-to: rgba(192, 132, 252, 0.05) !important;
+}
+
+.dark .to-\[\#d8b4fe\] {
+   --tw-gradient-to: rgba(192, 132, 252, 0.05) !important;
+}
+
+/* Transparent Modal content overrides */
+.transparent-modal .ant-modal-content {
+   background-color: transparent !important;
+   box-shadow: none !important;
+   padding: 0 !important;
+}
+
