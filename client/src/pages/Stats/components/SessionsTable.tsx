@@ -16,11 +16,11 @@ type SortKey = "date" | "revenue" | "totalCost" | "profit";
 type SortDir = "asc" | "desc";
 
 const ShimmerRow = () => (
-   <div className="flex items-center gap-3 py-3 border-b border-black/[0.06] dark:border-white/[0.06] animate-pulse">
-      <div className="w-16 h-4 bg-black/[0.06] dark:bg-white/[0.06] rounded-full" />
-      <div className="flex-1 h-4 bg-black/[0.04] dark:bg-white/[0.04] rounded-full" />
-      <div className="w-12 h-4 bg-black/[0.04] dark:bg-white/[0.04] rounded-full" />
-      <div className="w-14 h-4 bg-black/[0.04] dark:bg-white/[0.04] rounded-full" />
+   <div className="flex items-center gap-3 py-3 border-b border-black/6 dark:border-white/6 animate-pulse">
+      <div className="w-16 h-4 bg-black/6 dark:bg-white/6 rounded-full" />
+      <div className="flex-1 h-4 bg-black/4 dark:bg-white/4 rounded-full" />
+      <div className="w-12 h-4 bg-black/4 dark:bg-white/4 rounded-full" />
+      <div className="w-14 h-4 bg-black/4 dark:bg-white/4 rounded-full" />
    </div>
 );
 
@@ -71,13 +71,15 @@ const SessionsTable = ({ data, isLoading }: SessionsTableProps) => {
          initial={{ opacity: 0, y: 16 }}
          animate={{ opacity: 1, y: 0 }}
          transition={{ delay: 0.25, type: "spring", stiffness: 100 }}
-         className="bg-white dark:bg-[#1C1C1E] border border-black/[0.05] dark:border-white/[0.06] shadow-sm rounded-[24px] p-5 space-y-4"
+         className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-3xl p-5 space-y-4"
       >
          {/* Header */}
          <div className="flex items-center justify-between">
             <div>
                <h3 className="font-sans text-md font-black text-black dark:text-white">Chi tiết từng buổi</h3>
-               <p className="font-sans text-[11px] font-medium text-black/55 dark:text-white/55 mt-0.5">{isLoading ? "—" : `${data.length} buổi đã hoàn thành`}</p>
+               <p className="font-sans text-[11px] font-medium text-black/55 dark:text-white/55 mt-0.5">
+                  {isLoading ? "—" : `${data.length} buổi đã hoàn thành`}
+               </p>
             </div>
          </div>
 
@@ -85,7 +87,7 @@ const SessionsTable = ({ data, isLoading }: SessionsTableProps) => {
          <div className="overflow-x-auto -mx-1">
             <table className="w-full min-w-110">
                <thead>
-                  <tr className="border-b border-black/[0.06] dark:border-white/[0.06]">
+                  <tr className="border-b border-black/6 dark:border-white/6">
                      <th className="pb-2 text-left">
                         <ColHeader label="Ngày" col="date" align="left" />
                      </th>
@@ -123,25 +125,35 @@ const SessionsTable = ({ data, isLoading }: SessionsTableProps) => {
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: i * 0.04, duration: 0.25 }}
                                 onClick={() => navigate(`/host/report/${row._id}`)}
-                                className="border-b border-black/[0.06] dark:border-white/[0.06] hover:bg-[#0A84FF]/[0.04] transition-colors cursor-pointer group"
+                                className="border-b border-black/6 dark:border-white/6 hover:bg-[#0A84FF]/4 transition-colors cursor-pointer group"
                              >
                                 <td className="py-3 pr-2">
                                    <div className="flex flex-col gap-0.5">
-                                      <span className="font-sans text-[11px] font-black text-black dark:text-white">{dayjs(row.date).format("DD/MM")}</span>
-                                      <span className="font-sans text-[9px] font-medium text-black/35 dark:text-white/35">{dayjs(row.date).format("YYYY")}</span>
+                                      <span className="font-sans text-[11px] font-black text-black dark:text-white">
+                                         {dayjs(row.date).format("DD/MM")}
+                                      </span>
+                                      <span className="font-sans text-[9px] font-medium text-black/35 dark:text-white/35">
+                                         {dayjs(row.date).format("YYYY")}
+                                      </span>
                                    </div>
                                 </td>
                                 <td className="py-3 pr-2">
                                    <div className="flex flex-col gap-0.5">
-                                      <span className="font-sans text-[11px] font-bold text-black/55 dark:text-white/55 truncate max-w-20">{row.courtName}</span>
+                                      <span className="font-sans text-[11px] font-bold text-black/55 dark:text-white/55 truncate max-w-20">
+                                         {row.courtName}
+                                      </span>
                                       <span className="font-sans text-[9px] text-black/35 dark:text-white/35">{row.playerCount} người</span>
                                    </div>
                                 </td>
                                 <td className="py-3 text-right">
-                                   <span className="font-sans text-[11px] font-black text-black dark:text-white">{formatAmountFull(row.revenue)}</span>
+                                   <span className="font-sans text-[11px] font-black text-black dark:text-white">
+                                      {formatAmountFull(row.revenue)}
+                                   </span>
                                 </td>
                                 <td className="py-3 text-right">
-                                   <span className="font-sans text-[11px] font-bold text-black/35 dark:text-white/35">{formatAmountFull(row.totalCost)}</span>
+                                   <span className="font-sans text-[11px] font-bold text-black/35 dark:text-white/35">
+                                      {formatAmountFull(row.totalCost)}
+                                   </span>
                                 </td>
                                 <td className="py-3 text-right">
                                    <span
@@ -154,7 +166,10 @@ const SessionsTable = ({ data, isLoading }: SessionsTableProps) => {
                                    </span>
                                 </td>
                                 <td className="py-3 pl-1">
-                                   <ChevronRight size={13} className="text-black/20 dark:text-white/20 group-hover:text-[#0A84FF] transition-colors" />
+                                   <ChevronRight
+                                      size={13}
+                                      className="text-black/20 dark:text-white/20 group-hover:text-[#0A84FF] transition-colors"
+                                   />
                                 </td>
                              </motion.tr>
                           );

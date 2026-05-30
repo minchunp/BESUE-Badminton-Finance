@@ -48,7 +48,7 @@ const MonthlyStatsCard = ({ completedCount, totalRevenue, totalProfit, monthLabe
          </div>
 
          {/* Stats — 3 columns */}
-         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "12px" }}>
+         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px" }}>
             {/* Sessions count */}
             <div style={{ display: "flex", flexDirection: "column" }}>
                <div style={{ display: "flex", alignItems: "center", gap: "4px", marginBottom: "8px" }}>
@@ -65,7 +65,7 @@ const MonthlyStatsCard = ({ completedCount, totalRevenue, totalProfit, monthLabe
                      Buổi host
                   </span>
                </div>
-               <span style={{ fontSize: "18px", fontWeight: 900, color: "#FFFFFF", letterSpacing: "-0.02em", lineHeight: 1 }}>{completedCount}</span>
+               <span style={{ fontSize: "17px", fontWeight: 900, color: "#FFFFFF", letterSpacing: "-0.02em", lineHeight: 1 }}>{completedCount}</span>
             </div>
 
             {/* Total revenue */}
@@ -84,7 +84,7 @@ const MonthlyStatsCard = ({ completedCount, totalRevenue, totalProfit, monthLabe
                      Tổng thu
                   </span>
                </div>
-               <span style={{ fontSize: "18px", fontWeight: 900, color: "#FFFFFF", letterSpacing: "-0.02em", lineHeight: 1 }}>
+               <span style={{ fontSize: "17px", fontWeight: 900, color: "#FFFFFF", letterSpacing: "-0.02em", lineHeight: 1 }}>
                   {formatAmountFull(totalRevenue)}
                </span>
             </div>
@@ -105,7 +105,7 @@ const MonthlyStatsCard = ({ completedCount, totalRevenue, totalProfit, monthLabe
                      Lợi nhuận
                   </span>
                </div>
-               <span style={{ fontSize: "18px", fontWeight: 900, color: profitColor, letterSpacing: "-0.02em", lineHeight: 1 }}>
+               <span style={{ fontSize: "17px", fontWeight: 900, color: profitColor, letterSpacing: "-0.02em", lineHeight: 1 }}>
                   {formatAmountFull(totalProfit)}
                </span>
             </div>

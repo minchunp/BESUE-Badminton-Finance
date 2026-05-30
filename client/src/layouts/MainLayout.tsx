@@ -138,7 +138,7 @@ const MainLayout = () => {
             placement="right"
             onClose={() => setIsSettingsOpen(false)}
             open={isSettingsOpen}
-            width="82%"
+            size="82%"
             styles={{
                body: { padding: "20px", background: "var(--bg-card)" },
                header: { background: "var(--bg-card)", borderBottom: "1px solid var(--border-divider)" },
