@@ -1,15 +1,19 @@
 import { useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { Layout, Drawer } from "antd";
+import { Layout, Drawer, Image } from "antd";
 import { LayoutGrid, PlayCircle, History, BarChart3, Plus, Settings, FileText, LogOut, Mail, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 import { useAuth } from "../contexts/AuthContext";
+import { useTheme } from "../contexts/ThemeContext";
 import dayjs from "dayjs";
+import lightIcon from "../assets/imgs/icons/sun.png";
+import darkIcon from "../assets/imgs/icons/night-mode.png";
 
 const MainLayout = () => {
    const location = useLocation();
    const navigate = useNavigate();
    const { user, logout } = useAuth();
+   const { theme, setTheme } = useTheme();
    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
    const navItems = [
@@ -21,7 +25,7 @@ const MainLayout = () => {
    ];
 
    const getInitials = (name: string) => {
-      if (!name) return "🏆";
+      if (!name) return "🏸";
       const parts = name.split(" ");
       return parts
          .map((p) => p[0])
@@ -36,71 +40,68 @@ const MainLayout = () => {
    };
 
    return (
-      <Layout className="min-h-screen bg-[#FDFCFE] dark:bg-zinc-950 font-sans relative overflow-hidden transition-colors duration-300">
-         {/* Top dynamic gradient mesh background */}
-         <div className="absolute! top-0 right-0 w-125 h-125 bg-linear-to-br from-[#BAE6FD]/20 to-[#F3E8FF]/60 dark:from-[#BAE6FD]/5 dark:to-[#F3E8FF]/10 rounded-full blur-3xl opacity-80 pointer-events-none -translate-y-1/2 translate-x-1/3 transition-opacity duration-300" />
-
+      <Layout className="min-h-screen bg-[#F2F2F7] dark:bg-black font-sans relative transition-colors duration-300">
+         {/* ── Frosted Header (hidden on /notes) ── */}
          {location.pathname !== "/notes" && (
-            <header className="sticky top-0 z-50 bg-white/70 dark:bg-zinc-900/80 backdrop-blur-xl px-6 py-5 border-b border-gray-100 dark:border-zinc-800/40 transition-colors duration-300">
-               <div className="max-w-md mx-auto flex justify-between items-center relative z-10">
-                  {/* Left Section: Clickable Logo/Profile to go back Home */}
+            <header className="sticky top-0 z-50 bg-white/90 dark:bg-black/90 backdrop-blur-2xl px-5 py-3 border-b border-black/5 dark:border-white/6 transition-colors duration-300">
+               <div className="max-w-md mx-auto flex justify-between items-center">
+                  {/* Left: Logo / User avatar */}
                   <div onClick={() => navigate("/home")} className="flex items-center gap-3 cursor-pointer group">
-                     <div className="w-10 h-10 bg-linear-to-br from-[#D8B4FE] to-[#C084FC] shadow-sm rounded-full flex items-center justify-center overflow-hidden border border-white/50 dark:border-zinc-800/60 group-hover:scale-105 transition-transform duration-200">
-                        <span className="text-white font-sans text-xs font-black select-none">{getInitials(user?.fullName || "Suee Nguyen")}</span>
+                     <div className="w-9 h-9 bg-[#0A84FF] rounded-full flex items-center justify-center group-hover:scale-105 transition-transform duration-200">
+                        <span className="text-white font-bold text-xs select-none">{getInitials(user?.fullName || "SN")}</span>
                      </div>
                      <div>
-                        <p className="text-[11px] text-gray-400 dark:text-zinc-500 font-bold leading-none mb-1 group-hover:text-[#C084FC] transition-colors duration-250">
-                           BESUE Badminton
-                        </p>
-                        <h1 className="text-xs font-extrabold text-gray-700 dark:text-zinc-300 leading-none tracking-tight">
-                           {user?.fullName || "Suee Nguyen"}
-                        </h1>
+                        <p className="text-[10px] text-[#0A84FF] font-bold leading-none mb-0.5 uppercase tracking-wider">BESUE Badminton</p>
+                        <p className="text-xs font-bold text-black dark:text-white leading-none tracking-tight">{user?.fullName || "Suee Nguyen"}</p>
                      </div>
                   </div>
 
-                  <div className="flex items-center gap-2">
-                     {/* Notes app shortcut */}
+                  {/* Right: Action buttons */}
+                  <div className="flex items-center gap-1.5">
                      <motion.button
                         onClick={() => navigate("/notes")}
-                        whileTap={{ scale: 0.95 }}
-                        className="w-10 h-10 bg-white dark:bg-zinc-900 rounded-full flex items-center justify-center shadow-sm border border-gray-100 dark:border-zinc-800/80 text-gray-500 dark:text-zinc-400 hover:text-[#C084FC] dark:hover:text-[#C084FC] transition-colors cursor-pointer"
+                        whileTap={{ scale: 0.92 }}
+                        className="w-9 h-9 bg-black/5 dark:bg-white/[0.07] rounded-full flex items-center justify-center text-black/45 dark:text-white/45 hover:text-[#0A84FF] hover:bg-[#0A84FF]/10 transition-colors cursor-pointer"
                      >
-                        <FileText size={18} strokeWidth={2} />
+                        <FileText size={17} strokeWidth={2} />
                      </motion.button>
 
-                     {/* Settings Drawer Button */}
                      <motion.button
                         onClick={() => setIsSettingsOpen(true)}
-                        whileTap={{ scale: 0.95 }}
-                        className="w-10 h-10 bg-white dark:bg-zinc-900 rounded-full flex items-center justify-center shadow-sm border border-gray-100 dark:border-zinc-800/80 text-gray-500 dark:text-zinc-400 hover:text-[#C084FC] dark:hover:text-[#C084FC] transition-colors cursor-pointer"
+                        whileTap={{ scale: 0.92 }}
+                        className="w-9 h-9 bg-black/5 dark:bg-white/[0.07] rounded-full flex items-center justify-center text-black/45 dark:text-white/45 hover:text-[#0A84FF] hover:bg-[#0A84FF]/10 transition-colors cursor-pointer"
                      >
-                        <Settings size={18} strokeWidth={2} />
+                        <Settings size={17} strokeWidth={2} />
                      </motion.button>
                   </div>
                </div>
             </header>
          )}
 
+         {/* ── Page Content ── */}
          <main className="pb-32 pt-4 relative z-10">
-            <div className="max-w-md mx-auto px-6">
+            <div className="max-w-md mx-auto px-4">
                <Outlet />
             </div>
          </main>
 
-         <nav className="fixed bottom-3 left-0 right-0 z-50 px-6 pointer-events-none">
+         {/* ── Bottom Navigation Bar ── */}
+         <nav className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
             <div className="max-w-md mx-auto relative pointer-events-auto">
+               {/* Center FAB — Host */}
                <motion.button
                   onClick={() => navigate("/host")}
-                  whileTap={{ scale: 0.9 }}
+                  whileTap={{ scale: 0.88 }}
                   whileHover={{ scale: 1.05 }}
-                  className="absolute left-1/2 -translate-x-1/2 -top-4 z-20 w-14 h-14 bg-linear-to-br from-[#D8B4FE] to-[#C084FC] rounded-full shadow-[0_8px_20px_rgba(216,180,254,0.4)] flex items-center justify-center text-white border-4 border-[#FDFCFE] dark:border-zinc-950 cursor-pointer"
+                  className="absolute left-1/2 -translate-x-1/2 -top-6 z-20 w-18 h-18 bg-[#0A84FF] rounded-full flex items-center justify-center text-white border-[3px] border-[#F2F2F7] dark:border-black cursor-pointer shadow-[0_8px_24px_rgba(0,0,0,0.15)] dark:shadow-[0_8px_24px_rgba(0,0,0,0.40)]"
                >
-                  <Plus size={26} strokeWidth={2.5} />
+                  <Plus size={24} strokeWidth={2.5} />
                </motion.button>
 
-               <div className="bg-white/90 dark:bg-zinc-900/90 backdrop-blur-lg rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] border border-gray-100/50 dark:border-zinc-800/40 flex items-center justify-between px-2 py-2">
+               {/* Nav bar container — iOS tab bar style */}
+               <div className="bg-white/90 dark:bg-[#1C1C1E]/95 backdrop-blur-xl border-t border-black/6 dark:border-white/6 flex items-center justify-between px-2 pt-2 pb-[max(12px,env(safe-area-inset-bottom))]">
                   {navItems.map((item) => {
-                     if (item.path === "spacer") return <div key="spacer" className="w-12" />;
+                     if (item.path === "spacer") return <div key="spacer" className="w-14" />;
 
                      const Icon = item.icon!;
                      const isActive = location.pathname === item.path;
@@ -109,28 +110,21 @@ const MainLayout = () => {
                         <motion.button
                            key={item.path}
                            onClick={() => navigate(item.path)}
-                           className="relative flex flex-col items-center justify-center gap-1 w-16 h-14 rounded-2xl cursor-pointer"
-                           whileTap={{ scale: 0.95 }}
+                           className="relative flex flex-col items-center justify-center gap-1 w-16 h-12 cursor-pointer"
+                           whileTap={{ scale: 0.88 }}
                         >
-                           {isActive && (
-                              <motion.div
-                                 layoutId="activeTab"
-                                 className="absolute inset-0 bg-gray-50/80 dark:bg-zinc-800/50 rounded-xl"
-                                 transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                              />
-                           )}
-                           <div className="relative z-10 flex flex-col items-center gap-1">
-                              <Icon
-                                 size={22}
-                                 className={isActive ? "text-[#C084FC]" : "text-gray-400 dark:text-zinc-500"}
-                                 strokeWidth={isActive ? 2.5 : 2}
-                              />
-                              <span
-                                 className={`text-[10px] font-bold transition-colors ${isActive ? "text-[#C084FC]" : "text-gray-400 dark:text-zinc-500"}`}
-                              >
-                                 {item.label}
-                              </span>
-                           </div>
+                           <Icon
+                              size={22}
+                              className={isActive ? "text-[#0A84FF]" : "text-black/30 dark:text-white/30"}
+                              strokeWidth={isActive ? 2.5 : 1.8}
+                           />
+                           <span
+                              className={`text-[10px] font-semibold transition-colors ${
+                                 isActive ? "text-[#0A84FF]" : "text-black/30 dark:text-white/30"
+                              }`}
+                           >
+                              {item.label}
+                           </span>
                         </motion.button>
                      );
                   })}
@@ -138,107 +132,89 @@ const MainLayout = () => {
             </div>
          </nav>
 
-         {/* ================================================================
-             Setting Drawer (Cài đặt & Theme Switcher)
-             ================================================================ */}
+         {/* ── Settings Drawer ── */}
          <Drawer
-            title={<div className="font-sans font-black text-gray-900 dark:text-white text-base">Cài đặt tài khoản</div>}
+            title={<span className="font-bold text-[17px] text-black dark:text-white">Cài đặt tài khoản</span>}
             placement="right"
             onClose={() => setIsSettingsOpen(false)}
             open={isSettingsOpen}
-            size="70%"
-            className="font-sans dark:bg-zinc-900 dark:text-white"
+            width="82%"
             styles={{
-               body: { padding: "20px" },
-               mask: { backdropFilter: "blur(4px)" },
+               body: { padding: "20px", background: "var(--bg-card)" },
+               header: { background: "var(--bg-card)", borderBottom: "1px solid var(--border-divider)" },
+               mask: { backdropFilter: "blur(10px)", backgroundColor: "rgba(0,0,0,0.35)" },
             }}
          >
-            <div className="flex flex-col gap-6 h-full font-sans">
-               {/* 1. Account Details Section */}
-               <div className="flex flex-col gap-3">
-                  <span className="font-sans text-[10px] font-bold text-gray-400 dark:text-zinc-500 uppercase tracking-widest pl-1">
-                     Thông tin cá nhân
-                  </span>
+            <div className="flex flex-col gap-5 h-full">
+               {/* Section label */}
+               <span className="text-[11px] font-bold text-black/35 dark:text-white/35 uppercase tracking-widest px-1">Thông tin cá nhân</span>
 
-                  <div className="glass-card rounded-2xl p-4 flex flex-col gap-3">
-                     <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-linear-to-br from-[#D8B4FE] to-[#C084FC] rounded-full flex items-center justify-center overflow-hidden border border-white">
-                           <span className="text-white font-sans text-sm font-black">{getInitials(user?.fullName || "Suee Nguyen")}</span>
-                        </div>
-                        <div>
-                           <h4 className="font-sans text-sm font-extrabold text-gray-800 dark:text-zinc-155 leading-tight">
-                              {user?.fullName || "Suee Nguyen"}
-                           </h4>
-                           <p className="font-sans text-[11px] text-gray-400 dark:text-zinc-500 font-semibold mt-0.5">
-                              @{user?.username || "sueenguyen"}
-                           </p>
-                        </div>
+               {/* Account Card */}
+               <div className="bg-[#F2F2F7] dark:bg-[#2C2C2E] rounded-[20px] p-4 flex flex-col gap-3">
+                  {/* Avatar + name */}
+                  <div className="flex items-center gap-3">
+                     <div className="w-12 h-12 bg-[#0A84FF] rounded-full flex items-center justify-center">
+                        <span className="text-white font-bold text-sm">{getInitials(user?.fullName || "SN")}</span>
                      </div>
-
-                     <hr className="border-gray-100 dark:border-zinc-800/40 my-1" />
-
-                     {/* Email info */}
-                     <div className="flex items-center gap-2.5 text-xs">
-                        <Mail size={14} className="text-gray-400 dark:text-zinc-500 shrink-0" />
-                        <span className="text-gray-600 dark:text-zinc-300 font-semibold line-clamp-1">{user?.email || "suee@gmail.com"}</span>
+                     <div>
+                        <h4 className="font-bold text-sm text-black dark:text-white leading-tight">{user?.fullName || "Suee Nguyen"}</h4>
+                        <p className="text-[11px] text-black/40 dark:text-white/40 font-medium mt-0.5">@{user?.username || "sueenguyen"}</p>
                      </div>
+                  </div>
 
-                     {/* Calendar/Join Date */}
-                     <div className="flex items-center gap-2.5 text-xs">
-                        <Calendar size={14} className="text-gray-400 dark:text-zinc-500 shrink-0" />
-                        <span className="text-gray-500 dark:text-zinc-400 font-medium">
-                           Tham gia từ: {user?.createdAt ? dayjs(user.createdAt).format("DD/MM/YYYY") : "25/05/2026"}
-                        </span>
-                     </div>
+                  <div className="h-px bg-black/5 dark:bg-white/5" />
+
+                  {/* Email */}
+                  <div className="flex items-center gap-2.5 text-xs">
+                     <Mail size={14} className="text-black/30 dark:text-white/30 shrink-0" />
+                     <span className="text-black/65 dark:text-white/65 font-medium line-clamp-1">{user?.email || "suee@gmail.com"}</span>
+                  </div>
+
+                  {/* Join date */}
+                  <div className="flex items-center gap-2.5 text-xs">
+                     <Calendar size={14} className="text-black/30 dark:text-white/30 shrink-0" />
+                     <span className="text-black/45 dark:text-white/45 font-medium">
+                        Tham gia: {user?.createdAt ? dayjs(user.createdAt).format("DD/MM/YYYY") : "25/05/2026"}
+                     </span>
                   </div>
                </div>
 
-               {/* 2. Settings & Themes Section */}
-               {/* <div className="flex flex-col gap-3">
-                  <span className="font-sans text-[10px] font-bold text-gray-400 dark:text-zinc-500 uppercase tracking-widest pl-1">
-                     Tùy chọn hiển thị
-                  </span>
+               {/* Section label */}
+               <span className="text-[11px] font-bold text-black/35 dark:text-white/35 uppercase tracking-widest px-1">Giao diện</span>
 
-                  <div className="glass-card rounded-2xl p-4 flex flex-col gap-4">
-                     <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2.5">
-                           {isDarkMode ? (
-                              <Moon size={16} className="text-[#C084FC] shrink-0" />
-                           ) : (
-                              <Sun size={16} className="text-amber-500 shrink-0" />
-                           )}
-                           <span className="font-sans text-xs font-bold text-gray-700 dark:text-zinc-300">Chế độ Tối (Dark Mode)</span>
-                        </div>
+               {/* Theme Selector Card */}
+               <div className="bg-[#F2F2F7] dark:bg-[#2C2C2E] rounded-[20px] p-1.5 flex gap-1.5 border border-black/4 dark:border-white/4">
+                  <button
+                     onClick={() => setTheme("light")}
+                     className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-2xl font-sans text-xs font-bold transition-all cursor-pointer border-none ${
+                        theme === "light"
+                           ? "bg-white text-[#0A84FF] shadow-sm border border-black/4"
+                           : "bg-transparent text-black/45 dark:text-white/45 hover:text-black/65 dark:hover:text-white/65"
+                     }`}
+                  >
+                     <Image style={{ height: 18, width: 18 }} preview={false} src={lightIcon} /> Sáng
+                  </button>
+                  <button
+                     onClick={() => setTheme("dark")}
+                     className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-2xl font-sans text-xs font-bold transition-all cursor-pointer border-none ${
+                        theme === "dark"
+                           ? "bg-[#1C1C1E] text-[#0A84FF] shadow-sm border border-white/6"
+                           : "bg-transparent text-black/45 dark:text-white/45 hover:text-black/65 dark:hover:text-white/65"
+                     }`}
+                  >
+                     <Image style={{ height: 19, width: 19 }} preview={false} src={darkIcon} /> Tối
+                  </button>
+               </div>
 
-                        <div
-                           onClick={toggleTheme}
-                           className={`w-11 h-6 rounded-full p-1 cursor-pointer flex items-center transition-colors duration-300 ${
-                              isDarkMode ? "bg-[#C084FC]" : "bg-gray-200"
-                           }`}
-                        >
-                           <motion.div
-                              layout
-                              className="w-4 h-4 rounded-full bg-white shadow-md"
-                              animate={{ x: isDarkMode ? 20 : 0 }}
-                              transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                           />
-                        </div>
-                     </div>
-                  </div>
-               </div> */}
-
-               {/* 3. Dangerous / Actions Section */}
+               {/* Logout */}
                <div className="flex flex-col gap-3 mt-auto">
-                  <hr className="border-gray-100 dark:border-zinc-800/40" />
-
-                  {/* Log Out button inside settings */}
+                  <div className="h-px bg-black/5 dark:bg-white/5" />
                   <motion.button
                      onClick={handleLogoutClick}
-                     whileHover={{ scale: 1.01 }}
-                     whileTap={{ scale: 0.98 }}
-                     className="w-full h-11 bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/30 hover:bg-rose-100/50 dark:hover:bg-rose-950/30 text-rose-500 dark:text-rose-400 rounded-xl font-sans text-xs font-extrabold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-colors"
+                     whileTap={{ scale: 0.97 }}
+                     className="w-full h-12 bg-[#FF375F]/10 hover:bg-[#FF375F]/16 text-[#FF375F] rounded-2xl font-bold text-sm flex items-center justify-center gap-2 cursor-pointer transition-colors"
                   >
-                     <LogOut size={15} strokeWidth={2.5} />
+                     <LogOut size={16} strokeWidth={2.5} />
                      Đăng xuất tài khoản
                   </motion.button>
                </div>

@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { CheckCircle, RefreshCw, FileText, MapPin, Users, Layers, ArrowRight, ChevronRight, Swords } from "lucide-react";
 import type { HistorySession } from "../types";
 import { expandPlayers } from "../../../utils/playerUtils";
+
 interface SessionCardProps {
    session: HistorySession;
    formatSessionDate: (dateStr: string) => string;
@@ -12,18 +13,17 @@ interface SessionCardProps {
 }
 
 const cardVariants = {
-   hidden: { opacity: 0, y: 20 },
+   hidden: { opacity: 0, y: 14 },
    show: {
       opacity: 1,
       y: 0,
-      transition: { type: "spring" as const, stiffness: 100, damping: 15 },
+      transition: { type: "spring" as const, stiffness: 120, damping: 16 },
    },
 };
 
 const SessionCard = ({ session, formatSessionDate, formatAmount, isToday, onCardClick, onViewMatchStats }: SessionCardProps) => {
    const totalPlayers = session.players ? session.players.reduce((sum, p) => sum + (p.maleCount || 0) + (p.femaleCount || 0), 0) : 0;
 
-   // Check if this session has any match data recorded
    const totalMatchesRecorded = session.players ? expandPlayers(session.players).reduce((acc, p) => acc + p.matches, 0) : 0;
    const hasMatchData = totalMatchesRecorded > 0;
 
@@ -36,129 +36,124 @@ const SessionCard = ({ session, formatSessionDate, formatAmount, isToday, onCard
       <motion.article
          variants={cardVariants}
          onClick={() => onCardClick(session)}
-         className={`glass-card rounded-3xl p-5 flex flex-col gap-4 transition-all hover:shadow-md cursor-pointer border border-white/60 bg-white/70 backdrop-blur-md relative ${
-            isLive ? "border-purple-200/80 shadow-[0_8px_30px_rgba(123,65,180,0.1)]" : "shadow-xs"
-         }`}
+         className="bg-white dark:bg-[#1C1C1E] rounded-[20px] p-4 flex flex-col gap-3.5 cursor-pointer border border-black/5 dark:border-white/[0.07] active:bg-black/1 dark:active:bg-white/2 transition-colors"
       >
-         {/* Top row: icon + title + status badge */}
+         {/* ── Top row: icon + title + status badge ── */}
          <div className="flex justify-between items-start">
-            <div className="flex items-center gap-3.5 min-w-0">
+            <div className="flex items-center gap-3 min-w-0">
                {isCompleted && (
-                  <div className="w-10 h-10 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
-                     <CheckCircle size={18} className="text-emerald-500" strokeWidth={2.5} />
+                  <div className="w-9 h-9 rounded-full bg-[#30D158]/12 flex items-center justify-center shrink-0">
+                     <CheckCircle size={17} className="text-[#30D158]" strokeWidth={2.5} />
                   </div>
                )}
                {isLive && (
-                  <div className="w-10 h-10 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0 animate-[spin_6s_linear_infinite]">
-                     <RefreshCw size={18} className="text-blue-500" strokeWidth={2.5} />
+                  <div className="w-9 h-9 rounded-full bg-[#0A84FF]/10 flex items-center justify-center shrink-0">
+                     <RefreshCw size={17} className="text-[#0A84FF] animate-spin" style={{ animationDuration: "4s" }} strokeWidth={2.5} />
                   </div>
                )}
                {isDraft && (
-                  <div className="w-10 h-10 rounded-full bg-gray-50 border border-gray-150 flex items-center justify-center shrink-0">
-                     <FileText size={18} className="text-gray-400" strokeWidth={2.5} />
+                  <div className="w-9 h-9 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center shrink-0">
+                     <FileText size={17} className="text-black/30 dark:text-white/30" strokeWidth={2.5} />
                   </div>
                )}
 
                <div className="min-w-0">
-                  <h4 className="font-sans text-[14px] font-extrabold text-gray-800 leading-none mb-1.5 truncate">
-                     {isLive && isToday(session.date) ? "Hôm nay - Đang diễn ra" : formattedDate}
+                  <h4 className="text-[14px] font-bold text-black dark:text-white leading-none mb-1.5 truncate">
+                     {isLive && isToday(session.date) ? "Hôm nay — Đang diễn ra" : formattedDate}
                   </h4>
-                  <div className="flex items-center gap-1 text-gray-400 font-sans text-[10px] font-bold uppercase tracking-wider">
-                     <MapPin size={10} className="text-[#7b41b4] shrink-0" />
+                  <div className="flex items-center gap-1 text-[10px] font-semibold text-black/35 dark:text-white/35 uppercase tracking-wider">
+                     <MapPin size={9} className="text-[#0A84FF] shrink-0" />
                      <span className="truncate">{session.court?.name || "Chưa chọn sân"}</span>
                   </div>
                </div>
             </div>
 
-            <div>
+            {/* Status chip */}
+            <div className="shrink-0">
                {isCompleted && (
-                  <span className="bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full font-sans text-[9px] font-extrabold uppercase tracking-wider border border-emerald-100/50">
+                  <span className="bg-[#30D158]/12 text-[#30D158] px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide">
                      Hoàn tất
                   </span>
                )}
                {isLive && (
-                  <span className="bg-rose-50 text-rose-500 px-2 py-0.5 rounded-full font-sans text-[9px] font-extrabold uppercase tracking-wider border border-rose-100 animate-pulse">
+                  <span className="bg-[#FF9F0A]/12 text-[#FF9F0A] px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide animate-pulse">
                      Live
                   </span>
                )}
                {isDraft && (
-                  <span className="bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full font-sans text-[9px] font-extrabold uppercase tracking-wider">
+                  <span className="bg-black/5 dark:bg-white/6 text-black/35 dark:text-white/35 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide">
                      Nháp
                   </span>
                )}
             </div>
          </div>
 
-         {/* Middle info row */}
+         {/* ── Middle info row ── */}
          {!isDraft && (
-            <div className="flex gap-4 py-3 border-y border-gray-100/50 select-none">
+            <div className="flex gap-4 py-3 border-y border-black/4 dark:border-white/4 select-none">
                <div className="flex items-center gap-1.5">
-                  <Users size={14} className="text-[#7b41b4]/70" />
-                  <span className="font-sans text-xs font-bold text-gray-600">{totalPlayers} người</span>
+                  <Users size={12} className="text-[#0A84FF]/60" />
+                  <span className="text-xs font-semibold text-black/50 dark:text-white/50">{totalPlayers} người</span>
                </div>
                <div className="flex items-center gap-1.5">
-                  <Layers size={14} className="text-[#7b41b4]/70" />
-                  <span className="font-sans text-xs font-bold text-gray-600">{session.shuttle?.usedQuantity || 0} quả cầu</span>
+                  <Layers size={12} className="text-[#0A84FF]/60" />
+                  <span className="text-xs font-semibold text-black/50 dark:text-white/50">{session.shuttle?.usedQuantity || 0} quả cầu</span>
                </div>
-               {/* Show match count badge if data exists */}
                {isCompleted && hasMatchData && (
                   <div className="flex items-center gap-1.5">
-                     <Swords size={14} className="text-[#a93349]/70" />
-                     <span className="font-sans text-xs font-bold text-[#a93349]">{totalMatchesRecorded} trận</span>
+                     <Swords size={12} className="text-[#FF375F]/70" />
+                     <span className="text-xs font-semibold text-[#FF375F]">{totalMatchesRecorded} trận</span>
                   </div>
                )}
             </div>
          )}
 
-         {/* Progress bar for in-progress sessions */}
+         {/* ── Progress bar for Live sessions ── */}
          {isLive && (
-            <div className="space-y-1.5 pt-1.5">
-               <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+            <div className="space-y-1.5">
+               <div className="h-1.5 w-full bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
                   <div
-                     className="h-full bg-linear-to-r from-[#c185fd] to-[#7b41b4] rounded-full transition-all duration-500"
+                     className="h-full bg-[#0A84FF] rounded-full transition-all duration-500"
                      style={{ width: `${(session.currentStep || 1) * 20}%` }}
                   />
                </div>
-               <div className="flex justify-between items-center text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+               <div className="flex justify-between items-center text-[10px] font-semibold text-black/30 dark:text-white/30 uppercase tracking-wider">
                   <span>Bước {session.currentStep || 2}/5</span>
                   <span>{session.court?.hours || 2} giờ</span>
                </div>
             </div>
          )}
 
-         {/* Bottom: financial info + action buttons */}
-         <div className="flex justify-between items-center select-none pt-1">
+         {/* ── Bottom: financial info + action ── */}
+         <div className="flex justify-between items-center select-none">
             {isCompleted ? (
                <div className="flex flex-col">
-                  <span className="font-sans text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                  <span className="text-[10px] font-semibold text-black/30 dark:text-white/30 uppercase tracking-wider">
                      Thu: {formatAmount(session.summary?.totalRevenue || 0)}
                   </span>
-                  <span className="font-sans text-xs font-extrabold text-emerald-500 mt-0.5">
-                     Lời: {formatAmount(session.summary?.profit || 0, true)}
-                  </span>
+                  <span className="text-[14px] font-black text-[#30D158] mt-0.5">Lời: {formatAmount(session.summary?.profit || 0, true)}</span>
                </div>
             ) : isDraft ? (
-               <span className="font-sans text-[10px] font-bold text-gray-400 uppercase tracking-wider">Lưu nháp</span>
+               <span className="text-[10px] font-semibold text-black/30 dark:text-white/30 uppercase tracking-wider">Lưu nháp</span>
             ) : (
                <div className="flex flex-col">
-                  <span className="font-sans text-[10px] font-bold text-gray-400 uppercase tracking-wider">Dự thu:</span>
-                  <span className="font-sans text-xs font-extrabold text-[#7b41b4] mt-0.5">{formatAmount(session.summary?.totalRevenue || 0)}</span>
+                  <span className="text-[10px] font-semibold text-black/30 dark:text-white/30 uppercase tracking-wider">Dự thu:</span>
+                  <span className="text-[14px] font-black text-[#0A84FF] mt-0.5">{formatAmount(session.summary?.totalRevenue || 0)}</span>
                </div>
             )}
 
             {/* Action buttons */}
             <div className="flex items-center gap-2">
-               {/* Match stats button — only for completed sessions */}
                {isCompleted && onViewMatchStats && (
                   <button
                      onClick={(e) => {
                         e.stopPropagation();
                         onViewMatchStats(session);
                      }}
-                     className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl font-sans text-[10px] font-extrabold uppercase tracking-wide transition-all cursor-pointer border ${
+                     className={`flex items-center gap-1 px-2.5 py-1.5 rounded-[10px] text-[10px] font-bold uppercase tracking-wide transition-colors cursor-pointer border-none ${
                         hasMatchData
-                           ? "bg-purple-50 text-[#7b41b4] border-purple-100 hover:bg-purple-100"
-                           : "bg-gray-50 text-gray-400 border-gray-100 hover:bg-gray-100"
+                           ? "bg-[#0A84FF]/10 text-[#0A84FF] hover:bg-[#0A84FF]/16"
+                           : "bg-black/4 dark:bg-white/4 text-black/30 dark:text-white/30"
                      }`}
                   >
                      <Swords size={11} strokeWidth={2.5} />
@@ -167,17 +162,17 @@ const SessionCard = ({ session, formatSessionDate, formatAmount, isToday, onCard
                )}
 
                {isCompleted && (
-                  <button className="font-sans text-xs font-bold text-[#7b41b4] flex items-center gap-0.5 hover:underline cursor-pointer bg-transparent border-none p-0">
+                  <button className="text-[13px] font-semibold text-[#0A84FF] flex items-center gap-0.5 hover:opacity-70 transition-opacity cursor-pointer bg-transparent border-none p-0">
                      Báo cáo <ArrowRight size={13} strokeWidth={2.5} />
                   </button>
                )}
                {isLive && (
-                  <button className="font-sans text-xs font-bold bg-linear-to-r from-[#c185fd] to-[#7b41b4] text-white px-4 py-2 rounded-xl flex items-center gap-1 shadow-sm hover:opacity-90 active:scale-95 transition-all cursor-pointer border-none">
+                  <button className="text-[13px] font-bold bg-[#0A84FF] text-white px-3.5 py-1.5 rounded-[10px] flex items-center gap-1 hover:bg-[#0070E0] active:scale-95 transition-all cursor-pointer border-none">
                      Tiếp tục <ChevronRight size={13} strokeWidth={2.5} />
                   </button>
                )}
                {isDraft && (
-                  <button className="font-sans text-xs font-bold text-gray-500 flex items-center gap-0.5 hover:text-[#7b41b4] transition-colors cursor-pointer bg-transparent border-none p-0">
+                  <button className="text-[13px] font-semibold text-black/35 dark:text-white/35 flex items-center gap-0.5 hover:text-[#0A84FF] transition-colors cursor-pointer bg-transparent border-none p-0">
                      Chỉnh sửa <ArrowRight size={13} strokeWidth={2.5} />
                   </button>
                )}

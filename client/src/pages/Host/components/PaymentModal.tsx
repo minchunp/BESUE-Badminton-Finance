@@ -1,21 +1,15 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Modal, Button, ConfigProvider, theme } from "antd";
-import { Zap, Users, Check, X } from "lucide-react";
+import { Modal, ConfigProvider, theme } from "antd";
+import { Zap, Users, Check, X, Banknote, Building2, AlertCircle } from "lucide-react";
 import { useTheme } from "../../../contexts/ThemeContext";
 import type { IPlayer, IPersonPayment } from "../../../api/services/session.api";
 import { expandPlayers, initIndividualPayments, deriveGroupPaymentStatus } from "../../../utils/playerUtils";
 
-// ================================================================
-// Types
-// ================================================================
-
 interface PaymentModalProps {
-   /** null = closed */
    player: IPlayer | null;
    playerIdx: number | null;
-   /** Called when user confirms — receives the full updated player object */
    onConfirm: (playerIdx: number, payments: IPersonPayment[]) => void;
    onClose: () => void;
    feeMale: number;
@@ -24,80 +18,64 @@ interface PaymentModalProps {
 
 type PaymentMode = "group" | "individual";
 
-// ================================================================
-// Sub-components
-// ================================================================
-
+// ── Apple-style segmented toggle (Paid / Unpaid) ──────────────────
 const PayStatusToggle = ({ value, onChange }: { value: boolean; onChange: (v: boolean) => void }) => (
-   <div className="flex rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
-      <button
-         onClick={() => onChange(false)}
-         className={`flex-1 py-2 text-xs font-black transition-all cursor-pointer ${
-            !value ? "bg-rose-500 text-white shadow-sm" : "text-gray-400 hover:text-gray-600"
-         }`}
-      >
-         Nợ phí
-      </button>
-      <button
-         onClick={() => onChange(true)}
-         className={`flex-1 py-2 text-xs font-black transition-all cursor-pointer ${
-            value ? "bg-emerald-500 text-white shadow-sm" : "text-gray-400 hover:text-gray-600"
-         }`}
-      >
-         Đã đóng
-      </button>
+   <div className="flex p-0.75 rounded-[14px] gap-0.75" style={{ background: "var(--toggle-bg)" }}>
+      {[
+         { val: false, label: "Nợ phí", active: "bg-[#FF375F]" },
+         { val: true, label: "Đã đóng", active: "bg-[#30D158]" },
+      ].map(({ val, label, active }) => (
+         <button
+            key={String(val)}
+            type="button"
+            onClick={() => onChange(val)}
+            className={`flex-1 py-2 rounded-[11px] text-xs font-black transition-all duration-200 cursor-pointer border-none outline-none ${
+               value === val ? `${active} text-white shadow-sm` : "bg-transparent text-black/35 dark:text-white/35"
+            }`}
+         >
+            {label}
+         </button>
+      ))}
    </div>
 );
 
+// ── Apple-style method toggle (Cash / Transfer) ───────────────────
 const MethodToggle = ({ value, onChange }: { value: "cash" | "transfer"; onChange: (v: "cash" | "transfer") => void }) => (
-   <div className="flex rounded-xl overflow-hidden border border-gray-200 bg-gray-50 mt-2">
-      <button
-         onClick={() => onChange("cash")}
-         className={`flex-1 py-2 text-xs font-black transition-all cursor-pointer ${
-            value === "cash" ? "bg-emerald-500 text-white" : "text-gray-400 hover:text-gray-600"
-         }`}
-      >
-         💵 Tiền mặt
-      </button>
-      <button
-         onClick={() => onChange("transfer")}
-         className={`flex-1 py-2 text-xs font-black transition-all cursor-pointer ${
-            value === "transfer" ? "bg-blue-500 text-white" : "text-gray-400 hover:text-gray-600"
-         }`}
-      >
-         🏦 Chuyển khoản
-      </button>
+   <div className="flex p-0.75 rounded-[14px] gap-0.75" style={{ background: "var(--toggle-bg)" }}>
+      {[
+         { val: "cash" as const, label: "Tiền mặt", icon: <Banknote size={12} strokeWidth={2.5} />, active: "bg-[#30D158]" },
+         { val: "transfer" as const, label: "Chuyển khoản", icon: <Building2 size={12} strokeWidth={2.5} />, active: "bg-[#0A84FF]" },
+      ].map(({ val, label, icon, active }) => (
+         <button
+            key={val}
+            type="button"
+            onClick={() => onChange(val)}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-[11px] text-xs font-black transition-all duration-200 cursor-pointer border-none outline-none ${
+               value === val ? `${active} text-white shadow-sm` : "bg-transparent text-black/35 dark:text-white/35"
+            }`}
+         >
+            {icon}
+            {label}
+         </button>
+      ))}
    </div>
 );
 
-// ================================================================
-// Main Component
-// ================================================================
-
+// ── Main Component ────────────────────────────────────────────────
 const PaymentModal = ({ player, playerIdx, onConfirm, onClose, feeMale, feeFemale }: PaymentModalProps) => {
    const { isDarkMode } = useTheme();
    const [mode, setMode] = useState<PaymentMode>("group");
-
-   // Group-mode state
    const [groupIsPaid, setGroupIsPaid] = useState(false);
    const [groupMethod, setGroupMethod] = useState<"cash" | "transfer">("cash");
-
-   // Individual-mode state: one entry per expanded person
    const [perPersonPayments, setPerPersonPayments] = useState<IPersonPayment[]>([]);
 
-   // When player changes (modal opens), reset state
    useEffect(() => {
       if (!player) return;
       setMode("group");
-
       const existing = player.individualPayments ?? [];
       const total = player.maleCount + player.femaleCount;
-
-      // Seed individual payments from existing data or init fresh
       const seeded = existing.length === total ? existing.map((p) => ({ ...p })) : initIndividualPayments(player.maleCount, player.femaleCount);
       setPerPersonPayments(seeded);
-
-      // Seed group mode from existing data
       setGroupIsPaid(player.isPaid ?? false);
       setGroupMethod(player.paymentMethod ?? "cash");
    }, [player]);
@@ -108,15 +86,11 @@ const PaymentModal = ({ player, playerIdx, onConfirm, onClose, feeMale, feeFemal
    const isMultiple = total > 1;
    const expanded = expandPlayers([player]);
 
-   // Build final payments array for submission
    const buildFinalPayments = (): IPersonPayment[] => {
       if (mode === "group") {
          return Array(total)
             .fill(null)
-            .map(() => ({
-               isPaid: groupIsPaid,
-               paymentMethod: groupIsPaid ? groupMethod : undefined,
-            }));
+            .map(() => ({ isPaid: groupIsPaid, paymentMethod: groupIsPaid ? groupMethod : undefined }));
       }
       return perPersonPayments.map((p) => ({
          isPaid: p.isPaid,
@@ -133,11 +107,9 @@ const PaymentModal = ({ player, playerIdx, onConfirm, onClose, feeMale, feeFemal
       setPerPersonPayments((prev) => prev.map((p, i) => (i === personIdx ? { ...p, ...patch } : p)));
    };
 
-   // Summary line for individual mode
    const { isPaid: derivedPaid } = deriveGroupPaymentStatus(mode === "individual" ? perPersonPayments : buildFinalPayments());
    const paidInIndividual = perPersonPayments.filter((p) => p.isPaid).length;
 
-   // Fee preview
    const totalGroupFee = player.maleCount * feeMale + player.femaleCount * feeFemale;
    const paidAmount =
       mode === "group"
@@ -150,11 +122,21 @@ const PaymentModal = ({ player, playerIdx, onConfirm, onClose, feeMale, feeFemal
               return acc + (person?.gender === "male" ? feeMale : feeFemale);
            }, 0);
 
+   const isConfirmDisabled = !derivedPaid && mode === "group" && !groupIsPaid && paidInIndividual === 0;
+
+   // Avatar color based on name
+   const avatarColors = ["#0A84FF", "#30D158", "#FF9F0A", "#FF375F", "#BF5AF2", "#5AC8FA"];
+   const avatarColor = avatarColors[player.name.charCodeAt(0) % avatarColors.length];
+
+   const bg = isDarkMode ? "#1C1C1E" : "#ffffff";
+   const bgBody = isDarkMode ? "#000000" : "#F2F2F7";
+   const border = isDarkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)";
+
    return (
       <ConfigProvider
          theme={{
             algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
-            token: { colorPrimary: "#7b41b4", borderRadius: 28 },
+            token: { colorPrimary: "#0A84FF", borderRadius: 28 },
          }}
       >
          <Modal
@@ -164,54 +146,97 @@ const PaymentModal = ({ player, playerIdx, onConfirm, onClose, feeMale, feeFemal
             centered
             closable={false}
             width={360}
-            className="transparent-modal"
+            className="apple-payment-modal"
+            wrapClassName="apple-payment-modal-wrap"
+            classNames={{ body: "apple-modal-body-inner" }}
             styles={{
-               body: {
-                  padding: 0,
-                  backgroundColor: "transparent",
+               mask: {
+                  backdropFilter: "blur(16px)",
+                  WebkitBackdropFilter: "blur(16px)",
+                  background: "rgba(0,0,0,0.5)",
                },
+               body: { padding: 0, background: "transparent" },
             }}
          >
-            <div className="font-sans select-none overflow-hidden rounded-[28px]">
-               {/* ── Header ───────────────────────────────── */}
-               <div className="px-5 pt-5 pb-4 bg-white border-b border-gray-100 relative">
-                  <button
-                     onClick={onClose}
-                     className="absolute top-4 right-4 w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors"
-                  >
-                     <X size={13} className="text-gray-500" strokeWidth={2.5} />
-                  </button>
-                  <div className="flex items-center gap-2.5 mb-3">
-                     <div className="w-9 h-9 rounded-2xl bg-linear-to-br from-[#c185fd] to-[#7b41b4] flex items-center justify-center font-sans text-base font-black text-white shadow-sm">
-                        {player.name.charAt(0).toUpperCase()}
+            <div
+               className="font-sans select-none"
+               style={{ "--toggle-bg": isDarkMode ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.06)" } as React.CSSProperties}
+            >
+               {/* ── HEADER ───────────────────────────────────────── */}
+               <div style={{ marginBottom: 20, borderBottom: `1px solid ${border}`, background: bg }}>
+                  {/* Avatar + Name + Close */}
+                  <div className="flex items-center justify-between mb-3">
+                     <div className="flex items-center gap-3">
+                        <div
+                           style={{
+                              width: 46,
+                              height: 46,
+                              borderRadius: 16,
+                              background: avatarColor,
+                              boxShadow: `0 4px 14px ${avatarColor}50`,
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontSize: 18,
+                              fontWeight: 900,
+                              color: "#fff",
+                              flexShrink: 0,
+                           }}
+                        >
+                           {player.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                           <p className="text-[16px] font-black text-black dark:text-white m-0 leading-tight">{player.name}</p>
+                           <p className="text-[11px] font-semibold text-black/45 dark:text-white/45 m-0 mt-0.5">
+                              {total} người{player.maleCount > 0 && ` · ${player.maleCount} Nam`}
+                              {player.femaleCount > 0 && ` · ${player.femaleCount} Nữ`}
+                           </p>
+                        </div>
                      </div>
-                     <div>
-                        <p className="font-sans text-[15px] font-black text-gray-900 leading-tight">{player.name}</p>
-                        <p className="font-sans text-[10px] font-bold text-gray-400">
-                           {total} người · {player.maleCount > 0 && `${player.maleCount} Nam`}
-                           {player.maleCount > 0 && player.femaleCount > 0 && ", "}
-                           {player.femaleCount > 0 && `${player.femaleCount} Nữ`}
-                        </p>
-                     </div>
+
+                     {/* Close button */}
+                     <button
+                        type="button"
+                        onClick={onClose}
+                        className="w-7.5 h-7.5 rounded-full flex items-center justify-center cursor-pointer border-none transition-opacity hover:opacity-70"
+                        style={{
+                           background: isDarkMode ? "rgba(255,255,255,0.1)" : "rgba(60,60,67,0.08)",
+                           color: isDarkMode ? "rgba(235,235,245,0.6)" : "rgba(60,60,67,0.6)",
+                        }}
+                     >
+                        <X size={14} strokeWidth={2.5} />
+                     </button>
                   </div>
 
-                  {/* Mode toggle — chỉ hiện khi có nhiều người */}
+                  {/* Fee pill */}
+                  <div
+                     className="flex items-center justify-between px-3.5 py-2.5 rounded-[14px] mb-3"
+                     style={{ background: isDarkMode ? "rgba(10,132,255,0.12)" : "rgba(10,132,255,0.08)", border: "1px solid rgba(10,132,255,0.2)" }}
+                  >
+                     <span className="text-[11px] font-bold uppercase tracking-wider text-[#0A84FF]/70">Phí cần thu</span>
+                     <span className="text-[15px] font-black text-[#0A84FF]">{totalGroupFee.toLocaleString("vi-VN")}đ</span>
+                  </div>
+
+                  {/* Mode toggle */}
                   {isMultiple && (
-                     <div className="flex gap-2 bg-gray-100/80 p-1 rounded-2xl">
+                     <div
+                        className="flex p-0.75 rounded-[14px] gap-0.75"
+                        style={{ background: isDarkMode ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.06)" }}
+                     >
                         {(
                            [
-                              { key: "group", icon: <Zap size={12} strokeWidth={2.5} />, label: "Đồng loạt" },
-                              { key: "individual", icon: <Users size={12} strokeWidth={2.5} />, label: "Riêng lẻ" },
+                              { key: "group", icon: <Zap size={11} strokeWidth={2.5} />, label: "Đồng loạt" },
+                              { key: "individual", icon: <Users size={11} strokeWidth={2.5} />, label: "Riêng lẻ" },
                            ] as const
                         ).map((tab) => (
                            <button
                               key={tab.key}
+                              type="button"
                               onClick={() => setMode(tab.key)}
-                              className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-xl font-sans text-[11px] font-black transition-all cursor-pointer ${
-                                 mode === tab.key
-                                    ? "bg-white text-[#7b41b4] shadow-sm border border-purple-100/60"
-                                    : "text-gray-400 hover:text-gray-600"
+                              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-[11px] text-[11px] font-black transition-all duration-200 cursor-pointer border-none outline-none ${
+                                 mode === tab.key ? "text-[#0A84FF] shadow-sm" : "bg-transparent text-black/30 dark:text-white/30"
                               }`}
+                              style={mode === tab.key ? { background: bg, border: `1px solid ${border}` } : {}}
                            >
                               {tab.icon}
                               {tab.label}
@@ -221,92 +246,133 @@ const PaymentModal = ({ player, playerIdx, onConfirm, onClose, feeMale, feeFemal
                   )}
                </div>
 
-               {/* ── Body ─────────────────────────────────── */}
-               <div className="px-5 py-4 bg-[#f8f7fb] space-y-4 max-h-[52vh] overflow-y-auto">
+               {/* ── BODY ─────────────────────────────────────────── */}
+               <div style={{ padding: "16px 20px", background: bgBody, maxHeight: "44vh", overflowY: "auto" }}>
                   <AnimatePresence mode="wait">
-                     {/* ─ Đồng loạt mode ─ */}
+                     {/* Group mode */}
                      {mode === "group" && (
                         <motion.div
                            key="group"
-                           initial={{ opacity: 0, y: 6 }}
-                           animate={{ opacity: 1, y: 0 }}
-                           exit={{ opacity: 0, y: -6 }}
+                           initial={{ opacity: 0, x: -10 }}
+                           animate={{ opacity: 1, x: 0 }}
+                           exit={{ opacity: 0, x: 10 }}
+                           transition={{ duration: 0.18 }}
                            className="space-y-3"
                         >
                            {isMultiple && (
-                              <p className="font-sans text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                                 Áp dụng cho tất cả {total} người
-                              </p>
+                              <div
+                                 className="flex items-center gap-2 px-3 py-2 rounded-xl"
+                                 style={{
+                                    background: isDarkMode ? "rgba(10,132,255,0.1)" : "rgba(10,132,255,0.07)",
+                                    border: "1px solid rgba(10,132,255,0.18)",
+                                 }}
+                              >
+                                 <AlertCircle size={12} color="#0A84FF" strokeWidth={2.5} />
+                                 <span className="text-[11px] font-bold text-[#0A84FF]">Áp dụng cho tất cả {total} người</span>
+                              </div>
                            )}
-                           <div>
-                              <p className="font-sans text-[10px] font-bold text-gray-500 mb-1.5 uppercase tracking-wide">Trạng thái</p>
+
+                           {/* Status card */}
+                           <div className="rounded-[18px] p-3.5" style={{ background: bg, border: `1px solid ${border}` }}>
+                              <p className="text-[10px] font-bold text-black/35 dark:text-white/35 uppercase tracking-widest mb-2.5">
+                                 Trạng thái thanh toán
+                              </p>
                               <PayStatusToggle value={groupIsPaid} onChange={setGroupIsPaid} />
                            </div>
 
+                           {/* Method card */}
                            <AnimatePresence>
                               {groupIsPaid && (
                                  <motion.div
                                     initial={{ opacity: 0, height: 0 }}
                                     animate={{ opacity: 1, height: "auto" }}
                                     exit={{ opacity: 0, height: 0 }}
+                                    transition={{ duration: 0.22 }}
+                                    style={{ overflow: "hidden" }}
                                  >
-                                    <p className="font-sans text-[10px] font-bold text-gray-500 mb-1.5 uppercase tracking-wide">Hình thức</p>
-                                    <MethodToggle value={groupMethod} onChange={setGroupMethod} />
+                                    <div className="rounded-[18px] p-3.5" style={{ background: bg, border: `1px solid ${border}` }}>
+                                       <p className="text-[10px] font-bold text-black/35 dark:text-white/35 uppercase tracking-widest mb-2.5">
+                                          Hình thức thanh toán
+                                       </p>
+                                       <MethodToggle value={groupMethod} onChange={setGroupMethod} />
+                                    </div>
                                  </motion.div>
                               )}
                            </AnimatePresence>
                         </motion.div>
                      )}
 
-                     {/* ─ Riêng lẻ mode ─ */}
+                     {/* Individual mode */}
                      {mode === "individual" && (
                         <motion.div
                            key="individual"
-                           initial={{ opacity: 0, y: 6 }}
-                           animate={{ opacity: 1, y: 0 }}
-                           exit={{ opacity: 0, y: -6 }}
+                           initial={{ opacity: 0, x: 10 }}
+                           animate={{ opacity: 1, x: 0 }}
+                           exit={{ opacity: 0, x: -10 }}
+                           transition={{ duration: 0.18 }}
                            className="space-y-2.5"
                         >
-                           <p className="font-sans text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                              {paidInIndividual}/{total} người đã đóng
-                           </p>
+                           {/* Progress */}
+                           <div className="flex items-center justify-between mb-1">
+                              <span className="text-[11px] font-bold text-black/35 dark:text-white/35 uppercase tracking-wider">
+                                 {paidInIndividual}/{total} người đã đóng
+                              </span>
+                              <span className={`text-[11px] font-black ${paidInIndividual === total ? "text-[#30D158]" : "text-[#FF9F0A]"}`}>
+                                 {Math.round((paidInIndividual / total) * 100)}%
+                              </span>
+                           </div>
+                           <div
+                              className="h-1 rounded-full overflow-hidden mb-3"
+                              style={{ background: isDarkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)" }}
+                           >
+                              <motion.div
+                                 animate={{ width: `${(paidInIndividual / total) * 100}%` }}
+                                 transition={{ type: "spring", damping: 20, stiffness: 200 }}
+                                 className="h-full rounded-full"
+                                 style={{ background: paidInIndividual === total ? "#30D158" : "#FF9F0A" }}
+                              />
+                           </div>
 
+                           {/* Per-person cards */}
                            {expanded.map((person) => {
                               const payment = perPersonPayments[person.personIdx] ?? { isPaid: false };
+                              const isMale = person.gender === "male";
                               return (
                                  <div
                                     key={person.personIdx}
-                                    className={`rounded-2xl p-3.5 border transition-colors ${
-                                       payment.isPaid ? "bg-white border-emerald-100" : "bg-white border-gray-100"
-                                    }`}
+                                    className="rounded-[18px] p-3.5 transition-all duration-200"
+                                    style={{
+                                       background: bg,
+                                       border: payment.isPaid ? "1px solid rgba(48,209,88,0.25)" : `1px solid ${border}`,
+                                    }}
                                  >
-                                    {/* Person header */}
-                                    <div className="flex items-center justify-between mb-2.5">
-                                       <div className="flex items-center gap-2">
+                                    <div className="flex items-center justify-between mb-3">
+                                       <div className="flex items-center gap-2.5">
                                           <div
-                                             className={`w-7 h-7 rounded-xl flex items-center justify-center text-[11px] font-black ${
-                                                person.gender === "male"
-                                                   ? "bg-blue-50 text-blue-500 border border-blue-100"
-                                                   : "bg-rose-50 text-rose-400 border border-rose-100"
-                                             }`}
+                                             className="w-8 h-8 rounded-xl flex items-center justify-center text-[11px] font-black"
+                                             style={{
+                                                background: isMale ? "rgba(10,132,255,0.1)" : "rgba(255,55,95,0.1)",
+                                                border: `1px solid ${isMale ? "rgba(10,132,255,0.2)" : "rgba(255,55,95,0.2)"}`,
+                                                color: isMale ? "#0A84FF" : "#FF375F",
+                                             }}
                                           >
                                              {person.displayName.charAt(0).toUpperCase()}
                                           </div>
                                           <div>
-                                             <p className="font-sans text-[12px] font-black text-gray-800 leading-none">{person.displayName}</p>
-                                             <span
-                                                className={`font-sans text-[9px] font-bold uppercase ${
-                                                   person.gender === "male" ? "text-blue-400" : "text-rose-400"
-                                                }`}
-                                             >
-                                                {person.gender === "male" ? "♂ Nam" : "♀ Nữ"}
+                                             <p className="text-[13px] font-black text-black dark:text-white m-0 leading-tight">
+                                                {person.displayName}
+                                             </p>
+                                             <span className={`text-[10px] font-bold ${isMale ? "text-[#0A84FF]" : "text-[#FF375F]"}`}>
+                                                {isMale ? "♂ Nam" : "♀ Nữ"} · {(isMale ? feeMale : feeFemale).toLocaleString("vi-VN")}đ
                                              </span>
                                           </div>
                                        </div>
 
-                                       {/* Paid indicator */}
                                        {payment.isPaid && (
-                                          <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-600 text-[9px] font-black">
+                                          <span
+                                             className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black text-[#30D158]"
+                                             style={{ background: "rgba(48,209,88,0.1)", border: "1px solid rgba(48,209,88,0.2)" }}
+                                          >
                                              <Check size={9} strokeWidth={3} /> Đã đóng
                                           </span>
                                        )}
@@ -320,14 +386,12 @@ const PaymentModal = ({ player, playerIdx, onConfirm, onClose, feeMale, feeFemal
                                              initial={{ opacity: 0, height: 0 }}
                                              animate={{ opacity: 1, height: "auto" }}
                                              exit={{ opacity: 0, height: 0 }}
+                                             transition={{ duration: 0.2 }}
+                                             style={{ overflow: "hidden", marginTop: 10 }}
                                           >
                                              <MethodToggle
                                                 value={payment.paymentMethod ?? "cash"}
-                                                onChange={(v) =>
-                                                   updatePersonPayment(person.personIdx, {
-                                                      paymentMethod: v,
-                                                   })
-                                                }
+                                                onChange={(v) => updatePersonPayment(person.personIdx, { paymentMethod: v })}
                                              />
                                           </motion.div>
                                        )}
@@ -340,25 +404,59 @@ const PaymentModal = ({ player, playerIdx, onConfirm, onClose, feeMale, feeFemal
                   </AnimatePresence>
                </div>
 
-               {/* ── Footer ───────────────────────────────── */}
-               <div className="px-5 py-4 bg-white border-t border-gray-100">
-                  {/* Fee preview */}
-                  <div className="flex justify-between items-center mb-3">
-                     <span className="font-sans text-[11px] font-bold text-gray-400 uppercase tracking-wide">Đã thu được</span>
-                     <span className={`font-sans text-sm font-black ${paidAmount > 0 ? "text-emerald-500" : "text-gray-400"}`}>
-                        {paidAmount.toLocaleString("vi-VN")}đ
-                        <span className="text-gray-300 font-bold"> / {totalGroupFee.toLocaleString("vi-VN")}đ</span>
-                     </span>
+               {/* ── FOOTER ───────────────────────────────────────── */}
+               <div style={{ paddingTop: "10px", marginTop: "20px", background: bg, borderTop: `1px solid ${border}` }}>
+                  {/* Amount row */}
+                  <div
+                     className="flex items-center justify-between px-3.5 py-2.5 rounded-[14px] mb-3.5 transition-all duration-300"
+                     style={{
+                        background:
+                           paidAmount > 0
+                              ? isDarkMode
+                                 ? "rgba(48,209,88,0.1)"
+                                 : "rgba(48,209,88,0.07)"
+                              : isDarkMode
+                                ? "rgba(255,255,255,0.04)"
+                                : "rgba(0,0,0,0.03)",
+                        border: paidAmount > 0 ? "1px solid rgba(48,209,88,0.2)" : `1px solid ${border}`,
+                     }}
+                  >
+                     <span className="text-[11px] font-bold text-black/35 dark:text-white/35 uppercase tracking-wider">Đã thu được</span>
+                     <div className="flex items-baseline gap-1">
+                        <span
+                           className={`text-[15px] font-black transition-colors duration-300 ${paidAmount > 0 ? "text-[#30D158]" : "text-black/25 dark:text-white/25"}`}
+                        >
+                           {paidAmount.toLocaleString("vi-VN")}đ
+                        </span>
+                        <span className="text-[12px] font-semibold text-black/25 dark:text-white/25">/ {totalGroupFee.toLocaleString("vi-VN")}đ</span>
+                     </div>
                   </div>
 
-                  <div className="flex gap-2">
-                     <Button size="large" onClick={onClose} className="flex-1 rounded-2xl font-sans font-black text-xs border-gray-200">
-                        Hủy
-                     </Button>
+                  {/* Action buttons */}
+                  <div className="flex gap-2.5">
                      <button
+                        type="button"
+                        onClick={onClose}
+                        className="flex-1 h-12 rounded-2xl text-sm font-black transition-opacity hover:opacity-75 active:scale-[0.97] cursor-pointer border-none"
+                        style={{
+                           background: isDarkMode ? "rgba(255,255,255,0.1)" : "rgba(60,60,67,0.08)",
+                           color: isDarkMode ? "#ffffff" : "#000000",
+                        }}
+                     >
+                        Hủy
+                     </button>
+                     <button
+                        type="button"
                         onClick={handleConfirm}
-                        disabled={!derivedPaid && mode === "group" && !groupIsPaid && paidInIndividual === 0}
-                        className="flex-1 h-10 rounded-2xl bg-linear-to-r from-[#c185fd] to-[#7b41b4] text-white font-sans font-black text-xs shadow-md shadow-purple-200 hover:opacity-90 active:scale-[0.98] transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={isConfirmDisabled}
+                        className="flex-1 h-12 rounded-2xl text-sm font-black transition-all duration-200 active:scale-[0.97] border-none"
+                        style={{
+                           background: "#0A84FF",
+                           color: "#ffffff",
+                           opacity: isConfirmDisabled ? 0.4 : 1,
+                           cursor: isConfirmDisabled ? "not-allowed" : "pointer",
+                           boxShadow: isConfirmDisabled ? "none" : "0 4px 16px rgba(10,132,255,0.4)",
+                        }}
                      >
                         Xác nhận
                      </button>

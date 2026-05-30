@@ -19,29 +19,29 @@ const InsightsCard = ({ overview, isLoading, periodLabel }: InsightsCardProps) =
    const insights: { icon: React.ReactNode; color: string; bg: string; label: string; value: string }[] = [
       {
          icon: <BarChart2 size={15} strokeWidth={2} />,
-         color: "text-[#7b41b4]",
-         bg: "bg-purple-50",
+         color: "text-[#0A84FF]",
+         bg: "bg-[#0A84FF]/12",
          label: "TB thu/buổi",
          value: formatAmountFull(avgRevenuePerSession),
       },
       {
          icon: <Building2 size={15} strokeWidth={2} />,
-         color: "text-emerald-600",
-         bg: "bg-emerald-50",
+         color: "text-[#34C759]",
+         bg: "bg-[#34C759]/12",
          label: "TB lợi nhuận/buổi",
          value: formatAmountFull(avgProfitPerSession),
       },
       {
          icon: <Banknote size={15} strokeWidth={2} />,
-         color: "text-emerald-600",
-         bg: "bg-emerald-50",
+         color: "text-[#34C759]",
+         bg: "bg-[#34C759]/12",
          label: "Tiền mặt",
          value: formatAmountFull(overview.totalCash),
       },
       {
          icon: <CreditCard size={15} strokeWidth={2} />,
-         color: "text-blue-600",
-         bg: "bg-blue-50",
+         color: "text-[#007AFF]",
+         bg: "bg-[#007AFF]/10",
          label: "Chuyển khoản",
          value: formatAmountFull(overview.totalTransfer),
       },
@@ -52,11 +52,11 @@ const InsightsCard = ({ overview, isLoading, periodLabel }: InsightsCardProps) =
          initial={{ opacity: 0, y: 16 }}
          animate={{ opacity: 1, y: 0 }}
          transition={{ delay: 0.3, type: "spring", stiffness: 100 }}
-         className="glass-card rounded-3xl p-5 space-y-4"
+         className="bg-white dark:bg-[#1C1C1E] border border-black/[0.05] dark:border-white/[0.07] rounded-[20px] p-5 space-y-4"
       >
          <div>
-            <h3 className="font-sans text-sm font-black text-gray-900">Tổng quan chi tiết</h3>
-            <p className="font-sans text-[10px] font-medium text-gray-400 mt-0.5">{periodLabel}</p>
+            <h3 className="font-sans text-sm font-black text-black dark:text-white">Tổng quan chi tiết</h3>
+            <p className="font-sans text-[10px] font-medium text-black/55 dark:text-white/55 mt-0.5">{periodLabel}</p>
          </div>
 
          <div className="grid grid-cols-2 gap-3">
@@ -66,11 +66,11 @@ const InsightsCard = ({ overview, isLoading, periodLabel }: InsightsCardProps) =
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.3 + i * 0.05 }}
-                  className="bg-gray-50/80 rounded-2xl p-3 border border-gray-100/50"
+                  className="bg-black/[0.04] dark:bg-white/[0.04] rounded-2xl p-3 border border-black/[0.05] dark:border-white/[0.06]"
                >
                   <div className={`w-7 h-7 ${item.bg} rounded-xl flex items-center justify-center ${item.color} mb-2`}>{item.icon}</div>
-                  <p className="font-sans text-[9px] font-bold text-gray-400 uppercase tracking-wide leading-none mb-1">{item.label}</p>
-                  <p className="font-sans text-sm font-black text-gray-900">{item.value}</p>
+                  <p className="font-sans text-[9px] font-bold text-black/35 dark:text-white/35 uppercase tracking-wide leading-none mb-1">{item.label}</p>
+                  <p className="font-sans text-sm font-black text-black dark:text-white">{item.value}</p>
                </motion.div>
             ))}
          </div>

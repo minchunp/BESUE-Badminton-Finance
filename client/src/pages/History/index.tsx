@@ -148,8 +148,8 @@ const HistoryPage = () => {
    if (isLoading) {
       return (
          <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
-            <Spin size="large" className="text-[#7b41b4]" />
-            <span className="text-sm font-semibold text-gray-400">Đang tải lịch sử buổi host...</span>
+            <Spin size="large" />
+            <span className="text-sm font-semibold text-black/40 dark:text-white/40">Đang tải lịch sử buổi host...</span>
          </div>
       );
    }
@@ -158,7 +158,7 @@ const HistoryPage = () => {
       <ConfigProvider
          theme={{
             algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
-            token: { colorPrimary: "#7b41b4", borderRadius: 16 },
+            token: { colorPrimary: "#0A84FF", borderRadius: 14 },
          }}
       >
          <div className="space-y-6 pb-28 select-none font-sans">
@@ -178,8 +178,8 @@ const HistoryPage = () => {
             />
 
             {/* List header with month filter + sort */}
-            <div className="flex justify-between items-center pt-2 px-1">
-               <h4 className="font-sans text-[14px] font-extrabold text-gray-500 uppercase tracking-wider">
+            <div className="flex justify-between items-center pt-2 px-0.5">
+               <h4 className="text-[13px] font-semibold text-black/40 dark:text-white/40 uppercase tracking-wider">
                   {filteredAndSortedSessions.length} buổi host
                </h4>
 
@@ -197,7 +197,7 @@ const HistoryPage = () => {
 
                   <button
                      onClick={() => setSortOrder(sortOrder === "desc" ? "asc" : "desc")}
-                     className="flex items-center gap-1 text-[#7b41b4] font-sans text-xs font-bold hover:opacity-80 active:scale-95 transition-all select-none cursor-pointer bg-purple-50/70 border border-purple-100 px-3 py-1 rounded-full shadow-xs shrink-0"
+                     className="flex items-center gap-1 text-[#0A84FF] text-xs font-semibold hover:opacity-80 active:scale-95 transition-all select-none cursor-pointer bg-[#0A84FF]/10 px-3 py-1 rounded-full shrink-0"
                   >
                      <span>{sortOrder === "desc" ? "Mới nhất" : "Cũ nhất"}</span>
                      <SlidersHorizontal size={12} strokeWidth={2.5} />
@@ -207,9 +207,9 @@ const HistoryPage = () => {
 
             {/* Session Cards */}
             {filteredAndSortedSessions.length === 0 ? (
-               <div className="py-16 bg-white/40 backdrop-blur-md rounded-3xl border border-gray-100/50 flex flex-col items-center justify-center text-center">
-                  <FileText size={36} className="text-gray-300 mb-2" />
-                  <span className="text-xs font-bold text-gray-400">Không tìm thấy lịch sử phù hợp</span>
+               <div className="py-16 bg-white dark:bg-[#1C1C1E] rounded-3xl border border-black/5 dark:border-white/6 flex flex-col items-center justify-center text-center">
+                  <FileText size={32} className="text-black/20 dark:text-white/20 mb-2" />
+                  <span className="text-xs font-semibold text-black/35 dark:text-white/35">Không tìm thấy lịch sử phù hợp</span>
                </div>
             ) : (
                <motion.div variants={containerVariants} initial="hidden" animate="show" className="flex flex-col gap-4">

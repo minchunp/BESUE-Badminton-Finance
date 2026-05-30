@@ -16,10 +16,8 @@ const Onboarding = ({ onComplete }: { onComplete: () => void }) => {
       }
    };
 
-   const bgClass = step === 0 ? "bg-mesh-0" : step === 1 ? "bg-mesh-1" : "bg-mesh-2";
-
    return (
-      <div className={`fixed inset-0 ${bgClass} transition-colors duration-700 ease-in-out font-sans overflow-hidden`}>
+      <div className="fixed inset-0 bg-[#F2F2F7] dark:bg-black transition-colors duration-700 ease-in-out font-sans overflow-hidden">
          <AnimatePresence mode="wait">
             {step === 0 && <ScreenOne onNextPage={handleNext} />}
             {step === 1 && <ScreenTwo onNextPage={handleNext} onComplete={onComplete} />}

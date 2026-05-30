@@ -31,32 +31,32 @@ type TabKey = "players" | "matches";
 // ================================================================
 
 const PaymentBadge = ({ info, onClick }: { info: PaymentBadgeInfo; onClick: () => void }) => {
-   const base = "px-2 py-0.5 rounded-full font-sans text-[9px] font-extrabold uppercase tracking-wider cursor-pointer transition-colors";
+   const base = "px-3 py-1 rounded-full font-sans text-[9px] font-extrabold uppercase tracking-wider cursor-pointer transition-colors";
 
    if (info.type === "unchecked") {
       return (
-         <span onClick={onClick} className={`${base} bg-gray-100 text-gray-400 hover:bg-gray-200`}>
+         <span onClick={onClick} className={`${base} bg-black/6 dark:bg-white/8 text-black/35 dark:text-white/35 hover:bg-black/10`}>
             Chưa chọn
          </span>
       );
    }
    if (info.type === "unpaid") {
       return (
-         <span onClick={onClick} className={`${base} bg-red-50 text-red-500 hover:bg-red-100`}>
+         <span onClick={onClick} className={`${base} bg-[#FF375F]/10 text-[#FF375F] hover:bg-[#FF375F]/20`}>
             Nợ phí
          </span>
       );
    }
    if (info.type === "partial") {
       return (
-         <span onClick={onClick} className={`${base} bg-amber-50 text-amber-600 hover:bg-amber-100`}>
+         <span onClick={onClick} className={`${base} bg-[#FF9F0A]/12 text-[#FF9F0A] hover:bg-[#FF9F0A]/20`}>
             {info.paidCount}/{info.total} đã đóng
          </span>
       );
    }
    if (info.type === "mixed_method") {
       return (
-         <span onClick={onClick} className={`${base} bg-purple-50 text-[#7b41b4] hover:bg-purple-100`}>
+         <span onClick={onClick} className={`${base} bg-[#0A84FF]/10 text-[#0A84FF] hover:bg-[#0A84FF]/20`}>
             Hỗn hợp
          </span>
       );
@@ -66,7 +66,7 @@ const PaymentBadge = ({ info, onClick }: { info: PaymentBadgeInfo; onClick: () =
       <span
          onClick={onClick}
          className={`${base} ${
-            info.method === "cash" ? "bg-emerald-50 text-emerald-600 hover:bg-emerald-100" : "bg-blue-50 text-blue-600 hover:bg-blue-100"
+            info.method === "cash" ? "bg-[#30D158]/12 text-[#30D158] hover:bg-[#30D158]/20" : "bg-[#007AFF]/10 text-[#007AFF] hover:bg-[#007AFF]/20"
          }`}
       >
          {info.method === "cash" ? "Tiền mặt" : "Chuyển khoản"}
@@ -152,19 +152,19 @@ const StepPlayerList = ({
       <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} className="space-y-5">
          {/* Progress bar */}
          <div className="space-y-1.5 px-1">
-            <div className="flex justify-between items-center text-[11px] font-bold uppercase tracking-wider text-gray-400">
+            <div className="flex justify-between items-center text-[11px] font-bold uppercase tracking-wider text-black/35 dark:text-white/35">
                <span>Bước 2/5</span>
-               <span className="text-[#7b41b4]">40%</span>
+               <span className="text-[#0A84FF]">40%</span>
             </div>
-            <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-               <div className="h-full bg-linear-to-r from-[#c185fd] to-[#ffb2b9] w-[40%] rounded-full" />
+            <div className="h-2 w-full bg-black/6 dark:bg-white/6 rounded-full overflow-hidden">
+               <div className="h-full bg-[#0A84FF] w-[40%] rounded-full" />
             </div>
          </div>
 
          {/* Overview bar */}
-         <div className="glass-card rounded-3xl p-4 flex justify-between items-center shadow-xs border border-white/50 animate-fade-in">
-            <div className="flex items-center gap-2 text-gray-500">
-               <Calendar size={16} className="text-[#7b41b4]" />
+         <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-2xl p-4 flex justify-between items-center">
+            <div className="flex items-center gap-2 text-black/55 dark:text-white/55">
+               <Calendar size={16} className="text-[#0A84FF]" />
                <span className="font-sans text-[11px] font-extrabold tracking-wide uppercase">
                   {getFormattedDate(date)} • {numberOfCourts} sân • {activeShuttle?.name}
                </span>
@@ -173,34 +173,34 @@ const StepPlayerList = ({
 
          {/* Stats bento grid */}
          <div className="grid grid-cols-3 gap-3">
-            <div className="glass-card rounded-2xl p-3 flex flex-col items-center justify-center text-center relative overflow-hidden shadow-xs">
-               <div className="absolute -right-4 -top-4 w-10 h-10 bg-purple-500/10 rounded-full blur-lg" />
-               <span className="font-sans text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Tổng người</span>
-               <span className="font-sans text-lg font-extrabold text-[#7b41b4] leading-none">{totalPlayersCount}</span>
+            <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[20px] p-3 flex flex-col items-center justify-center text-center">
+               <span className="font-sans text-[10px] font-bold text-black/35 dark:text-white/35 uppercase tracking-wider mb-1">Tổng người</span>
+               <span className="font-sans text-lg font-extrabold text-[#0A84FF] leading-none">{totalPlayersCount}</span>
             </div>
-            <div className="glass-card rounded-2xl p-3 flex flex-col items-center justify-center text-center relative overflow-hidden shadow-xs">
-               <div className="absolute -left-4 -top-4 w-10 h-10 bg-pink-500/10 rounded-full blur-lg" />
-               <span className="font-sans text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Tổng tiền</span>
-               <span className="font-sans text-lg font-extrabold text-[#7b41b4] leading-none">
+            <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[20px] p-3 flex flex-col items-center justify-center text-center">
+               <span className="font-sans text-[10px] font-bold text-black/35 dark:text-white/35 uppercase tracking-wider mb-1">Tổng tiền</span>
+               <span className="font-sans text-lg font-extrabold text-[#0A84FF] leading-none">
                   {totalExpectedRevenue > 0 ? `${(totalExpectedRevenue / 1000).toFixed(0)}k` : "0đ"}
                </span>
             </div>
-            <div className="glass-card rounded-2xl p-3 flex flex-col items-center justify-center text-center bg-emerald-50/50 border border-emerald-100/50 shadow-xs">
-               <span className="font-sans text-[10px] font-bold text-emerald-600 uppercase tracking-wider mb-1">Đã thu</span>
-               <span className="font-sans text-lg font-extrabold text-[#10b981] leading-none">
+            <div className="bg-[#30D158]/12 border border-[#30D158]/20 rounded-[20px] p-3 flex flex-col items-center justify-center text-center">
+               <span className="font-sans text-[10px] font-bold text-[#30D158] uppercase tracking-wider mb-1">Đã thu</span>
+               <span className="font-sans text-lg font-extrabold text-[#30D158] leading-none">
                   {totalCollectedRevenue > 0 ? `${(totalCollectedRevenue / 1000).toFixed(0)}k` : "0đ"}
                </span>
             </div>
          </div>
 
          {/* Tab Navigation */}
-         <div className="flex gap-2 bg-gray-100/70 p-1 rounded-2xl">
+         <div className="flex gap-2 bg-black/4 dark:bg-white/4 p-1 rounded-2xl">
             {tabs.map((tab) => (
                <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
                   className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl font-sans text-xs font-extrabold transition-all select-none cursor-pointer ${
-                     activeTab === tab.key ? "bg-white text-[#7b41b4] shadow-sm border border-purple-100/60" : "text-gray-400 hover:text-gray-600"
+                     activeTab === tab.key
+                        ? "bg-white dark:bg-[#2C2C2E] text-[#0A84FF] border border-black/5 dark:border-white/6"
+                        : "text-black/35 dark:text-white/35 hover:text-black/55 dark:hover:text-white/55"
                   }`}
                >
                   {tab.icon}
@@ -208,7 +208,7 @@ const StepPlayerList = ({
                   {tab.key === "matches" && playersList.length > 0 && (
                      <span
                         className={`ml-0.5 px-1.5 py-0.5 rounded-full text-[9px] font-extrabold ${
-                           activeTab === "matches" ? "bg-purple-100 text-[#7b41b4]" : "bg-gray-200 text-gray-400"
+                           activeTab === "matches" ? "bg-[#0A84FF]/12 text-[#0A84FF]" : "bg-black/6 dark:bg-white/8 text-black/35 dark:text-white/35"
                         }`}
                      >
                         {totalMatchesBadge}
@@ -222,15 +222,17 @@ const StepPlayerList = ({
          <AnimatePresence mode="wait">
             {activeTab === "players" ? (
                <motion.div key="players-tab" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-3">
-                  <h2 className="font-sans text-[15px] font-extrabold text-gray-500 uppercase tracking-wider px-1">Danh sách khách vãng lai</h2>
+                  <h2 className="font-sans text-[15px] font-extrabold text-black/55 dark:text-white/55 uppercase tracking-wider px-1">
+                     Danh sách khách vãng lai
+                  </h2>
 
                   {playersList.length === 0 ? (
-                     <div className="py-12 bg-white/40 backdrop-blur-md rounded-3xl border border-gray-100/50 flex flex-col items-center justify-center">
-                        <Users size={32} className="text-gray-300 mb-2" />
-                        <span className="text-xs font-semibold text-gray-400">Chưa có người chơi vãng lai</span>
+                     <div className="py-12 bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-3xl flex flex-col items-center justify-center">
+                        <Users size={32} className="text-black/20 dark:text-white/20 mb-2" />
+                        <span className="text-xs font-semibold text-black/35 dark:text-white/35">Chưa có người chơi vãng lai</span>
                         <button
                            onClick={onAddPlayer}
-                           className="mt-3 bg-linear-to-r! from-[#c185fd] to-[#7b41b4] text-white px-4 py-2 rounded-xl font-sans text-xs font-bold shadow-sm cursor-pointer"
+                           className="mt-3 bg-[#0A84FF] text-white px-4 py-2 rounded-xl font-sans text-xs font-bold shadow-sm cursor-pointer"
                         >
                            + Thêm người chơi
                         </button>
@@ -245,41 +247,29 @@ const StepPlayerList = ({
                               <motion.div
                                  key={idx}
                                  variants={cardVariants}
-                                 className={`glass-card rounded-3xl p-4 flex items-center justify-between transition-all border border-white/50 shadow-xs group ${
-                                    player.isCheckedIn ? "bg-white/95" : "opacity-75"
+                                 className={`bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-2xl p-4 flex items-center justify-between transition-all group ${
+                                    player.isCheckedIn ? "" : "opacity-75"
                                  }`}
                               >
                                  <div className="flex items-center gap-3.5 min-w-0">
                                     {/* Checkbox */}
                                     <button
                                        onClick={() => handleCheckboxClick(idx)}
-                                       className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 shadow-sm border transition-all cursor-pointer ${
+                                       className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 border transition-all cursor-pointer ${
                                           player.isCheckedIn
-                                             ? "bg-[#7b41b4] border-[#7b41b4] text-white"
-                                             : "bg-white border-gray-200 text-transparent"
+                                             ? "bg-[#0A84FF] border-[#0A84FF] text-white"
+                                             : "bg-white dark:bg-[#2C2C2E] border-black/10 dark:border-white/10 text-transparent"
                                        }`}
                                     >
                                        <Check size={14} strokeWidth={3} />
                                     </button>
 
-                                    {/* Avatar */}
-                                    <div
-                                       onClick={() => onEditPlayer(idx)}
-                                       className={`w-11 h-11 rounded-full flex items-center justify-center font-sans text-base font-extrabold border shrink-0 cursor-pointer transition-colors ${
-                                          idx % 2 === 0
-                                             ? "bg-purple-50 text-[#7b41b4] border-purple-100"
-                                             : "bg-pink-50 text-[#a93349] border-pink-100"
-                                       }`}
-                                    >
-                                       {player.name.charAt(0).toUpperCase()}
-                                    </div>
-
                                     {/* Name + count */}
                                     <div className="min-w-0 cursor-pointer" onClick={() => onEditPlayer(idx)}>
-                                       <h3 className="font-sans text-[14px] font-extrabold text-gray-800 pr-2 leading-none mb-1 truncate">
+                                       <h3 className="font-sans text-[14px] font-extrabold text-black dark:text-white pr-2 leading-none mb-1 truncate">
                                           {player.name}
                                        </h3>
-                                       <p className="font-sans text-[10px] font-bold text-gray-400 flex items-center">
+                                       <p className="font-sans text-[10px] font-bold text-black/35 dark:text-white/35 flex items-center">
                                           <Users size={10} className="mr-0.5" />
                                           {player.maleCount > 0 && `${player.maleCount} Nam`}
                                           {player.maleCount > 0 && player.femaleCount > 0 && ", "}
@@ -289,10 +279,12 @@ const StepPlayerList = ({
                                  </div>
 
                                  {/* Price + badge + actions */}
-                                 <div className="flex flex-col items-end gap-1.5 shrink-0">
-                                    <span className="font-sans text-sm font-extrabold text-gray-800">{totalFee.toLocaleString("vi-VN")}đ</span>
+                                 <div className="flex flex-col items-end gap-2 shrink-0">
+                                    <span className="font-sans text-sm font-extrabold text-black dark:text-white">
+                                       {totalFee.toLocaleString("vi-VN")}đ
+                                    </span>
 
-                                    <div className="flex items-center gap-1.5">
+                                    <div className="flex items-center gap-2.5">
                                        <PaymentBadge
                                           info={badgeInfo}
                                           onClick={() => (player.isCheckedIn ? openPaymentModal(idx) : handleCheckboxClick(idx))}
@@ -300,10 +292,10 @@ const StepPlayerList = ({
 
                                        <button
                                           onClick={() => onEditPlayer(idx)}
-                                          className="text-gray-300 hover:text-purple-600 p-0.5 rounded-md hover:bg-purple-50/50 transition-colors cursor-pointer"
+                                          className="text-black/20 dark:text-white/20 hover:text-[#0A84FF] p-0.5 rounded-md hover:bg-[#0A84FF]/10 transition-colors cursor-pointer"
                                           title="Sửa"
                                        >
-                                          <Pencil size={13} strokeWidth={2.5} className="w-3.5 h-3.5" />
+                                          <Pencil size={13} strokeWidth={2.5} className="w-4 h-4" />
                                        </button>
 
                                        <Popconfirm
@@ -315,10 +307,10 @@ const StepPlayerList = ({
                                           cancelButtonProps={{ size: "small" }}
                                        >
                                           <button
-                                             className="text-gray-300 hover:text-rose-500 p-0.5 rounded-md hover:bg-rose-50/50 transition-colors cursor-pointer"
+                                             className="text-black/20 dark:text-white/20 hover:text-[#FF375F] p-0.5 rounded-md hover:bg-[#FF375F]/10 transition-colors cursor-pointer"
                                              title="Xóa"
                                           >
-                                             <Trash2 size={13} strokeWidth={2.5} className="w-3.5 h-3.5" />
+                                             <Trash2 size={13} strokeWidth={2.5} className="w-4 h-4" />
                                           </button>
                                        </Popconfirm>
                                     </div>
@@ -330,7 +322,7 @@ const StepPlayerList = ({
                   )}
 
                   {!allPlayersChecked && playersList.length > 0 && (
-                     <div className="px-1 text-[10px] font-bold text-rose-500 uppercase tracking-wide text-center">
+                     <div className="px-1 text-[10px] font-bold text-[#FF375F] uppercase tracking-wide text-center">
                         ⚠️ Vui lòng tick chọn trạng thái thanh toán cho tất cả người chơi để tiếp tục
                      </div>
                   )}
@@ -346,7 +338,7 @@ const StepPlayerList = ({
          <button
             onClick={() => setIsQrOpen(true)}
             aria-label="Hiện mã QR"
-            className="fixed bottom-20 right-4 z-60! bg-linear-to-br from-[#7b41b4] to-[#a93349] shadow-lg rounded-full px-4 py-2.5 flex items-center space-x-1.5 text-white hover:scale-105 active:scale-95 transition-transform border border-white/20 select-none cursor-pointer"
+            className="fixed bottom-20 right-4 z-60! bg-[#0A84FF] shadow-[0_4px_16px_rgba(88,86,214,0.28)] rounded-full px-4 py-2.5 flex items-center space-x-1.5 text-white hover:scale-105 active:scale-95 transition-transform select-none cursor-pointer"
          >
             <QrCode size={18} strokeWidth={2.5} />
             <span className="font-sans text-xs font-extrabold tracking-wide">QR</span>
@@ -355,18 +347,20 @@ const StepPlayerList = ({
          {/* Sticky bottom actions */}
          <div className="pt-4 flex items-center justify-between gap-4">
             <div className="flex flex-col select-none">
-               <span className="font-sans text-[10px] font-bold text-gray-400 uppercase tracking-wider leading-none">Tham gia:</span>
-               <span className="font-sans text-base font-extrabold text-[#7b41b4] mt-1 leading-none">
+               <span className="font-sans text-[10px] font-bold text-black/35 dark:text-white/35 uppercase tracking-wider leading-none">
+                  Tham gia:
+               </span>
+               <span className="font-sans text-base font-extrabold text-[#0A84FF] mt-1 leading-none">
                   {selectedPlayersCount}/{totalPlayersCount} khách
                </span>
             </div>
             <button
                onClick={onNext}
                disabled={isPending || !allPlayersChecked}
-               className={`h-12 px-6 rounded-xl font-sans text-xs font-bold flex items-center transition-all select-none ${
+               className={`h-13 px-6 rounded-2xl font-sans text-xs font-bold flex items-center transition-all select-none ${
                   allPlayersChecked
-                     ? "bg-linear-to-r from-[#c185fd] to-[#7b41b4] text-white shadow-md shadow-[#7b41b4]/20 hover:opacity-90 active:scale-98 cursor-pointer"
-                     : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                     ? "bg-[#0A84FF] text-white hover:opacity-90 active:scale-[0.98] cursor-pointer"
+                     : "bg-black/6 dark:bg-white/8 text-black/35 dark:text-white/35 cursor-not-allowed"
                }`}
             >
                {isPending ? "Đang lưu..." : "Tiếp tục"}
@@ -376,23 +370,23 @@ const StepPlayerList = ({
 
          {/* QR Modal */}
          <Modal
-            title={<div className="font-sans font-extrabold text-gray-800 text-sm select-none">Mã QR Thanh Toán</div>}
+            title={<div className="font-sans font-extrabold text-black dark:text-white text-md select-none">Mã QR Thanh Toán</div>}
             open={isQrOpen}
             onCancel={() => setIsQrOpen(false)}
             footer={null}
             centered
+            closeIcon={false}
             styles={{ body: { borderRadius: 24 } }}
-            className="rounded-3xl overflow-hidden shadow-glass"
+            className="rounded-[28px] overflow-hidden"
          >
-            <div className="flex flex-col items-center justify-center p-6 space-y-4 font-sans select-none">
-               <div className="p-3 bg-purple-50 rounded-3xl border border-purple-100/50 shadow-xs">
+            <div className="flex flex-col items-center justify-center pace-y-4 font-sans select-none">
+               <div className="p-3 bg-[#0A84FF]/10 rounded-3xl border border-[#0A84FF]/20">
                   <Image preview={false} src={QRBanking} />
                </div>
-               <div className="text-center space-y-1">
-                  <p className="text-xs font-extrabold text-[#7b41b4] uppercase tracking-wider">Mã QR Chuyển Khoản Nhanh</p>
-                  <p className="text-[11px] font-semibold text-gray-400 max-w-60 leading-relaxed mx-auto">
-                     Người chơi vãng lai quét mã QR này để thanh toán phí tham gia nhanh chóng cho Host.
-                  </p>
+
+               <div className="text-center space-y-1 mt-5">
+                  <p className="text-md font-extrabold text-[#0A84FF] uppercase tracking-wider">Mã QR Chuyển Khoản Nhanh</p>
+                  <p className="text-[12px] font-semibold text-black/55 dark:text-white/55 max-w-60 leading-relaxed mx-auto">NGUYEN TRAN THUY DU</p>
                </div>
             </div>
          </Modal>

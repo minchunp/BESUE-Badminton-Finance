@@ -389,9 +389,9 @@ const HostPage = () => {
 
    if (isLoadingCourts || isLoadingShuttles || (activeId && isLoadingSession)) {
       return (
-         <div className="flex flex-col items-center justify-center min-h-screen gap-3">
-            <Spin size="large" className="text-[#7b41b4]" />
-            <span className="text-sm font-semibold text-gray-400">Đang tải thông tin buổi host...</span>
+         <div className="flex flex-col items-center justify-center min-h-screen gap-3 bg-[#F2F2F7] dark:bg-black">
+            <Spin size="large" />
+            <span className="text-sm font-semibold text-black/40 dark:text-white/40">Đang tải thông tin buổi host...</span>
          </div>
       );
    }
@@ -401,23 +401,26 @@ const HostPage = () => {
          theme={{
             algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
             token: {
-               colorPrimary: "#7b41b4",
+               colorPrimary: "#0A84FF",
                borderRadius: 16,
             },
          }}
       >
-         <div className="ronded-2xl! w-full min-h-screen bg-[#F9F9F9] relative overflow-x-hidden pb-20">
-            {/* Background glass glows */}
-            <div className="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-linear-to-br from-[#c185fd]/20 to-transparent blur-[80px] pointer-events-none z-0" />
-            <div className="fixed bottom-[10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-[#ffb2b9]/10 blur-[100px] pointer-events-none z-0" />
-
-            {/* SHARED HEADER RENDERING */}
+         <div className="w-full min-h-screen bg-[#F2F2F7] dark:bg-black relative overflow-x-hidden pb-20">
+            {/* ── Progress indicator ── */}
             {step < 5 && (
-               <header className="rounded-tr-xl rounded-tl-xl sticky top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100 shadow-sm flex items-center justify-between px-4 h-16 transition-all duration-300">
+               <div className="w-full h-0.5 bg-black/6 dark:bg-white/6">
+                  <div className="h-full bg-[#0A84FF] transition-all duration-500" style={{ width: `${((step - 1) / 3) * 100}%` }} />
+               </div>
+            )}
+
+            {/* ── SHARED HEADER ── */}
+            {step < 5 && (
+               <header className="sticky top-0 w-full z-50 bg-white/90 dark:bg-[#1C1C1E]/95 backdrop-blur-2xl border-b border-black/6 dark:border-white/6 flex items-center justify-between px-4 h-14 transition-all duration-300">
                   {step === 1 ? (
                      <button
                         onClick={() => navigate("/home")}
-                        className="text-gray-500 font-sans text-sm font-bold hover:opacity-85 transition-all select-none cursor-pointer"
+                        className="text-black/50 dark:text-white/50 text-sm font-semibold hover:text-black dark:hover:text-white transition-colors select-none cursor-pointer"
                      >
                         Hủy
                      </button>
@@ -430,14 +433,14 @@ const HostPage = () => {
                               setStep((step - 1) as WizardStep);
                            }
                         }}
-                        className="flex items-center text-[#7b41b4] font-sans text-sm font-bold hover:opacity-85 transition-all select-none cursor-pointer"
+                        className="flex items-center text-[#0A84FF] text-sm font-semibold hover:opacity-80 transition-all select-none cursor-pointer"
                      >
                         <ChevronLeft size={16} strokeWidth={2.5} className="mr-0.5" />
                         {isViewOnly ? "Lịch sử" : "Quay lại"}
                      </button>
                   )}
 
-                  <h1 className="font-sans text-base font-extrabold tracking-tight text-gray-900 absolute left-1/2 -translate-x-1/2 select-none">
+                  <h1 className="text-[16px] font-bold tracking-tight text-black dark:text-white absolute left-1/2 -translate-x-1/2 select-none">
                      {step === 1 && "Tạo buổi host"}
                      {step === 2 && "Danh sách vãng lai"}
                      {step === 3 && "Số cầu sử dụng"}
@@ -447,25 +450,25 @@ const HostPage = () => {
                   {step === 2 ? (
                      <button
                         onClick={handleAddPlayerOpen}
-                        className="flex items-center text-[#7b41b4] bg-purple-50/70 border border-purple-100 px-3 py-1.5 rounded-full font-sans text-xs font-bold hover:bg-[#efdbff] active:scale-95 transition-all select-none cursor-pointer"
+                        className="flex items-center text-[#0A84FF] bg-[#0A84FF]/10 px-3 py-1.5 rounded-full text-xs font-semibold hover:bg-[#0A84FF]/16 active:scale-95 transition-all select-none cursor-pointer"
                      >
-                        <Plus size={14} strokeWidth={2.5} className="mr-1" />
+                        <Plus size={13} strokeWidth={2.5} className="mr-1" />
                         <span>Thêm</span>
                      </button>
                   ) : step === 4 ? (
-                     <button className="text-[#7b41b4] hover:opacity-80 flex items-center justify-center h-10 w-10 rounded-full active:bg-purple-50 transition-colors">
-                        <Share2 size={18} strokeWidth={2} />
+                     <button className="text-[#0A84FF] hover:opacity-75 flex items-center justify-center h-9 w-9 rounded-full active:bg-[#0A84FF]/10 transition-colors">
+                        <Share2 size={17} strokeWidth={2} />
                      </button>
                   ) : (
-                     <button className="text-gray-400 hover:opacity-80 flex items-center justify-center h-10 w-10 rounded-full active:bg-gray-100 transition-colors">
-                        <HelpCircle size={18} strokeWidth={2} />
+                     <button className="text-black/30 dark:text-white/30 hover:opacity-70 flex items-center justify-center h-9 w-9 rounded-full transition-colors">
+                        <HelpCircle size={17} strokeWidth={2} />
                      </button>
                   )}
                </header>
             )}
 
             {/* DETAILED WIZARD STAGE ROUTER */}
-            <main className={`pt-5 px-4 max-w-md mx-auto relative z-10 ${step === 5 ? "pt-10!" : ""}`}>
+            <main className={`pt-4 px-2 max-w-md mx-auto relative z-10 ${step === 5 ? "pt-10!" : ""}`}>
                <AnimatePresence mode="wait">
                   {step === 1 && (
                      <StepBasicInfo

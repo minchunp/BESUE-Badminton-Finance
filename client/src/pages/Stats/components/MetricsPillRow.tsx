@@ -9,10 +9,10 @@ interface MetricsPillRowProps {
 }
 
 const Shimmer = () => (
-   <div className="glass-card rounded-2xl p-4 flex flex-col gap-2 items-center text-center animate-pulse">
-      <div className="w-9 h-9 bg-gray-200 rounded-2xl" />
-      <div className="h-3 w-14 bg-gray-200 rounded-full" />
-      <div className="h-4 w-16 bg-gray-200 rounded-full" />
+   <div className="bg-white dark:bg-[#1C1C1E] border border-black/[0.05] dark:border-white/[0.06] shadow-sm rounded-[20px] p-4 flex flex-col gap-2 items-center text-center animate-pulse">
+      <div className="w-9 h-9 bg-black/[0.06] dark:bg-white/[0.06] rounded-2xl" />
+      <div className="h-3 w-14 bg-black/[0.06] dark:bg-white/[0.06] rounded-full" />
+      <div className="h-4 w-16 bg-black/[0.06] dark:bg-white/[0.06] rounded-full" />
    </div>
 );
 
@@ -37,25 +37,25 @@ const MetricsPillRow = ({ overview, isLoading }: MetricsPillRowProps) => {
 
    const pills: PillItem[] = [
       {
-         icon: <Wallet size={18} strokeWidth={2} className="text-[#7b41b4]" />,
+         icon: <Wallet size={18} strokeWidth={2} className="text-[#0A84FF]" />,
          label: "Tổng thu",
          value: overview ? formatAmountFull(overview.totalRevenue) : "—",
-         accent: "text-[#7b41b4]",
-         bg: "bg-purple-50",
+         accent: "text-[#0A84FF]",
+         bg: "bg-[#0A84FF]/12",
       },
       {
-         icon: <TrendingDown size={18} strokeWidth={2} className="text-[#a93349]" />,
+         icon: <TrendingDown size={18} strokeWidth={2} className="text-[#FF375F]" />,
          label: "Chi phí",
          value: overview ? formatAmountFull(overview.totalCost) : "—",
-         accent: "text-[#a93349]",
-         bg: "bg-rose-50",
+         accent: "text-[#FF375F]",
+         bg: "bg-[#FF375F]/10",
       },
       {
-         icon: <BarChart2 size={18} strokeWidth={2} className="text-emerald-600" />,
+         icon: <BarChart2 size={18} strokeWidth={2} className="text-[#30D158]" />,
          label: "Biên LN",
          value: overview ? `${overview.profitMargin}%` : "—",
-         accent: "text-emerald-600",
-         bg: "bg-emerald-50",
+         accent: "text-[#30D158]",
+         bg: "bg-[#30D158]/12",
       },
    ];
 
@@ -67,10 +67,10 @@ const MetricsPillRow = ({ overview, isLoading }: MetricsPillRowProps) => {
                initial={{ opacity: 0, y: 12 }}
                animate={{ opacity: 1, y: 0 }}
                transition={{ delay: i * 0.07, type: "spring", stiffness: 120, damping: 15 }}
-               className="glass-card rounded-2xl p-4 flex flex-col gap-2 items-center text-center"
+               className="bg-white dark:bg-[#1C1C1E] border border-black/[0.05] dark:border-white/[0.07] rounded-[20px] p-4 flex flex-col gap-2 items-center text-center"
             >
                <div className={`w-9 h-9 ${pill.bg} rounded-2xl flex items-center justify-center`}>{pill.icon}</div>
-               <span className="font-sans text-[9px] font-bold text-gray-400 uppercase tracking-wider leading-none">{pill.label}</span>
+               <span className="font-sans text-[9px] font-bold text-black/35 dark:text-white/35 uppercase tracking-wider leading-none">{pill.label}</span>
                <span className={`font-sans text-sm font-black leading-none ${pill.accent}`}>{pill.value}</span>
             </motion.div>
          ))}

@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import onboarding_img1 from "../../../assets/imgs/onboarding_img1.png";
 
 interface GreetingCardProps {
    userName: string;
@@ -9,24 +8,42 @@ interface GreetingCardProps {
 const GreetingCard = ({ userName, scheduledHostsCount }: GreetingCardProps) => {
    return (
       <motion.section
-         initial={{ opacity: 0, y: -20 }}
+         initial={{ opacity: 0, y: -12 }}
          animate={{ opacity: 1, y: 0 }}
-         transition={{ duration: 0.6, ease: "easeOut" }}
-         className="relative h-35 rounded-2xl bg-linear-to-br from-[#d8b4fe] to-[#ffadb5] p-6 overflow-hidden shadow-glass flex items-center"
+         transition={{ duration: 0.4, ease: "easeOut" }}
+         className="relative rounded-[20px] overflow-hidden flex items-center min-h-32"
+         style={{ background: "#1C1C1E", border: "1px solid rgba(255,255,255,0.08)" }}
       >
-         {/* Background soft glow elements */}
-         <div className="absolute top-0 left-0 w-24 h-24 bg-white/20 rounded-full blur-xl pointer-events-none -translate-x-1/2 -translate-y-1/2" />
-
-         <div className="relative z-10 w-2/4">
-            <h1 className="font-sans text-xl font-extrabold text-[#29074a] mb-1.5 tracking-tight leading-tight">Chào buổi sáng, {userName}!</h1>
-            <p className="font-sans text-xs text-[#29074a]/85 font-medium">
-               Hôm nay bạn có <span className="font-bold text-[#7b41b4]">{scheduledHostsCount} buổi host</span> được lên lịch
+         {/* Content */}
+         <div className="relative z-10 w-3/5 px-5 py-5">
+            <p
+               style={{
+                  color: "rgba(255,255,255,0.45)",
+                  fontSize: "11px",
+                  fontWeight: 600,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.1em",
+                  marginBottom: "4px",
+               }}
+            >
+               Xin chào
             </p>
-         </div>
-
-         {/* Beautiful 3D Floating Shuttlecock */}
-         <div className="absolute -right-3.75 -top-2.5 w-44 h-44 opacity-95 drop-shadow-xl select-none pointer-events-none animate-float">
-            <img alt="3D Shuttlecock" className="w-full h-full object-contain" src={onboarding_img1} />
+            <h1 style={{ color: "#FFFFFF", fontSize: "22px", fontWeight: 900, lineHeight: 1.2, letterSpacing: "-0.02em", marginBottom: "12px" }}>
+               {userName}!
+            </h1>
+            <div
+               style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  background: "rgba(10,132,255,0.22)",
+                  borderRadius: "100px",
+                  padding: "4px 12px",
+               }}
+            >
+               <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#0A84FF", flexShrink: 0 }} />
+               <span style={{ color: "#0A84FF", fontSize: "11px", fontWeight: 700 }}>{scheduledHostsCount} buổi hôm nay</span>
+            </div>
          </div>
       </motion.section>
    );

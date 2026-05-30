@@ -27,13 +27,13 @@ interface StatsHeaderProps {
 
 const StatsHeader = ({ activePeriod, onPeriodChange, customRange, onCustomRangeChange }: StatsHeaderProps) => {
    return (
-      <ConfigProvider theme={{ token: { colorPrimary: "#7b41b4", borderRadius: 20 } }}>
+      <ConfigProvider theme={{ token: { colorPrimary: "#0A84FF", borderRadius: 20 } }}>
          <div className="space-y-3">
             {/* Title row */}
             <div className="flex items-center justify-between">
                <div>
-                  <h1 className="font-sans text-xl font-black text-gray-900 leading-tight">Thống kê</h1>
-                  <p className="font-sans text-xs font-medium text-gray-400 mt-0.5">Phân tích tài chính buổi host</p>
+                  <h1 className="font-sans text-xl font-black text-black dark:text-white leading-tight">Thống kê</h1>
+                  <p className="font-sans text-xs font-medium text-black/55 dark:text-white/55 mt-0.5">Phân tích tài chính buổi host</p>
                </div>
             </div>
 
@@ -46,10 +46,10 @@ const StatsHeader = ({ activePeriod, onPeriodChange, customRange, onCustomRangeC
                         key={tab.key}
                         onClick={() => onPeriodChange(tab.key)}
                         whileTap={{ scale: 0.93 }}
-                        className={`relative whitespace-nowrap px-4 py-2 rounded-full font-sans text-xs font-bold transition-all duration-200 cursor-pointer shrink-0 ${
+                        className={`relative whitespace-nowrap px-4 py-1.5 rounded-full font-sans text-[13px] font-bold transition-all duration-200 cursor-pointer shrink-0 border-none ${
                            isActive
-                              ? "bg-[#7b41b4] text-white shadow-md shadow-[#7b41b4]/25"
-                              : "bg-white text-gray-500 border border-gray-100 shadow-xs hover:text-[#7b41b4] hover:border-purple-100"
+                              ? "bg-[#0A84FF] text-white"
+                              : "bg-black/[0.05] dark:bg-white/[0.07] text-black/50 dark:text-white/50 hover:text-[#0A84FF]"
                         }`}
                      >
                         {tab.label}
@@ -71,7 +71,7 @@ const StatsHeader = ({ activePeriod, onPeriodChange, customRange, onCustomRangeC
                         format="DD/MM/YYYY"
                         allowClear
                         size="middle"
-                        className="w-full rounded-2xl font-sans text-xs border-purple-200"
+                        className="w-full rounded-2xl font-sans text-xs border-[#0A84FF]/25"
                         value={customRange ? [dayjs(customRange.from), dayjs(customRange.to)] : null}
                         onChange={(dates) => {
                            if (!dates || !dates[0] || !dates[1]) {

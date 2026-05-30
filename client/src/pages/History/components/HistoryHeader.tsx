@@ -9,22 +9,17 @@ interface HistoryHeaderProps {
    setSearchOpen: (open: boolean) => void;
 }
 
-const HistoryHeader = ({
-   searchQuery,
-   setSearchQuery,
-   searchOpen,
-   setSearchOpen
-}: HistoryHeaderProps) => {
+const HistoryHeader = ({ searchQuery, setSearchQuery, searchOpen, setSearchOpen }: HistoryHeaderProps) => {
    return (
-      <div className="flex justify-between items-center px-1">
-         <h2 className="text-[22px] font-black text-gray-900 tracking-tight">Lịch sử</h2>
-         
+      <div className="flex justify-between items-center px-0.5">
+         <h2 className="text-[22px] font-bold text-black dark:text-white tracking-tight">Lịch sử</h2>
+
          <div className="flex items-center gap-2">
             <AnimatePresence>
                {searchOpen && (
                   <motion.div
                      initial={{ width: 0, opacity: 0 }}
-                     animate={{ width: 180, opacity: 1 }}
+                     animate={{ width: 176, opacity: 1 }}
                      exit={{ width: 0, opacity: 0 }}
                      className="overflow-hidden"
                   >
@@ -32,20 +27,20 @@ const HistoryHeader = ({
                         placeholder="Tìm sân, ghi chú..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="h-9 rounded-full border border-gray-200 shadow-xs text-xs"
+                        className="h-9 rounded-2xl border-black/10 text-xs"
                         allowClear
                      />
                   </motion.div>
                )}
             </AnimatePresence>
-            
+
             <button
                onClick={() => setSearchOpen(!searchOpen)}
                aria-label="Search"
-               className={`w-9 h-9 flex items-center justify-center rounded-full transition-all active:scale-95 duration-200 cursor-pointer ${
+               className={`w-9 h-9 flex items-center justify-center rounded-full transition-colors active:scale-95 duration-150 cursor-pointer ${
                   searchOpen
-                     ? "bg-[#7b41b4]/10 text-[#7b41b4]"
-                     : "bg-white border border-gray-100 text-gray-500 shadow-xs hover:text-[#7b41b4]"
+                     ? "bg-[#0A84FF]/12 text-[#0A84FF]"
+                     : "bg-black/5 dark:bg-white/[0.07] text-black/40 dark:text-white/40 hover:text-[#0A84FF]"
                }`}
             >
                <Search size={16} />

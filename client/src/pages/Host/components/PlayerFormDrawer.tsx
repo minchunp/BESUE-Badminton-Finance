@@ -19,24 +19,30 @@ const PlayerFormDrawer = ({ isOpen, onClose, editingIndex, onSave, initialValues
    return (
       <Drawer
          title={
-            <div className="font-sans text-base font-extrabold text-gray-800 tracking-tight">
+            <div className="mt-2 font-sans text-base font-bold text-black/35 dark:text-white/35 text-center flex-1">
                {editingIndex !== null ? "Chỉnh sửa người chơi" : "Thêm người chơi vãng lai"}
             </div>
          }
+         closeIcon={false}
          placement="bottom"
          onClose={onClose}
          open={isOpen}
-         height="50%"
+         size="60%"
          styles={{
             body: {
-               paddingTop: 16,
-               paddingBottom: 40,
-               backgroundColor: isDarkMode ? "#18181b" : "#f9f9f9",
+               paddingTop: 20,
+               paddingBottom: 0,
+               backgroundColor: isDarkMode ? "#1C1C1E" : "#FFFFFF",
             },
             header: {
                borderBottom: isDarkMode ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(0,0,0,0.05)",
-               paddingTop: 20,
-               paddingBottom: 16,
+               paddingTop: 40,
+               paddingBottom: 20,
+               backgroundColor: isDarkMode ? "#1C1C1E" : "#FFFFFF",
+            },
+            mask: {
+               backdropFilter: "blur(10px)",
+               backgroundColor: "rgba(0,0,0,0.35)",
             },
          }}
          className="rounded-t-4xl overflow-hidden"
@@ -44,27 +50,38 @@ const PlayerFormDrawer = ({ isOpen, onClose, editingIndex, onSave, initialValues
          <Form form={form} layout="vertical" onFinish={onSave} className="space-y-4 max-w-md mx-auto">
             <Form.Item
                name="name"
-               label={<span className="font-sans text-xs font-bold text-gray-500 uppercase tracking-wider">Tên người đại diện</span>}
+               label={
+                  <span className="font-sans text-xs font-bold text-black/55 dark:text-white/55 uppercase tracking-wider">Tên người đại diện</span>
+               }
                rules={[{ required: true, message: "Vui lòng nhập tên!" }]}
             >
-               <Input placeholder="VD: Nguyễn Văn A" className="h-12 rounded-xl border border-gray-200/80 font-sans shadow-sm text-sm" />
+               <Input
+                  placeholder="VD: Nguyễn Văn A"
+                  className="h-12 rounded-xl border border-black/8 dark:border-white/8 font-sans text-sm bg-transparent!"
+               />
             </Form.Item>
 
             <div className="grid grid-cols-2 gap-4">
                <Form.Item
                   name="maleCount"
-                  label={<span className="font-sans text-xs font-bold text-gray-500 uppercase tracking-wider">Số lượng Nam</span>}
+                  label={<span className="font-sans text-xs font-bold text-black/55 dark:text-white/55 uppercase tracking-wider">Số lượng Nam</span>}
                   rules={[{ required: true, message: "Thiếu!" }]}
                >
-                  <InputNumber min={0} className="w-full h-12 flex items-center rounded-xl border border-gray-200/80 font-sans shadow-sm text-sm" />
+                  <InputNumber
+                     min={0}
+                     className="w-full h-12 flex items-center rounded-xl border border-black/8 dark:border-white/8 font-sans text-sm"
+                  />
                </Form.Item>
 
                <Form.Item
                   name="femaleCount"
-                  label={<span className="font-sans text-xs font-bold text-gray-500 uppercase tracking-wider">Số lượng Nữ</span>}
+                  label={<span className="font-sans text-xs font-bold text-black/55 dark:text-white/55 uppercase tracking-wider">Số lượng Nữ</span>}
                   rules={[{ required: true, message: "Thiếu!" }]}
                >
-                  <InputNumber min={0} className="w-full h-12 flex items-center rounded-xl border border-gray-200/80 font-sans shadow-sm text-sm" />
+                  <InputNumber
+                     min={0}
+                     className="w-full h-12 flex items-center rounded-xl border border-black/8 dark:border-white/8 font-sans text-sm"
+                  />
                </Form.Item>
             </div>
 
@@ -73,7 +90,8 @@ const PlayerFormDrawer = ({ isOpen, onClose, editingIndex, onSave, initialValues
                   type="primary"
                   htmlType="submit"
                   block
-                  className="h-12! rounded-xl! text-sm! font-bold shadow-md shadow-[#7b41b4]/20 bg-linear-to-r! from-[#c185fd] to-[#7b41b4] border-none text-white flex items-center justify-center active:scale-98 transition-transform cursor-pointer"
+                  className="h-13! rounded-2xl! text-sm! font-bold border-none text-white flex items-center justify-center active:scale-[0.98] transition-transform cursor-pointer"
+                  style={{ background: "#0A84FF" }}
                >
                   Xác nhận
                </Button>

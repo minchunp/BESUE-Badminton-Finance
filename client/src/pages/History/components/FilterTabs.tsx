@@ -11,49 +11,34 @@ interface FilterTabsProps {
    };
 }
 
+const TABS: { key: HistoryFilterType; label: string }[] = [
+   { key: "all", label: "Tất cả" },
+   { key: "completed", label: "Hoàn tất" },
+   { key: "active", label: "Đang diễn ra" },
+   { key: "draft", label: "Nháp" },
+];
+
 const FilterTabs = ({ filter, setFilter, counts }: FilterTabsProps) => {
    return (
-      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 px-1">
-         <button
-            onClick={() => setFilter("all")}
-            className={`whitespace-nowrap px-4 py-2 rounded-full font-sans text-xs font-bold transition-all duration-200 active:scale-95 cursor-pointer ${
-               filter === "all"
-                  ? "bg-[#7b41b4] text-white shadow-md shadow-[#7b41b4]/20"
-                  : "bg-white text-gray-500 border border-gray-100 shadow-xs hover:text-[#7b41b4]"
-            }`}
-         >
-            Tất cả ({counts.all})
-         </button>
-         <button
-            onClick={() => setFilter("completed")}
-            className={`whitespace-nowrap px-4 py-2 rounded-full font-sans text-xs font-bold transition-all duration-200 active:scale-95 cursor-pointer ${
-               filter === "completed"
-                  ? "bg-[#7b41b4] text-white shadow-md shadow-[#7b41b4]/20"
-                  : "bg-white text-gray-500 border border-gray-100 shadow-xs hover:text-[#7b41b4]"
-            }`}
-         >
-            Hoàn tất ({counts.completed})
-         </button>
-         <button
-            onClick={() => setFilter("active")}
-            className={`whitespace-nowrap px-4 py-2 rounded-full font-sans text-xs font-bold transition-all duration-200 active:scale-95 cursor-pointer ${
-               filter === "active"
-                  ? "bg-[#7b41b4] text-white shadow-md shadow-[#7b41b4]/20"
-                  : "bg-white text-gray-500 border border-gray-100 shadow-xs hover:text-[#7b41b4]"
-            }`}
-         >
-            Đang diễn ra ({counts.active})
-         </button>
-         <button
-            onClick={() => setFilter("draft")}
-            className={`whitespace-nowrap px-4 py-2 rounded-full font-sans text-xs font-bold transition-all duration-200 active:scale-95 cursor-pointer ${
-               filter === "draft"
-                  ? "bg-[#7b41b4] text-white shadow-md shadow-[#7b41b4]/20"
-                  : "bg-white text-gray-500 border border-gray-100 shadow-xs hover:text-[#7b41b4]"
-            }`}
-         >
-            Nháp ({counts.draft})
-         </button>
+      /* Apple Segmented Control container */
+      <div className="bg-[#E5E5EA] dark:bg-[#2C2C2E] rounded-[10px] p-0.75 flex items-center gap-0 overflow-x-auto hide-scrollbar">
+         {TABS.map(({ key, label }) => {
+            const count = counts[key];
+            const isActive = filter === key;
+            return (
+               <button
+                  key={key}
+                  onClick={() => setFilter(key)}
+                  className={`whitespace-nowrap flex-1 min-w-fit px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 active:scale-95 cursor-pointer border-none ${
+                     isActive
+                        ? "bg-white dark:bg-[#3A3A3C] text-black dark:text-white shadow-[0_1px_4px_rgba(0,0,0,0.10),0_0.5px_1px_rgba(0,0,0,0.06)]"
+                        : "text-black/50 dark:text-white/45 hover:text-black dark:hover:text-white bg-transparent"
+                  }`}
+               >
+                  {label} ({count})
+               </button>
+            );
+         })}
       </div>
    );
 };

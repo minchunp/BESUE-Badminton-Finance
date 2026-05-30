@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Drawer, message, ConfigProvider, theme } from "antd";
+import { Drawer, message, ConfigProvider, theme, Image } from "antd";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus, ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -14,6 +14,9 @@ import CourtForm from "./components/CourtForm";
 
 import { shuttleApi, courtApi } from "../../api/services/categories.api";
 import type { IShuttle, ICourt } from "./types";
+
+import courtIcon from "../../assets/imgs/icons/court.png";
+import shuttleIcon from "../../assets/imgs/icons/shuttlecock.png";
 
 type TabType = "shuttle" | "court";
 
@@ -134,64 +137,60 @@ const CategoriesPage = () => {
          theme={{
             algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
             token: {
-               colorPrimary: "#7b41b4",
-               borderRadius: 16,
+               colorPrimary: "#0A84FF",
+               borderRadius: 20,
             },
          }}
       >
          <div className="w-full min-h-screen relative pb-20">
             {/* Top Navigation Bar */}
-            <header className="sticky top-0 z-40 w-full glass-card border-b border-gray-100 px-4 h-16 flex items-center justify-between transition-all duration-300 rounded-tl-xl rounded-tr-xl">
+            <header className="sticky top-0 z-40 w-full bg-white/90 dark:bg-black/90 backdrop-blur-2xl px-5 h-16 flex items-center justify-between transition-colors duration-300 border-b border-black/5 dark:border-white/6 rounded-tl-xl rounded-tr-xl">
                <motion.button
                   whileTap={{ scale: 0.9 }}
                   onClick={() => navigate("/home")}
-                  className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-gray-700 animate-fade-in"
+                  className="w-9 h-9 bg-black/5 dark:bg-white/[0.07] rounded-full flex items-center justify-center text-black/45 dark:text-white/45 hover:text-[#0A84FF] transition-colors cursor-pointer border-none"
                >
-                  <ChevronLeft size={20} strokeWidth={2.5} />
+                  <ChevronLeft size={18} strokeWidth={2.5} />
                </motion.button>
 
-               <h1 className="font-sans text-lg font-extrabold tracking-tight text-gray-900 absolute left-1/2 -translate-x-1/2 select-none animate-fade-in">
+               <h1 className="font-sans text-md font-bold text-black dark:text-white absolute left-1/2 -translate-x-1/2 uppercase tracking-widest select-none animate-fade-in">
                   Danh mục
                </h1>
             </header>
 
-            {/* Premium Tab Selector */}
-            <div className="rounded-bl-xl rounded-br-xl px-4 py-3 flex gap-3 overflow-x-auto hide-scrollbar sticky top-16 z-30 bg-[#FDFCFE]/80 backdrop-blur-md border-b border-gray-50/50">
-               <button
-                  onClick={() => setActiveTab("shuttle")}
-                  className={`relative flex items-center gap-2 px-5 py-2 rounded-full font-sans text-xs font-bold whitespace-nowrap transition-all duration-300 select-none ${
-                     activeTab === "shuttle" ? "text-white shadow-md shadow-[#7b41b4]/20" : "text-gray-500 hover:bg-gray-100"
-                  }`}
-               >
-                  {activeTab === "shuttle" && (
-                     <motion.div
-                        layoutId="activeCategoryTab"
-                        className="absolute inset-0 bg-[#7b41b4] rounded-full z-0"
-                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                     />
-                  )}
-                  <span className="relative z-10">🏸 Ống cầu</span>
-               </button>
+            {/* iOS Segmented Tab Selector */}
+            <div className="px-4 py-3 sticky top-16 z-30 bg-white/90 dark:bg-black/90 backdrop-blur-2xl border-b border-black/5 dark:border-white/6">
+               <div className="flex bg-[#F2F2F7] dark:bg-[#2C2C2E] p-1 rounded-2xl border border-black/4 dark:border-white/4">
+                  <button
+                     onClick={() => setActiveTab("shuttle")}
+                     className={`flex-1 relative flex items-center justify-center gap-2 py-2 rounded-xl font-sans text-xs font-bold whitespace-nowrap transition-all duration-300 select-none border-none cursor-pointer ${
+                        activeTab === "shuttle"
+                           ? "bg-white dark:bg-[#1C1C1E] text-[#0A84FF] shadow-sm border border-black/4"
+                           : "bg-transparent text-black/45 dark:text-white/45 hover:text-black/65 dark:hover:text-white/65"
+                     }`}
+                  >
+                     <span className="flex flex-row items-center gap-2">
+                        <Image style={{ width: 17, height: 17, marginBottom: 3 }} preview={false} src={shuttleIcon} /> Ống cầu
+                     </span>
+                  </button>
 
-               <button
-                  onClick={() => setActiveTab("court")}
-                  className={`relative flex items-center gap-2 px-5 py-2 rounded-full font-sans text-xs font-bold whitespace-nowrap transition-all duration-300 select-none ${
-                     activeTab === "court" ? "text-white shadow-md shadow-[#7b41b4]/20" : "text-gray-500 hover:bg-gray-100"
-                  }`}
-               >
-                  {activeTab === "court" && (
-                     <motion.div
-                        layoutId="activeCategoryTab"
-                        className="absolute inset-0 bg-[#7b41b4] rounded-full z-0"
-                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                     />
-                  )}
-                  <span className="relative z-10">🏟️ Sân cầu</span>
-               </button>
+                  <button
+                     onClick={() => setActiveTab("court")}
+                     className={`flex-1 relative flex items-center justify-center gap-2 py-2 rounded-xl font-sans text-xs font-bold whitespace-nowrap transition-all duration-300 select-none border-none cursor-pointer ${
+                        activeTab === "court"
+                           ? "bg-white dark:bg-[#1C1C1E] text-[#0A84FF] shadow-sm border border-black/4"
+                           : "bg-transparent text-black/45 dark:text-white/45 hover:text-black/65 dark:hover:text-white/65"
+                     }`}
+                  >
+                     <span className="flex flex-row items-center gap-2">
+                        <Image style={{ width: 18, height: 18 }} preview={false} src={courtIcon} /> Sân cầu
+                     </span>
+                  </button>
+               </div>
             </div>
 
             {/* Master Tab Content render */}
-            <main className="px-4 pt-4 pb-20">
+            <main className="pt-4 px-2 pb-20">
                <AnimatePresence mode="wait">
                   <motion.div
                      key={activeTab}
@@ -210,7 +209,7 @@ const CategoriesPage = () => {
                whileHover={{ scale: 1.05 }}
                whileTap={{ scale: 0.9 }}
                onClick={handleOpenCreate}
-               className="fixed bottom-24 right-5 w-14 h-14 rounded-2xl bg-linear-to-br from-[#D8B4FE] to-[#FB7185] shadow-[0_8px_32px_rgba(216,180,254,0.45)] flex items-center justify-center text-white z-40 select-none cursor-pointer"
+               className="fixed bottom-24 right-5 w-14 h-14 rounded-2xl bg-[#0A84FF] border-none text-white flex items-center justify-center z-40 select-none cursor-pointer"
             >
                <Plus size={28} strokeWidth={2.5} />
             </motion.button>
@@ -218,7 +217,7 @@ const CategoriesPage = () => {
             {/* Bottom Sheet Drawer containing modular sub-forms */}
             <Drawer
                title={
-                  <div className="font-sans text-base font-extrabold text-gray-800 tracking-tight">
+                  <div className="mt-2 font-sans text-xs font-bold uppercase tracking-widest text-black/35 dark:text-white/35 text-center flex-1">
                      {editingItem
                         ? activeTab === "shuttle"
                            ? "Chỉnh sửa ống cầu"
@@ -231,21 +230,31 @@ const CategoriesPage = () => {
                placement="bottom"
                onClose={handleCloseDrawer}
                open={isDrawerOpen}
-               size="65%"
+               destroyOnHidden={true}
+               closable={false}
+               size="68%"
                styles={{
                   body: {
-                     paddingTop: 16,
-                     paddingBottom: 40,
-                     backgroundColor: isDarkMode ? "#18181b" : "#f9f9f9",
+                     paddingTop: 20,
+                     paddingBottom: 0,
+                     backgroundColor: isDarkMode ? "#1C1C1E" : "#FFFFFF",
                   },
                   header: {
                      borderBottom: isDarkMode ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(0,0,0,0.05)",
-                     paddingTop: 20,
-                     paddingBottom: 16,
+                     paddingTop: 40,
+                     paddingBottom: 20,
+                     backgroundColor: isDarkMode ? "#1C1C1E" : "#FFFFFF",
+                  },
+                  mask: {
+                     backdropFilter: "blur(10px)",
+                     backgroundColor: "rgba(0,0,0,0.35)",
                   },
                }}
-               className="rounded-t-4xl overflow-hidden"
+               className="rounded-t-4xl overflow-hidden relative"
             >
+               {/* Thin drag handle for premium iOS feel */}
+               <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-9 h-1 bg-black/10 dark:bg-white/15 rounded-full z-50 pointer-events-none" />
+
                {activeTab === "shuttle" ? (
                   <ShuttleForm
                      initialValues={editingItem as IShuttle | null}

@@ -11,7 +11,7 @@ interface CostBreakdownCardProps {
    isLoading: boolean;
 }
 
-const COLORS = ["#7b41b4", "#ffadb5"];
+const COLORS = ["#0A84FF", "#FF375F"];
 
 const CostBreakdownCard = ({ data, isLoading }: CostBreakdownCardProps) => {
    const { isDarkMode } = useTheme();
@@ -38,24 +38,24 @@ const CostBreakdownCard = ({ data, isLoading }: CostBreakdownCardProps) => {
          fontFamily: "Inter, sans-serif",
          tooltip: {
             trigger: "item",
-            backgroundColor: isDarkMode ? "rgba(24, 24, 27, 0.98)" : "rgba(255, 255, 255, 0.98)",
+            backgroundColor: isDarkMode ? "rgba(28, 28, 30, 0.98)" : "rgba(255, 255, 255, 0.98)",
             borderRadius: 12,
             borderWidth: 1,
-            borderColor: isDarkMode ? "#27272a" : "#f3f4f6",
+            borderColor: isDarkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.05)",
             shadowBlur: 15,
             shadowColor: "rgba(0,0,0,0.05)",
             padding: [8, 10],
             textStyle: {
                fontFamily: "Inter, sans-serif",
-               color: isDarkMode ? "#e4e4e7" : "#1f2937",
+               color: isDarkMode ? "#ffffff" : "#000000",
                fontSize: 11,
             },
             formatter: (params: any) => {
                const item = params.data;
                let html = `<div style="font-family: Inter, sans-serif;">`;
-               html += `<div style="font-weight: bold; color: ${isDarkMode ? "#ffffff" : "#4b5563"}; margin-bottom: 2px;">${params.name}</div>`;
-               html += `<div style="color: #7b41b4; font-weight: 800; font-size: 12px; margin-bottom: 2px;">${formatAmountFull(params.value)}đ</div>`;
-               html += `<div style="color: ${isDarkMode ? "#71717a" : "#9ca3af"}; font-size: 10px;">Tỷ lệ: ${item.pct}%</div>`;
+               html += `<div style="font-weight: bold; color: ${isDarkMode ? "#ffffff" : "rgba(0,0,0,0.55)"}; margin-bottom: 2px;">${params.name}</div>`;
+               html += `<div style="color: #0A84FF; font-weight: 800; font-size: 12px; margin-bottom: 2px;">${formatAmountFull(params.value)}đ</div>`;
+               html += `<div style="color: ${isDarkMode ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.35)"}; font-size: 10px;">Tỷ lệ: ${item.pct}%</div>`;
                html += `</div>`;
                return html;
             },
@@ -68,7 +68,7 @@ const CostBreakdownCard = ({ data, isLoading }: CostBreakdownCardProps) => {
                avoidLabelOverlap: false,
                itemStyle: {
                   borderRadius: 6,
-                  borderColor: isDarkMode ? "#18181b" : "#fff",
+                  borderColor: isDarkMode ? "#1C1C1E" : "#fff",
                   borderWidth: 2,
                },
                label: { show: false },
@@ -98,13 +98,13 @@ const CostBreakdownCard = ({ data, isLoading }: CostBreakdownCardProps) => {
 
    if (isLoading) {
       return (
-         <div className="glass-card rounded-3xl p-5 animate-pulse space-y-3">
-            <div className="h-5 w-40 bg-gray-200 rounded-full" />
+         <div className="bg-white dark:bg-[#1C1C1E] border border-black/[0.05] dark:border-white/[0.06] shadow-sm rounded-[24px] p-5 animate-pulse space-y-3">
+            <div className="h-5 w-40 bg-black/[0.06] dark:bg-white/[0.06] rounded-full" />
             <div className="flex items-center gap-4">
-               <div className="w-32 h-32 bg-gray-200 rounded-full" />
+               <div className="w-32 h-32 bg-black/[0.06] dark:bg-white/[0.06] rounded-full" />
                <div className="flex-1 space-y-3">
-                  <div className="h-8 bg-gray-100 rounded-xl" />
-                  <div className="h-8 bg-gray-100 rounded-xl" />
+                  <div className="h-8 bg-black/[0.04] dark:bg-white/[0.04] rounded-xl" />
+                  <div className="h-8 bg-black/[0.04] dark:bg-white/[0.04] rounded-xl" />
                </div>
             </div>
          </div>
@@ -123,11 +123,11 @@ const CostBreakdownCard = ({ data, isLoading }: CostBreakdownCardProps) => {
          initial={{ opacity: 0, y: 16 }}
          animate={{ opacity: 1, y: 0 }}
          transition={{ delay: 0.15, type: "spring", stiffness: 100 }}
-         className="glass-card rounded-3xl p-5 space-y-4"
+         className="bg-white dark:bg-[#1C1C1E] border border-black/[0.05] dark:border-white/[0.07] rounded-[20px] p-5 space-y-4"
       >
          <div>
-            <h3 className="font-sans text-sm font-black text-gray-900">Phân tích chi phí</h3>
-            <p className="font-sans text-[10px] font-medium text-gray-400 mt-0.5">Tổng: {formatAmountFull(data.total)}</p>
+            <h3 className="font-sans text-sm font-black text-black dark:text-white">Phân tích chi phí</h3>
+            <p className="font-sans text-[10px] font-medium text-black/55 dark:text-white/55 mt-0.5">Tổng: {formatAmountFull(data.total)}</p>
          </div>
 
          <div className="flex items-center gap-4">
@@ -138,8 +138,8 @@ const CostBreakdownCard = ({ data, isLoading }: CostBreakdownCardProps) => {
 
                {/* Center absolute HTML labels */}
                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                  <span className="font-sans text-[10px] font-bold text-gray-400 uppercase tracking-wide">Tổng</span>
-                  <span className="font-sans text-xs font-black text-gray-800">{formatAmountFull(data.total)}</span>
+                  <span className="font-sans text-[10px] font-bold text-black/35 dark:text-white/35 uppercase tracking-wide">Tổng</span>
+                  <span className="font-sans text-xs font-black text-black dark:text-white">{formatAmountFull(data.total)}</span>
                </div>
             </div>
 
@@ -150,12 +150,12 @@ const CostBreakdownCard = ({ data, isLoading }: CostBreakdownCardProps) => {
                      <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                            <div className="w-2.5 h-2.5 rounded-full" style={{ background: COLORS[i] }} />
-                           <span className="font-sans text-[11px] font-bold text-gray-700">{item.name}</span>
+                           <span className="font-sans text-[11px] font-bold text-black/55 dark:text-white/55">{item.name}</span>
                         </div>
-                        <span className="font-sans text-[11px] font-black text-gray-900">{item.pct}%</span>
+                        <span className="font-sans text-[11px] font-black text-black dark:text-white">{item.pct}%</span>
                      </div>
                      {/* Progress bar */}
-                     <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+                     <div className="h-1.5 w-full bg-black/[0.06] dark:bg-white/[0.06] rounded-full overflow-hidden">
                         <motion.div
                            className="h-full rounded-full"
                            style={{ background: COLORS[i] }}
@@ -164,7 +164,7 @@ const CostBreakdownCard = ({ data, isLoading }: CostBreakdownCardProps) => {
                            transition={{ duration: 0.6, delay: 0.2 + i * 0.1, ease: "easeOut" }}
                         />
                      </div>
-                     <span className="font-sans text-[10px] font-medium text-gray-400">{formatAmountFull(item.value)}</span>
+                     <span className="font-sans text-[10px] font-medium text-black/35 dark:text-white/35">{formatAmountFull(item.value)}</span>
                   </div>
                ))}
             </div>

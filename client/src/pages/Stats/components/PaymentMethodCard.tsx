@@ -11,12 +11,12 @@ interface PaymentMethodCardProps {
 const PaymentMethodCard = ({ totalCash, totalTransfer, isLoading }: PaymentMethodCardProps) => {
    if (isLoading) {
       return (
-         <div className="glass-card rounded-3xl p-5 animate-pulse space-y-3">
-            <div className="h-5 w-44 bg-gray-200 rounded-full" />
-            <div className="h-6 bg-gray-100 rounded-full" />
+         <div className="bg-white dark:bg-[#1C1C1E] border border-black/[0.05] dark:border-white/[0.06] shadow-sm rounded-[24px] p-5 animate-pulse space-y-3">
+            <div className="h-5 w-44 bg-black/[0.06] dark:bg-white/[0.06] rounded-full" />
+            <div className="h-6 bg-black/[0.04] dark:bg-white/[0.04] rounded-full" />
             <div className="grid grid-cols-2 gap-3">
-               <div className="h-16 bg-gray-100 rounded-2xl" />
-               <div className="h-16 bg-gray-100 rounded-2xl" />
+               <div className="h-16 bg-black/[0.04] dark:bg-white/[0.04] rounded-2xl" />
+               <div className="h-16 bg-black/[0.04] dark:bg-white/[0.04] rounded-2xl" />
             </div>
          </div>
       );
@@ -33,23 +33,23 @@ const PaymentMethodCard = ({ totalCash, totalTransfer, isLoading }: PaymentMetho
          initial={{ opacity: 0, y: 16 }}
          animate={{ opacity: 1, y: 0 }}
          transition={{ delay: 0.2, type: "spring", stiffness: 100 }}
-         className="glass-card rounded-3xl p-5 space-y-4"
+         className="bg-white dark:bg-[#1C1C1E] border border-black/[0.05] dark:border-white/[0.07] rounded-[20px] p-5 space-y-4"
       >
          <div>
-            <h3 className="font-sans text-sm font-black text-gray-900">Phương thức thanh toán</h3>
-            <p className="font-sans text-[10px] font-medium text-gray-400 mt-0.5">Tổng thu: {formatAmountFull(total)}</p>
+            <h3 className="font-sans text-sm font-black text-black dark:text-white">Phương thức thanh toán</h3>
+            <p className="font-sans text-[10px] font-medium text-black/55 dark:text-white/55 mt-0.5">Tổng thu: {formatAmountFull(total)}</p>
          </div>
 
          {/* Stacked horizontal bar */}
-         <div className="h-4 w-full bg-gray-100 rounded-full overflow-hidden flex">
+         <div className="h-4 w-full bg-black/[0.06] dark:bg-white/[0.06] rounded-full overflow-hidden flex">
             <motion.div
-               className="h-full bg-linear-to-r from-emerald-400 to-emerald-500 rounded-l-full"
+               className="h-full bg-[#34C759] rounded-l-full"
                initial={{ width: 0 }}
                animate={{ width: `${cashPct}%` }}
                transition={{ duration: 0.8, ease: "easeOut" }}
             />
             <motion.div
-               className="h-full bg-linear-to-r from-blue-400 to-blue-500 rounded-r-full"
+               className="h-full bg-[#007AFF] rounded-r-full"
                initial={{ width: 0 }}
                animate={{ width: `${transferPct}%` }}
                transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
@@ -58,26 +58,26 @@ const PaymentMethodCard = ({ totalCash, totalTransfer, isLoading }: PaymentMetho
 
          {/* Legend */}
          <div className="grid grid-cols-2 gap-3">
-            <div className="bg-emerald-50/80 rounded-2xl p-3 border border-emerald-100/50">
+            <div className="bg-[#34C759]/12 rounded-2xl p-3 border border-[#34C759]/20">
                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-7 h-7 bg-emerald-100 rounded-xl flex items-center justify-center">
-                     <Banknote size={14} className="text-emerald-600" strokeWidth={2} />
+                  <div className="w-7 h-7 bg-[#34C759]/20 rounded-xl flex items-center justify-center">
+                     <Banknote size={14} className="text-[#34C759]" strokeWidth={2} />
                   </div>
-                  <span className="font-sans text-[10px] font-black text-emerald-700 uppercase tracking-wide">Tiền mặt</span>
+                  <span className="font-sans text-[10px] font-black text-[#34C759] uppercase tracking-wide">Tiền mặt</span>
                </div>
-               <p className="font-sans text-sm font-black text-gray-900">{formatAmountFull(totalCash)}</p>
-               <p className="font-sans text-[11px] font-bold text-emerald-600">{cashPct}%</p>
+               <p className="font-sans text-sm font-black text-black dark:text-white">{formatAmountFull(totalCash)}</p>
+               <p className="font-sans text-[11px] font-bold text-[#34C759]">{cashPct}%</p>
             </div>
 
-            <div className="bg-blue-50/80 rounded-2xl p-3 border border-blue-100/50">
+            <div className="bg-[#007AFF]/10 rounded-2xl p-3 border border-[#007AFF]/20">
                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-7 h-7 bg-blue-100 rounded-xl flex items-center justify-center">
-                     <CreditCard size={14} className="text-blue-600" strokeWidth={2} />
+                  <div className="w-7 h-7 bg-[#007AFF]/15 rounded-xl flex items-center justify-center">
+                     <CreditCard size={14} className="text-[#007AFF]" strokeWidth={2} />
                   </div>
-                  <span className="font-sans text-[10px] font-black text-blue-700 uppercase tracking-wide">Chuyển khoản</span>
+                  <span className="font-sans text-[10px] font-black text-[#007AFF] uppercase tracking-wide">Chuyển khoản</span>
                </div>
-               <p className="font-sans text-sm font-black text-gray-900">{formatAmountFull(totalTransfer)}</p>
-               <p className="font-sans text-[11px] font-bold text-blue-600">{transferPct}%</p>
+               <p className="font-sans text-sm font-black text-black dark:text-white">{formatAmountFull(totalTransfer)}</p>
+               <p className="font-sans text-[11px] font-bold text-[#007AFF]">{transferPct}%</p>
             </div>
          </div>
       </motion.section>

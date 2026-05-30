@@ -8,7 +8,6 @@ interface RecentHostsProps {
    sessions: RecentSession[];
 }
 
-// Collection of premium avatar URLs for high-end look
 const AVATAR_POOL = [
    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&h=150&q=80",
    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&h=150&q=80",
@@ -20,48 +19,38 @@ const AVATAR_POOL = [
 
 const containerVariants = {
    hidden: { opacity: 0 },
-   show: {
-      opacity: 1,
-      transition: {
-         staggerChildren: 0.1,
-      },
-   },
+   show: { opacity: 1, transition: { staggerChildren: 0.08 } },
 };
 
 const cardVariants = {
-   hidden: { opacity: 0, x: 30 },
+   hidden: { opacity: 0, x: 20 },
    show: {
       opacity: 1,
       x: 0,
-      transition: {
-         type: "spring" as const,
-         stiffness: 80,
-         damping: 14,
-      },
+      transition: { type: "spring" as const, stiffness: 100, damping: 16 },
    },
 };
 
 const RecentHosts = ({ sessions }: RecentHostsProps) => {
    const navigate = useNavigate();
 
-   // Helper function to generate an array of avatars based on player count
    const getAvatarsForPlayerCount = (count: number, sessionId: string) => {
       const avatars: string[] = [];
       const seed = sessionId.charCodeAt(0) || 0;
       for (let i = 0; i < count; i++) {
-         const avatarIndex = (seed + i) % AVATAR_POOL.length;
-         avatars.push(AVATAR_POOL[avatarIndex]);
+         avatars.push(AVATAR_POOL[(seed + i) % AVATAR_POOL.length]);
       }
       return avatars;
    };
 
    return (
-      <section className="space-y-4">
-         <div className="flex justify-between items-center px-1">
-            <h2 className="font-sans text-lg font-extrabold text-[#1a1c1c] tracking-tight">Buổi host gần đây</h2>
+      <section className="space-y-3">
+         {/* Section header — Apple Fitness style */}
+         <div className="flex justify-between items-center">
+            <h2 className="text-[17px] font-bold text-black dark:text-white tracking-tight">Buổi host gần đây</h2>
             <button
                onClick={() => navigate("/history")}
-               className="font-sans text-[13px] font-bold text-[#7b41b4] hover:text-[#6f5092] transition-colors flex items-center gap-0.5 cursor-pointer bg-transparent border-none p-0 outline-none"
+               className="text-[#0A84FF] text-[13px] font-semibold flex items-center gap-0.5 cursor-pointer bg-transparent border-none p-0 outline-none hover:opacity-75 transition-opacity"
             >
                Xem tất cả
                <ChevronRight size={14} strokeWidth={2.5} />
@@ -69,13 +58,15 @@ const RecentHosts = ({ sessions }: RecentHostsProps) => {
          </div>
 
          {sessions.length === 0 ? (
-            <div className="glass-card rounded-2xl p-6 text-center text-gray-400 font-sans text-xs">Chưa có buổi host hoàn tất nào gần đây</div>
+            <div className="bg-white dark:bg-[#1C1C1E] rounded-[20px] p-6 text-center text-black/30 dark:text-white/30 text-sm border border-black/5 dark:border-white/[0.07]">
+               Chưa có buổi host hoàn tất nào gần đây
+            </div>
          ) : (
             <motion.div
                variants={containerVariants}
                initial="hidden"
                animate="show"
-               className="flex gap-4 overflow-x-auto hide-scrollbar pb-3 -mx-6 px-6"
+               className="flex gap-3 overflow-x-auto hide-scrollbar pb-2 -mx-4 px-4"
             >
                {sessions.map((session) => {
                   const playerAvatars = getAvatarsForPlayerCount(session.quantityPlayer, session.id);
@@ -85,50 +76,53 @@ const RecentHosts = ({ sessions }: RecentHostsProps) => {
                      <motion.div
                         key={session.id}
                         variants={cardVariants}
-                        whileHover={{ y: -3, scale: 1.01 }}
-                        whileTap={{ scale: 0.99 }}
+                        whileTap={{ scale: 0.98 }}
                         onClick={() => navigate(`/host/report/${session.id}`)}
-                        className="min-w-70 w-70 glass-card rounded-2xl p-4 flex flex-col gap-3 shrink-0 cursor-pointer transition-shadow hover:shadow-[0_12px_24px_rgba(216,180,254,0.2)]"
+                        className="min-w-65 w-65 bg-white dark:bg-[#1C1C1E] rounded-[20px] p-4 flex flex-col gap-3 shrink-0 cursor-pointer border border-black/5 dark:border-white/[0.07] active:bg-black/[0.02] dark:active:bg-white/[0.03] transition-colors"
                      >
+                        {/* Top row */}
                         <div className="flex justify-between items-start">
                            <div>
-                              <div className="font-sans text-[11px] font-semibold text-gray-400 mb-1">{session.date}</div>
-                              <div className="font-sans text-sm font-extrabold text-gray-800 tracking-tight line-clamp-1">{session.courtName}</div>
+                              <div className="text-[11px] font-medium text-black/35 dark:text-white/35 mb-1">{session.date}</div>
+                              <div className="text-[15px] font-bold text-black dark:text-white tracking-tight line-clamp-1">{session.courtName}</div>
                            </div>
 
+                           {/* Status chip */}
                            <span
-                              className={`font-sans text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider select-none shrink-0 ${
-                                 isComplete ? "bg-[#FB7185]/10 text-[#FB7185]" : "bg-red-50 text-red-500"
+                              className={`text-[10px] font-bold px-2.5 py-1 rounded-full select-none shrink-0 ${
+                                 isComplete ? "bg-[#30D158]/12 text-[#30D158]" : "bg-[#FF375F]/10 text-[#FF375F]"
                               }`}
                            >
                               {isComplete ? "Hoàn tất" : "Đã hủy"}
                            </span>
                         </div>
 
-                        <div className="flex justify-between items-end mt-2">
+                        {/* Bottom row: profit + avatars */}
+                        <div className="flex justify-between items-end">
                            <div className="flex flex-col">
-                              <span className="font-sans text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Lợi nhuận</span>
-                              <span className="font-sans text-lg font-extrabold text-emerald-600 tracking-tight leading-none">
-                                 +{session.profit.toLocaleString("vi-VN")}đ
+                              <span className="text-[10px] font-semibold text-black/30 dark:text-white/30 uppercase tracking-wider mb-0.5">
+                                 Lợi nhuận
+                              </span>
+                              <span className="text-[18px] font-black text-[#30D158] tracking-tight leading-none">
+                                 {session.profit.toLocaleString("vi-VN")}đ
                               </span>
                            </div>
 
-                           {/* Ant Design Avatar.Group for beautiful profile representation */}
                            <div className="flex select-none">
                               <Avatar.Group
                                  max={{
                                     count: 3,
                                     style: {
-                                       color: "#7b41b4",
-                                       backgroundColor: "#f0dbff",
+                                       color: "#0A84FF",
+                                       backgroundColor: "rgba(10, 132, 255, 0.12)",
                                        fontSize: "11px",
                                        fontWeight: "bold",
-                                       border: "2px solid #ffffff",
+                                       border: "2px solid transparent",
                                     },
                                  }}
                               >
                                  {playerAvatars.map((url, idx) => (
-                                    <Avatar key={idx} src={url} style={{ border: "2px solid #ffffff" }} className="shadow-sm" />
+                                    <Avatar key={idx} src={url} style={{ border: "2px solid transparent" }} />
                                  ))}
                               </Avatar.Group>
                            </div>

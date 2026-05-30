@@ -1,7 +1,7 @@
 import { Modal, ConfigProvider, theme } from "antd";
 import { useTheme } from "../../../contexts/ThemeContext";
 import { motion, AnimatePresence } from "framer-motion";
-import { Swords, Trophy, User, X, MapPin, Clock } from "lucide-react";
+import { Swords, Trophy, User, MapPin, Clock } from "lucide-react";
 import type { ISession } from "../../../api/services/session.api";
 import { expandPlayers, formatSessionDate } from "../../../utils/playerUtils";
 
@@ -12,46 +12,38 @@ interface MatchStatsModalProps {
 
 const RANK_MEDALS = ["🥇", "🥈", "🥉"];
 
-const AVATAR_PALETTES = [
-   { bg: "from-violet-500 to-purple-600", ring: "ring-violet-200" },
-   { bg: "from-rose-400 to-pink-600", ring: "ring-rose-200" },
-   { bg: "from-indigo-400 to-blue-600", ring: "ring-indigo-200" },
-   { bg: "from-emerald-400 to-teal-600", ring: "ring-emerald-200" },
-   { bg: "from-amber-400 to-orange-500", ring: "ring-amber-200" },
-   { bg: "from-sky-400 to-cyan-600", ring: "ring-sky-200" },
-   { bg: "from-fuchsia-400 to-violet-600", ring: "ring-fuchsia-200" },
+/* Apple Fitness activity-ring-inspired avatar colors */
+const AVATAR_COLORS = [
+   "bg-[#0A84FF]/14 text-[#0A84FF]",
+   "bg-[#FF375F]/10 text-[#FF375F]",
+   "bg-[#30D158]/12 text-[#30D158]",
+   "bg-[#FF9F0A]/12 text-[#FF9F0A]",
+   "bg-[#64D2FF]/12 text-[#64D2FF]",
+   "bg-[#FF375F]/10 text-[#FF375F]",
+   "bg-[#30D158]/12 text-[#30D158]",
 ];
 
-const StatPill = ({ icon, label, value, accent }: { icon: React.ReactNode; label: string; value: number | string; accent: string }) => (
-   <div className="flex-1 flex flex-col items-center gap-1.5 py-3">
-      <div className={`w-9 h-9 rounded-2xl flex items-center justify-center ${accent}`}>{icon}</div>
-      <span className="font-sans text-[9px] font-black uppercase tracking-widest text-gray-400">{label}</span>
-      <span
-         className={`font-sans text-xl font-black leading-none ${accent.includes("purple") ? "text-[#7b41b4]" : accent.includes("indigo") ? "text-indigo-600" : "text-[#a93349]"}`}
-      >
-         {value}
-      </span>
+const StatPill = ({ icon, label, value, color, bg }: { icon: React.ReactNode; label: string; value: number | string; color: string; bg: string }) => (
+   <div className="flex-1 flex flex-col items-center gap-1.5 py-3.5">
+      <div className={`w-9 h-9 rounded-[14px] flex items-center justify-center ${bg}`}>{icon}</div>
+      <span className="text-[9px] font-bold uppercase tracking-widest text-black/30 dark:text-white/30">{label}</span>
+      <span className={`text-xl font-black leading-none ${color}`}>{value}</span>
    </div>
 );
 
 const EmptyMatchState = () => (
    <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
+      initial={{ opacity: 0, scale: 0.96 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: 0.15 }}
+      transition={{ delay: 0.1 }}
       className="flex flex-col items-center justify-center py-10 px-6 text-center"
    >
-      <div className="relative mb-5">
-         <div className="w-20 h-20 rounded-3xl bg-linear-to-br from-gray-100 to-gray-50 border border-gray-100 flex items-center justify-center shadow-inner">
-            <Trophy size={30} className="text-gray-300" strokeWidth={1.5} />
-         </div>
-         <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-xl bg-gray-100 border border-white flex items-center justify-center">
-            <span className="text-xs">❓</span>
-         </div>
+      <div className="w-20 h-20 rounded-[24px] bg-black/[0.04] dark:bg-white/[0.04] flex items-center justify-center mb-4">
+         <Trophy size={30} className="text-black/20 dark:text-white/20" strokeWidth={1.5} />
       </div>
-      <p className="font-sans text-[15px] font-black text-gray-600 mb-1.5">Chưa có dữ liệu số trận</p>
-      <p className="font-sans text-xs font-medium text-gray-400 leading-relaxed max-w-50">
-         Sử dụng tab <span className="font-bold text-[#7b41b4]">"Số trận"</span> trong buổi host để ghi nhận số trận đã đánh
+      <p className="text-[15px] font-bold text-black/55 dark:text-white/55 mb-1.5">Chưa có dữ liệu số trận</p>
+      <p className="text-xs font-medium text-black/30 dark:text-white/30 leading-relaxed max-w-[200px]">
+         Sử dụng tab <span className="font-bold text-[#0A84FF]">"Số trận"</span> trong buổi host để ghi nhận
       </p>
    </motion.div>
 );
@@ -78,7 +70,7 @@ const MatchStatsModal = ({ session, onClose }: MatchStatsModalProps) => {
       <ConfigProvider
          theme={{
             algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
-            token: { colorPrimary: "#7b41b4", borderRadius: 20 },
+            token: { colorPrimary: "#0A84FF", borderRadius: 20 },
          }}
       >
          <Modal
@@ -90,73 +82,63 @@ const MatchStatsModal = ({ session, onClose }: MatchStatsModalProps) => {
             closable={false}
             className="transparent-modal"
             styles={{
-               body: {
-                  padding: 0,
-                  backgroundColor: "transparent",
-               },
+               body: { padding: 0, backgroundColor: "transparent" },
             }}
          >
-            <div className="font-sans overflow-hidden rounded-4xl bg-[#f6f4fa]">
-               {/* ── Hero Header ─────────────────────────────────── */}
-               <div className="relative overflow-hidden px-6 pt-7 pb-6 bg-white">
-                  {/* Decorative blobs */}
-                  <div className="absolute -top-8 -right-8 w-36 h-36 rounded-full bg-purple-100/60 blur-2xl pointer-events-none" />
-                  <div className="absolute -bottom-6 -left-6 w-28 h-28 rounded-full bg-pink-100/50 blur-2xl pointer-events-none" />
-
-                  {/* Icon + Close */}
-                  <div className="relative flex items-start justify-between mb-4">
+            <div className="overflow-hidden rounded-[28px] bg-white dark:bg-[#1C1C1E]">
+               {/* ── Hero Header ── */}
+               <div className="px-5 pt-6 pb-4 border-b border-black/[0.05] dark:border-white/[0.05]">
+                  {/* Icon */}
+                  <div className="flex items-start justify-between mb-4">
                      <div className="flex items-center gap-2.5">
-                        <div className="w-10 h-10 rounded-xl bg-linear-to-br from-[#c185fd] to-[#7b41b4] flex items-center justify-center shadow-lg shadow-purple-200">
-                           <Swords size={18} className="text-white" strokeWidth={2} />
+                        <div className="w-10 h-10 rounded-[14px] bg-[#0A84FF]/12 flex items-center justify-center">
+                           <Swords size={18} className="text-[#0A84FF]" strokeWidth={2} />
                         </div>
-                        <div>
-                           <p className="font-sans text-[12px] font-black uppercase tracking-widest text-[#7b41b4]">Thống kê số trận</p>
-                        </div>
+                        <p className="text-[12px] font-bold uppercase tracking-widest text-[#0A84FF]">Thống kê số trận</p>
                      </div>
-
-                     <button
-                        onClick={onClose}
-                        className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors cursor-pointer shrink-0"
-                     >
-                        <X size={14} className="text-gray-500" strokeWidth={2.5} />
-                     </button>
                   </div>
 
                   {/* Session info */}
-                  <div className="relative">
-                     <h2 className="font-sans text-[19px] font-black text-gray-900 leading-tight mb-2">{formatSessionDate(session.date)}</h2>
-                     <div className="flex items-center gap-3">
-                        <span className="flex items-center gap-1 font-sans text-[11px] font-bold text-gray-400">
-                           <MapPin size={10} className="text-[#7b41b4]" />
-                           {session.court?.name || "Chưa rõ sân"}
-                        </span>
-                        <span className="w-1 h-1 rounded-full bg-gray-300" />
-                        <span className="flex items-center gap-1 font-sans text-[11px] font-bold text-gray-400">
-                           <Clock size={10} className="text-[#7b41b4]" />
-                           {session.court?.hours || 2}h · {session.court?.numberOfCourts || 1} sân
-                        </span>
-                     </div>
+                  <h2 className="text-[19px] font-bold text-black dark:text-white leading-tight mb-1.5">{formatSessionDate(session.date)}</h2>
+                  <div className="flex items-center gap-3">
+                     <span className="flex items-center gap-1 text-[11px] font-medium text-black/35 dark:text-white/35">
+                        <MapPin size={10} className="text-[#0A84FF]" />
+                        {session.court?.name || "Chưa rõ sân"}
+                     </span>
+                     <span className="w-1 h-1 rounded-full bg-black/15 dark:bg-white/15" />
+                     <span className="flex items-center gap-1 text-[11px] font-medium text-black/35 dark:text-white/35">
+                        <Clock size={10} className="text-[#0A84FF]" />
+                        {session.court?.hours || 2}h · {session.court?.numberOfCourts || 1} sân
+                     </span>
                   </div>
                </div>
 
-               {/* ── Stats Strip ──────────────────────────────────── */}
-               <div className="flex items-stretch divide-x divide-gray-100 bg-white border-t border-gray-100 mx-0">
-                  <StatPill icon={<span className="text-base">👥</span>} label="Nhóm" value={totalGroups} accent="bg-purple-50 text-[#7b41b4]" />
+               {/* ── Stats Strip ── */}
+               <div className="flex items-stretch divide-x divide-black/[0.05] dark:divide-white/[0.05]">
                   <StatPill
-                     icon={<User size={15} className="text-indigo-600" />}
-                     label="Cá nhân"
-                     value={totalIndividuals}
-                     accent="bg-indigo-50 text-indigo-600"
+                     icon={<span className="text-base">👥</span>}
+                     label="Nhóm"
+                     value={totalGroups}
+                     color="text-[#0A84FF]"
+                     bg="bg-[#0A84FF]/10"
                   />
                   <StatPill
-                     icon={<Swords size={15} className="text-[#a93349]" />}
+                     icon={<User size={15} className="text-[#30D158]" />}
+                     label="Cá nhân"
+                     value={totalIndividuals}
+                     color="text-[#30D158]"
+                     bg="bg-[#30D158]/12"
+                  />
+                  <StatPill
+                     icon={<Swords size={15} className="text-[#FF375F]" />}
                      label="Tổng trận"
                      value={totalMatches}
-                     accent="bg-rose-50 text-[#a93349]"
+                     color="text-[#FF375F]"
+                     bg="bg-[#FF375F]/10"
                   />
                </div>
 
-               {/* ── Leaderboard / Empty ──────────────────────────── */}
+               {/* ── Leaderboard / Empty ── */}
                <div className="px-4 pt-4 pb-2 max-h-[46vh] overflow-y-auto">
                   {!hasMatchData ? (
                      <EmptyMatchState />
@@ -165,17 +147,19 @@ const MatchStatsModal = ({ session, onClose }: MatchStatsModalProps) => {
                         <motion.div
                            initial="hidden"
                            animate="show"
-                           variants={{ show: { transition: { staggerChildren: 0.07 } } }}
-                           className="space-y-2.5"
+                           variants={{ show: { transition: { staggerChildren: 0.06 } } }}
+                           className="space-y-2"
                         >
                            {/* Section label */}
-                           <div className="flex items-center gap-2 px-1 mb-1">
-                              <Trophy size={12} className="text-amber-400" />
-                              <span className="font-sans text-[10px] font-black uppercase tracking-widest text-gray-400">Bảng xếp hạng</span>
+                           <div className="flex items-center gap-2 px-0.5 mb-1">
+                              <Trophy size={12} className="text-[#FF9F0A]" />
+                              <span className="text-[10px] font-semibold uppercase tracking-widest text-black/30 dark:text-white/30">
+                                 Bảng xếp hạng
+                              </span>
                            </div>
 
                            {ranked.map((person, rankIdx) => {
-                              const palette = AVATAR_PALETTES[person.playerIdx % AVATAR_PALETTES.length];
+                              const avatarColor = AVATAR_COLORS[person.playerIdx % AVATAR_COLORS.length];
                               const medal = RANK_MEDALS[rankIdx];
                               const isFriend = person.personIdx > 0;
                               const progress = maxMatches > 0 ? (person.matches / maxMatches) * 100 : 0;
@@ -185,32 +169,25 @@ const MatchStatsModal = ({ session, onClose }: MatchStatsModalProps) => {
                                  <motion.div
                                     key={`${person.playerIdx}-${person.personIdx}`}
                                     variants={{
-                                       hidden: { opacity: 0, y: 10, scale: 0.97 },
-                                       show: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 130, damping: 18 } },
+                                       hidden: { opacity: 0, y: 8, scale: 0.97 },
+                                       show: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 140, damping: 18 } },
                                     }}
-                                    className={`relative flex items-center gap-3 rounded-2xl px-3.5 py-3 overflow-hidden ${
-                                       isTop
-                                          ? "bg-linear-to-r from-amber-50 to-yellow-50 border border-amber-200/60 shadow-sm shadow-amber-100"
-                                          : "bg-white border border-gray-100 shadow-xs"
+                                    className={`flex items-center gap-3 rounded-[16px] px-3.5 py-3 ${
+                                       isTop ? "bg-[#FF9F0A]/08 border border-[#FF9F0A]/18" : "bg-black/[0.02] dark:bg-white/[0.02]"
                                     }`}
                                  >
-                                    {/* Subtle top-rank glow */}
-                                    {isTop && (
-                                       <div className="absolute inset-0 bg-linear-to-r from-amber-100/30 to-transparent pointer-events-none" />
-                                    )}
-
                                     {/* Rank number / medal */}
                                     <div className="w-6 text-center shrink-0">
                                        {medal && person.matches > 0 ? (
                                           <span className="text-base leading-none">{medal}</span>
                                        ) : (
-                                          <span className="font-sans text-[11px] font-black text-gray-300">#{rankIdx + 1}</span>
+                                          <span className="text-[11px] font-bold text-black/22 dark:text-white/22">#{rankIdx + 1}</span>
                                        )}
                                     </div>
 
-                                    {/* Gradient avatar */}
+                                    {/* Avatar */}
                                     <div
-                                       className={`w-9 h-9 rounded-2xl bg-linear-to-br ${palette.bg} flex items-center justify-center font-sans text-sm font-black text-white shrink-0 shadow-sm ring-2 ring-white`}
+                                       className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${avatarColor}`}
                                     >
                                        {person.displayName.charAt(0).toUpperCase()}
                                     </div>
@@ -220,40 +197,36 @@ const MatchStatsModal = ({ session, onClose }: MatchStatsModalProps) => {
                                        <div className="flex items-start justify-between gap-1 mb-1.5">
                                           <div className="min-w-0">
                                              <p
-                                                className={`font-sans text-[13px] font-black truncate leading-tight ${isTop ? "text-amber-800" : "text-gray-800"}`}
+                                                className={`text-[13px] font-bold truncate leading-tight ${isTop ? "text-[#FF9F0A]" : "text-black dark:text-white"}`}
                                              >
                                                 {person.displayName}
                                              </p>
                                              <div className="flex items-center gap-1 mt-0.5">
                                                 {isFriend && (
-                                                   <span className="font-sans text-[9px] font-bold text-gray-300 uppercase tracking-wide">
+                                                   <span className="text-[9px] font-medium text-black/22 dark:text-white/22 uppercase tracking-wide">
                                                       bạn của ·
                                                    </span>
                                                 )}
                                                 <span
-                                                   className={`font-sans text-[9px] font-black uppercase tracking-wide ${
-                                                      person.gender === "male" ? "text-blue-400" : "text-rose-400"
-                                                   }`}
+                                                   className={`text-[9px] font-bold uppercase tracking-wide ${person.gender === "male" ? "text-[#0A84FF]" : "text-[#FF375F]"}`}
                                                 >
                                                    {person.gender === "male" ? "♂ Nam" : "♀ Nữ"}
                                                 </span>
                                              </div>
                                           </div>
-                                          <span
-                                             className={`font-sans text-sm font-black shrink-0 tabular-nums ${isTop ? "text-amber-600" : "text-[#7b41b4]"}`}
-                                          >
+                                          <span className={`text-sm font-black shrink-0 tabular-nums ${isTop ? "text-[#FF9F0A]" : "text-[#0A84FF]"}`}>
                                              {person.matches}
-                                             <span className="text-[10px] font-bold ml-0.5 opacity-60">tr</span>
+                                             <span className="text-[10px] font-medium ml-0.5 opacity-50">tr</span>
                                           </span>
                                        </div>
 
                                        {/* Progress bar */}
-                                       <div className="h-1 w-full bg-gray-100 rounded-full overflow-hidden">
+                                       <div className="h-1 w-full bg-black/[0.05] dark:bg-white/[0.05] rounded-full overflow-hidden">
                                           <motion.div
-                                             className={`h-full rounded-full ${isTop ? "bg-linear-to-r from-amber-400 to-yellow-500" : "bg-linear-to-r from-[#c185fd] to-[#7b41b4]"}`}
+                                             className={`h-full rounded-full ${isTop ? "bg-[#FF9F0A]" : "bg-[#0A84FF]"}`}
                                              initial={{ width: 0 }}
                                              animate={{ width: `${progress}%` }}
-                                             transition={{ type: "spring", stiffness: 60, damping: 14, delay: 0.1 + rankIdx * 0.04 }}
+                                             transition={{ type: "spring", stiffness: 70, damping: 14, delay: 0.1 + rankIdx * 0.04 }}
                                           />
                                        </div>
                                     </div>
@@ -265,11 +238,11 @@ const MatchStatsModal = ({ session, onClose }: MatchStatsModalProps) => {
                   )}
                </div>
 
-               {/* ── Footer ───────────────────────────────────────── */}
-               <div className="px-4 py-4">
+               {/* ── Footer ── */}
+               <div className="px-4 py-4 pt-2">
                   <button
                      onClick={onClose}
-                     className="w-full h-12 rounded-2xl bg-linear-to-r from-[#c185fd] to-[#7b41b4] text-white font-sans text-sm font-black shadow-md shadow-purple-200 hover:opacity-90 active:scale-[0.98] transition-all cursor-pointer"
+                     className="w-full h-12 rounded-[14px] bg-[#0A84FF] text-white text-sm font-bold hover:bg-[#0070E0] active:scale-[0.98] transition-all cursor-pointer border-none"
                   >
                      Đóng
                   </button>

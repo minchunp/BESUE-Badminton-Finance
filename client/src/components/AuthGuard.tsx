@@ -17,9 +17,7 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
                <div className="absolute inset-0 rounded-full border-4 border-[#BAE6FD]/30" />
                <div className="absolute inset-0 rounded-full border-4 border-[#C084FC] border-t-transparent animate-spin" />
             </div>
-            <p className="font-sans text-xs font-bold text-gray-400 mt-4 tracking-widest uppercase">
-               Đang kết nối...
-            </p>
+            <p className="font-sans text-xs font-bold text-gray-400 mt-4 tracking-widest uppercase">Đang kết nối...</p>
          </div>
       );
    }

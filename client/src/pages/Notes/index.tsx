@@ -68,11 +68,7 @@ const NotesPage = () => {
          />
 
          {/* Confirm Delete Modal */}
-         <DeleteConfirmModal
-            isOpen={isDeleteModalOpen}
-            onCancel={() => setIsDeleteModalOpen(false)}
-            onConfirm={confirmDeleteNote}
-         />
+         <DeleteConfirmModal isOpen={isDeleteModalOpen} onCancel={() => setIsDeleteModalOpen(false)} onConfirm={confirmDeleteNote} />
       </div>
    );
 };

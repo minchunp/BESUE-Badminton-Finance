@@ -2,87 +2,260 @@
 @variant dark (&:where(.dark, .dark *));
 
 /* ================================================================
-   1. Theme System (Light & Dark variables)
+   BESUE Badminton Finance — Apple Fitness Design System
+   Inspired by Apple Fitness app — clean, bold, no decorative shadows
+   ================================================================ */
+
+/* ================================================================
+   1. Design Tokens
    ================================================================ */
 :root {
-   --bg-primary: #fdfcfe;
-   --bg-card: rgba(255, 255, 255, 0.7);
-   --border-card: rgba(255, 255, 255, 0.4);
-   --text-primary: #1a1c1c;
-   --text-secondary: #6b7280;
-   --text-heading: #111827;
-   --bg-header: rgba(255, 255, 255, 0.7);
-   --bg-input: rgba(249, 250, 251, 0.5);
-   --border-input: #f3f4f6;
-   --bg-mesh-glow:
-      radial-gradient(at 0% 0%, hsla(280, 100%, 74%, 0.15) 0, transparent 50%),
-      radial-gradient(at 100% 0%, hsla(330, 100%, 71%, 0.15) 0, transparent 50%);
+   /* ── System Backgrounds (Apple Fitness light) ── */
+   --bg-system: #f2f2f7; /* Apple systemGroupedBackground */
+   --bg-card: #ffffff; /* Apple secondarySystemGroupedBackground */
+   --bg-card-hover: #f9f9f9;
+   --bg-secondary: #f2f2f7; /* Inner nested card */
+   --bg-header: rgba(242, 242, 247, 0.92);
+   --bg-input: #ffffff;
+
+   /* ── Borders (NO box-shadow, use subtle border only) ── */
+   --border-card: rgba(60, 60, 67, 0.1); /* Very subtle separator */
+   --border-input: rgba(60, 60, 67, 0.18);
+   --border-divider: rgba(60, 60, 67, 0.06);
+
+   /* ── Typography ── */
+   --text-primary: #000000;
+   --text-secondary: rgba(60, 60, 67, 0.6);
+   --text-tertiary: rgba(60, 60, 67, 0.35);
+   --text-heading: #000000;
+   --text-placeholder: rgba(60, 60, 67, 0.28);
+
+   /* ── Tint: Apple systemBlue (Fitness accent) ── */
+   --tint-primary: #0a84ff; /* Apple systemBlue — main accent */
+   --tint-soft: #5ac8fa; /* Apple systemTeal — softer variant */
+   --tint-bg: rgba(10, 132, 255, 0.1);
+   --tint-border: rgba(10, 132, 255, 0.2);
+
+   /* ── Functional / Financial Colors (Apple Fitness ring style) ── */
+   --color-income: #30d158; /* Apple systemGreen — Activity ring (Exercise) */
+   --color-expense: #ff375f; /* Apple systemPink  — Activity ring (Move)     */
+   --color-pending: #ff9f0a; /* Apple systemOrange — Stand                   */
+   --color-info: #0a84ff; /* Apple systemBlue  — Info                     */
+
+   /* Pastel fills (for status chips) */
+   --color-income-bg: rgba(48, 209, 88, 0.12);
+   --color-expense-bg: rgba(255, 55, 95, 0.1);
+   --color-pending-bg: rgba(255, 159, 10, 0.12);
+   --color-info-bg: rgba(10, 132, 255, 0.1);
+
+   /* ── Corner Radius ── */
+   --radius-card: 20px; /* Cards, list rows */
+   --radius-sheet: 28px; /* Modals, drawers */
+   --radius-btn: 14px; /* Buttons */
+   --radius-chip: 8px; /* Status badges */
+   --radius-input: 12px; /* Form inputs */
+
+   /* ── NO decorative card shadows in Apple Fitness style ── */
+   /* Only use for Modal/Sheet elevation */
+   --shadow-sheet: 0 20px 60px rgba(0, 0, 0, 0.15);
+   --shadow-fab: 0 4px 16px rgba(0, 0, 0, 0.15);
+
+   /* ── Transitions ── */
+   --transition-fast: 0.15s ease;
+   --transition-base: 0.25s ease;
 }
 
+/* ── Dark Mode Tokens (Apple Fitness dark palette) ── */
 .dark {
-   --bg-primary: #09090b; /* zinc-950 */
-   --bg-card: rgba(24, 24, 27, 0.85); /* zinc-900 */
-   --border-card: rgba(63, 63, 70, 0.35); /* zinc-700 */
-   --text-primary: #e4e4e7; /* zinc-200 */
-   --text-secondary: #a1a1aa; /* zinc-400 */
+   --bg-system: #000000; /* Pure black — Apple Fitness dark */
+   --bg-card: #1c1c1e; /* Elevated surface */
+   --bg-card-hover: #2c2c2e;
+   --bg-secondary: #2c2c2e; /* Double elevated */
+   --bg-header: rgba(0, 0, 0, 0.9);
+   --bg-input: #2c2c2e;
+
+   --border-card: rgba(255, 255, 255, 0.08);
+   --border-input: rgba(255, 255, 255, 0.14);
+   --border-divider: rgba(255, 255, 255, 0.05);
+
+   --text-primary: #ffffff;
+   --text-secondary: rgba(235, 235, 245, 0.6);
+   --text-tertiary: rgba(235, 235, 245, 0.3);
    --text-heading: #ffffff;
-   --bg-header: rgba(9, 9, 11, 0.8); /* zinc-950 */
-   --bg-input: rgba(39, 39, 42, 0.6); /* zinc-800 */
-   --border-input: #27272a;
-   --bg-mesh-glow:
-      radial-gradient(at 0% 0%, hsla(280, 100%, 65%, 0.08) 0, transparent 50%),
-      radial-gradient(at 100% 0%, hsla(330, 100%, 65%, 0.08) 0, transparent 50%);
+   --text-placeholder: rgba(235, 235, 245, 0.25);
+
+   --tint-primary: #0a84ff;
+   --tint-soft: #64d2ff;
+   --tint-bg: rgba(10, 132, 255, 0.15);
+   --tint-border: rgba(10, 132, 255, 0.25);
+
+   --color-income: #30d158;
+   --color-expense: #ff375f;
+   --color-pending: #ff9f0a;
+   --color-info: #0a84ff;
+
+   --color-income-bg: rgba(48, 209, 88, 0.15);
+   --color-expense-bg: rgba(255, 55, 95, 0.12);
+   --color-pending-bg: rgba(255, 159, 10, 0.14);
+   --color-info-bg: rgba(10, 132, 255, 0.14);
+
+   --shadow-sheet: 0 20px 60px rgba(0, 0, 0, 0.5);
+   --shadow-fab: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 /* ================================================================
-   2. Core HTML & Global Overrides
+   2. Global Reset & Body
    ================================================================ */
-body {
-   background-color: var(--bg-primary);
-   color: var(--text-primary);
-   transition:
-      background-color 0.3s ease,
-      color 0.3s ease;
+*,
+*::before,
+*::after {
+   box-sizing: border-box;
 }
 
+body {
+   background-color: var(--bg-system);
+   color: var(--text-primary);
+   -webkit-font-smoothing: antialiased;
+   -moz-osx-font-smoothing: grayscale;
+   transition:
+      background-color var(--transition-base),
+      color var(--transition-base);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+   color: var(--text-heading);
+   transition: color var(--transition-base);
+}
+
+/* ================================================================
+   3. Utility Classes — Apple Fitness Design System
+   ================================================================ */
 @layer utilities {
-   .bg-mesh-0 {
-      background-color: var(--bg-primary);
-      background-image: var(--bg-mesh-glow);
-      transition: background-color 0.3s ease;
+   /* ── System Background ── */
+   .bg-system {
+      background-color: var(--bg-system);
+      transition: background-color var(--transition-base);
    }
 
-   .bg-mesh-1 {
-      background-color: var(--bg-primary);
-      background-image: var(--bg-mesh-glow);
-      transition: background-color 0.3s ease;
-   }
-
-   .bg-mesh-2 {
-      background-color: var(--bg-primary);
-      background-image: var(--bg-mesh-glow);
-      transition: background-color 0.3s ease;
-   }
-
-   .glass-card {
-      background: var(--bg-card) !important;
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border: 1px solid var(--border-card) !important;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04) !important;
+   /* ── Apple Fitness Card — NO shadow, border only ── */
+   .fitness-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-card);
       transition:
-         background 0.3s ease,
-         border 0.3s ease,
-         box-shadow 0.3s ease;
+         background-color var(--transition-base),
+         border-color var(--transition-base);
    }
 
+   /* ── Legacy aliases: glass-card → fitness-card tokens ── */
+   .glass-card,
+   .apple-card {
+      background-color: var(--bg-card) !important;
+      border: 1px solid var(--border-card) !important;
+      box-shadow: none !important;
+      transition:
+         background-color var(--transition-base),
+         border-color var(--transition-base);
+   }
+
+   /* ── bg-mesh-* aliases (no more gradients) ── */
+   .bg-mesh-0,
+   .bg-mesh-1,
+   .bg-mesh-2 {
+      background-color: var(--bg-system);
+      transition: background-color var(--transition-base);
+   }
+
+   /* ── Primary Action Button (Apple Fitness blue) ── */
+   .btn-tint {
+      background-color: var(--tint-primary);
+      color: #ffffff;
+      border-radius: var(--radius-btn);
+      transition:
+         background-color var(--transition-fast),
+         transform var(--transition-fast);
+   }
+   .btn-tint:hover {
+      background-color: color-mix(in srgb, var(--tint-primary) 88%, #000);
+   }
+   .btn-tint:active {
+      transform: scale(0.97);
+   }
+
+   /* ── Financial Status Chips — Pill style ── */
+   .chip-income {
+      background-color: var(--color-income-bg);
+      color: var(--color-income);
+      border-radius: 100px;
+      font-weight: 600;
+   }
+   .chip-expense {
+      background-color: var(--color-expense-bg);
+      color: var(--color-expense);
+      border-radius: 100px;
+      font-weight: 600;
+   }
+   .chip-pending {
+      background-color: var(--color-pending-bg);
+      color: var(--color-pending);
+      border-radius: 100px;
+      font-weight: 600;
+   }
+   .chip-info {
+      background-color: var(--color-info-bg);
+      color: var(--color-info);
+      border-radius: 100px;
+      font-weight: 600;
+   }
+
+   .badge-tint {
+      background-color: var(--tint-bg);
+      color: var(--tint-primary);
+      border-radius: 100px;
+      font-weight: 600;
+   }
+
+   /* ── Scrollbar Hide ── */
    .hide-scrollbar {
       -ms-overflow-style: none;
       scrollbar-width: none;
    }
-
    .hide-scrollbar::-webkit-scrollbar {
       display: none;
+   }
+
+   /* ── Micro-animations ── */
+   @keyframes apple-fade-in {
+      from {
+         opacity: 0;
+         transform: translateY(8px);
+      }
+      to {
+         opacity: 1;
+         transform: translateY(0);
+      }
+   }
+   .animate-apple-fade-in {
+      animation: apple-fade-in 0.3s ease forwards;
+   }
+
+   @keyframes apple-scale-in {
+      from {
+         opacity: 0;
+         transform: scale(0.95);
+      }
+      to {
+         opacity: 1;
+         transform: scale(1);
+      }
+   }
+   .animate-apple-scale-in {
+      animation: apple-scale-in 0.2s ease forwards;
    }
 
    @keyframes float {
@@ -91,35 +264,57 @@ body {
          transform: translateY(0);
       }
       50% {
-         transform: translateY(-10px);
+         transform: translateY(-8px);
       }
    }
    .animate-float {
-      animation: float 6s ease-in-out infinite;
+      animation: float 5s ease-in-out infinite;
    }
 
-   @keyframes shine {
+   @keyframes ring-pulse {
+      0%,
       100% {
-         left: 200%;
+         opacity: 1;
+      }
+      50% {
+         opacity: 0.6;
       }
    }
-   .animate-shine {
-      animation: shine 1.5s ease-in-out infinite;
+   .animate-ring-pulse {
+      animation: ring-pulse 2s ease-in-out infinite;
+   }
+
+   /* ── Apple press interaction ── */
+   .apple-interactive {
+      transition:
+         transform var(--transition-fast),
+         opacity var(--transition-fast);
+   }
+   .apple-interactive:hover {
+      opacity: 0.85;
+   }
+   .apple-interactive:active {
+      transform: scale(0.97);
+      opacity: 0.7;
    }
 }
 
 /* ================================================================
-   3. Centralized Dark Mode Elements Overrides (Giao diện êm dịu, không chói)
+   4. Dark Mode — Global HTML Element Overrides
    ================================================================ */
+
 .dark body {
-   background-color: #09090b !important;
+   background-color: #000000 !important;
 }
 
+/* Layout containers */
 .dark .bg-\[\#FDFCFE\],
 .dark .bg-white,
-.dark .bg-\[\#F9F9F9\] {
-   background-color: #18181b !important; /* zinc-900 */
-   transition: background-color 0.3s ease;
+.dark .bg-\[\#F9F9F9\],
+.dark .bg-\[\#f8f7fb\],
+.dark .bg-\[\#f6f4fa\] {
+   background-color: #1c1c1e !important;
+   transition: background-color var(--transition-base);
 }
 
 .dark .bg-white\/90,
@@ -129,18 +324,19 @@ body {
 .dark .bg-white\/45,
 .dark .bg-white\/40,
 .dark .bg-white\/30 {
-   background-color: rgba(24, 24, 27, 0.85) !important; /* zinc-900 translucent */
-   border-color: rgba(63, 63, 70, 0.3) !important;
-   transition:
-      background-color 0.3s ease,
-      border-color 0.3s ease;
+   background-color: rgba(28, 28, 30, 0.95) !important;
+   border-color: rgba(255, 255, 255, 0.07) !important;
 }
 
+/* Header */
 .dark header {
-   background-color: rgba(24, 24, 27, 0.8) !important; /* zinc-900 with glass */
-   border-bottom: 1px solid rgba(63, 63, 70, 0.3) !important;
+   background-color: rgba(0, 0, 0, 0.9) !important;
+   border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
+   backdrop-filter: blur(20px) !important;
+   -webkit-backdrop-filter: blur(20px) !important;
 }
 
+/* ── Typography ── */
 .dark .text-gray-900,
 .dark .text-slate-900,
 .dark h1,
@@ -148,39 +344,23 @@ body {
 .dark h3 {
    color: #ffffff !important;
 }
-
 .dark .text-gray-800 {
-   color: #f4f4f5 !important; /* zinc-100 */
+   color: rgba(235, 235, 245, 0.9) !important;
 }
-
 .dark .text-gray-700 {
-   color: #e4e4e7 !important; /* zinc-200 */
+   color: rgba(235, 235, 245, 0.75) !important;
 }
-
 .dark .text-gray-600 {
-   color: #d4d4d8 !important; /* zinc-300 */
+   color: rgba(235, 235, 245, 0.6) !important;
 }
-
 .dark .text-gray-500 {
-   color: #a1a1aa !important; /* zinc-400 */
+   color: rgba(235, 235, 245, 0.45) !important;
 }
-
 .dark .text-gray-400 {
-   color: #71717a !important; /* zinc-500 */
+   color: rgba(235, 235, 245, 0.3) !important;
 }
 
-/* Ant Design components override in Dark Mode */
-.dark .ant-layout {
-   background-color: #09090b !important;
-}
-
-.dark .ant-avatar-group .ant-avatar,
-.dark .ant-avatar {
-   border-color: #18181b !important;
-   background-color: #27272a !important;
-   color: #dbb8ff !important;
-}
-
+/* ── Borders ── */
 .dark .border-gray-100,
 .dark .border-gray-50,
 .dark .border-gray-200,
@@ -195,37 +375,140 @@ body {
 .dark .border-emerald-100,
 .dark .border-blue-100\/50,
 .dark .border-blue-100 {
-   border-color: rgba(63, 63, 70, 0.3) !important;
+   border-color: rgba(255, 255, 255, 0.07) !important;
+}
+.dark .divide-gray-100 > :not([hidden]) ~ :not([hidden]) {
+   border-color: rgba(255, 255, 255, 0.05) !important;
 }
 
+/* ── Gray fills → Apple dark fills ── */
 .dark .bg-gray-50,
 .dark .bg-gray-50\/50,
 .dark .bg-gray-50\/80,
 .dark .bg-gray-100,
-.dark .bg-gray-100\/80,
-.dark .bg-gray-150\/50 {
-   background-color: #27272a !important; /* zinc-800 */
+.dark .bg-gray-100\/80 {
+   background-color: #2c2c2e !important;
 }
 
-/* Inputs and Forms styling overrides */
+/* ── Inputs ── */
 .dark input,
 .dark select,
 .dark textarea {
-   background-color: #27272a !important;
-   border-color: #3f3f46 !important;
+   background-color: #2c2c2e !important;
+   border-color: rgba(255, 255, 255, 0.12) !important;
+   color: #ffffff !important;
+}
+.dark input::placeholder {
+   color: rgba(235, 235, 245, 0.28) !important;
+}
+
+/* ── Remove decorative gradients ── */
+.dark .absolute.top-0.right-0.bg-linear-to-br {
+   display: none !important;
+}
+
+/* ── Old tint/purple interceptors — map to blue ── */
+.dark .text-\[\#5856D6\],
+.dark .text-\[\#5E5CE6\],
+.dark .text-\[\#7b41b4\],
+.dark .text-\[\#6f5092\] {
+   color: #0a84ff !important;
+}
+.dark .text-\[\#1a1c1c\] {
    color: #ffffff !important;
 }
 
-.dark input::placeholder {
-   color: #71717a !important;
+/* Financial text */
+.dark .text-emerald-700,
+.dark .text-emerald-600 {
+   color: var(--color-income) !important;
+}
+.dark .text-blue-700,
+.dark .text-blue-600 {
+   color: var(--color-info) !important;
+}
+.dark .text-indigo-600 {
+   color: #0a84ff !important;
+}
+.dark .text-\[\#a93349\],
+.dark .text-rose-500 {
+   color: var(--color-expense) !important;
+}
+.dark .text-amber-800,
+.dark .text-amber-600,
+.dark .text-amber-500 {
+   color: var(--color-pending) !important;
 }
 
-/* Floating mesh opacity reduction in Dark Mode to be very gentle */
-.dark .absolute.top-0.right-0.bg-linear-to-br {
-   opacity: 0.25 !important;
+/* Color fills — purple/indigo → tint-bg */
+.dark .bg-purple-50,
+.dark .bg-purple-50\/70,
+.dark .bg-purple-100,
+.dark .bg-indigo-50,
+.dark .bg-indigo-100,
+.dark .bg-\[\#efdbff\],
+.dark .bg-\[\#f0dbff\] {
+   background-color: var(--tint-bg) !important;
+   color: var(--tint-primary) !important;
 }
 
-/* Ant Design Modal / Drawer / Popover overrides in Dark Mode */
+/* ── Old indigo bg → blue tint bg ── */
+.dark .bg-\[\#5856D6\]\/10,
+.dark .bg-\[\#5856D6\]\/12,
+.dark .bg-\[\#5E5CE6\]\/15 {
+   background-color: rgba(10, 132, 255, 0.14) !important;
+}
+
+/* Functional fills */
+.dark .bg-emerald-50,
+.dark .bg-emerald-50\/80,
+.dark .bg-emerald-100 {
+   background-color: var(--color-income-bg) !important;
+}
+.dark .bg-blue-50,
+.dark .bg-blue-50\/80,
+.dark .bg-blue-100 {
+   background-color: var(--color-info-bg) !important;
+}
+.dark .bg-amber-50,
+.dark .bg-amber-100,
+.dark .bg-yellow-50 {
+   background-color: var(--color-pending-bg) !important;
+}
+.dark .bg-rose-50,
+.dark .bg-rose-100 {
+   background-color: var(--color-expense-bg) !important;
+}
+
+/* ================================================================
+   5. Ant Design — Dark Mode Component Overrides
+   ================================================================ */
+
+.dark .ant-layout {
+   background-color: #000000 !important;
+}
+
+/* Avatar */
+.dark .ant-avatar-group .ant-avatar,
+.dark .ant-avatar {
+   border-color: #1c1c1e !important;
+   background-color: #2c2c2e !important;
+   color: #0a84ff !important;
+}
+
+/* Buttons */
+.dark .ant-btn {
+   background-color: #2c2c2e !important;
+   border-color: rgba(255, 255, 255, 0.1) !important;
+   color: rgba(235, 235, 245, 0.9) !important;
+   border-radius: var(--radius-btn) !important;
+}
+.dark .ant-btn:hover {
+   background-color: #3a3a3c !important;
+   color: #ffffff !important;
+}
+
+/* Modal & Drawer */
 .dark .ant-modal-content,
 .dark .ant-modal-header,
 .dark .ant-modal-body,
@@ -234,259 +517,450 @@ body {
 .dark .ant-drawer-header,
 .dark .ant-drawer-body,
 .dark .ant-drawer-footer {
-   background-color: #18181b !important;
-   color: #e4e4e7 !important;
-   border-color: rgba(63, 63, 70, 0.3) !important;
+   background-color: #1c1c1e !important;
+   color: rgba(235, 235, 245, 0.9) !important;
+   border-color: rgba(255, 255, 255, 0.07) !important;
+}
+
+.dark .ant-modal-content {
+   border-radius: var(--radius-sheet) !important;
+}
+.dark .ant-drawer-content {
+   border-radius: var(--radius-sheet) var(--radius-sheet) 0 0 !important;
 }
 
 .dark .ant-modal-title,
 .dark .ant-drawer-title {
-   background-color: #18181b !important;
+   background-color: #1c1c1e !important;
    color: #ffffff !important;
 }
 
-.dark .ant-modal-close-icon,
-.dark .ant-drawer-close {
-   color: #a1a1aa !important;
+.dark .ant-modal-mask,
+.dark .ant-drawer-mask {
+   background-color: rgba(0, 0, 0, 0.65) !important;
+   backdrop-filter: blur(8px) !important;
 }
 
-.dark .ant-modal-close-icon:hover,
-.dark .ant-drawer-close:hover {
-   color: #ffffff !important;
-}
-
-.dark .ant-drawer-mask,
-.dark .ant-modal-mask {
-   background-color: rgba(9, 9, 11, 0.6) !important;
-   backdrop-filter: blur(4px) !important;
-}
-
-.dark .ant-btn {
-   background-color: #27272a !important;
-   border-color: rgba(63, 63, 70, 0.4) !important;
-   color: #e4e4e7 !important;
-}
-
-.dark .ant-btn:hover {
-   background-color: #3f3f46 !important;
-   color: #ffffff !important;
-}
-
-/* Tables in Dark Mode */
+/* Tables */
 .dark .ant-table {
-   background: #18181b !important;
-   color: #e4e4e7 !important;
+   background: #1c1c1e !important;
+   color: rgba(235, 235, 245, 0.9) !important;
 }
-
 .dark .ant-table-thead > tr > th {
-   background: #27272a !important;
+   background: #2c2c2e !important;
    color: #ffffff !important;
-   border-bottom: 1px solid #3f3f46 !important;
+   border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
 }
-
 .dark .ant-table-tbody > tr > td {
-   border-bottom: 1px solid #27272a !important;
+   border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
 }
-
 .dark .ant-table-tbody > tr:hover > td {
-   background: #27272a !important;
+   background: #2c2c2e !important;
 }
 
-/* Ant Design Dropdown, Select & DatePicker dark mode overrides */
+/* Select & DatePicker dropdowns */
 .dark .ant-select-dropdown,
 .dark .ant-picker-dropdown,
 .dark .ant-picker-panel-container {
-   background-color: #18181b !important;
+   background-color: #1c1c1e !important;
    color: #ffffff !important;
-   border: 1px solid rgba(63, 63, 70, 0.4) !important;
-   box-shadow:
-      0 10px 25px -5px rgba(0, 0, 0, 0.3),
-      0 8px 10px -6px rgba(0, 0, 0, 0.3) !important;
+   border: 1px solid rgba(255, 255, 255, 0.08) !important;
+   border-radius: 16px !important;
 }
-
 .dark .ant-select-item {
-   color: #d4d4d8 !important; /* zinc-300 */
+   color: rgba(235, 235, 245, 0.85) !important;
 }
-
 .dark .ant-select-item-option-selected {
-   background-color: #27272a !important; /* zinc-800 */
+   background-color: #2c2c2e !important;
    color: #ffffff !important;
-   font-weight: 700 !important;
 }
-
 .dark .ant-select-item-option-active {
-   background-color: #27272a !important;
+   background-color: #2c2c2e !important;
    color: #ffffff !important;
 }
 
+/* dark-select-dropdown — applied via popupClassName in dark mode */
+.dark-select-dropdown {
+   background-color: #1c1c1e !important;
+   border: 1px solid rgba(255, 255, 255, 0.08) !important;
+   border-radius: 12px !important;
+}
+.dark-select-dropdown .ant-select-item {
+   color: rgba(235, 235, 245, 0.85) !important;
+   background-color: transparent !important;
+}
+.dark-select-dropdown .ant-select-item-option-content {
+   color: rgba(235, 235, 245, 0.85) !important;
+}
+.dark-select-dropdown .ant-select-item-option-selected {
+   background-color: rgba(255, 255, 255, 0.08) !important;
+   color: #ffffff !important;
+}
+.dark-select-dropdown .ant-select-item-option-active:not(.ant-select-item-option-selected) {
+   background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* ── Antd Borderless & Dark Mode Text Color Fixes ── */
+.ant-picker.ant-picker-borderless,
+.ant-picker.ant-picker-borderless:hover,
+.ant-picker.ant-picker-borderless-focused,
+.dark .ant-picker.ant-picker-borderless,
+.dark .ant-picker.ant-picker-borderless:hover,
+.dark .ant-picker.ant-picker-borderless-focused {
+   background-color: transparent !important;
+   background: transparent !important;
+}
+
+.ant-select.ant-select-borderless .ant-select-selector,
+.dark .ant-select.ant-select-borderless .ant-select-selector {
+   background-color: transparent !important;
+   background: transparent !important;
+}
+
+.dark .ant-select .ant-select-selection-item {
+   color: #ffffff !important;
+}
+.dark .ant-select-selection-item {
+   color: #ffffff !important;
+}
+/* Ant Design 5 — target selection-item span directly */
+.dark .ant-select-selection-item span,
+.dark .ant-select-selector .ant-select-selection-item {
+   color: #ffffff !important;
+}
+/* Ensure the selector wrapper itself doesn't override text color */
+.dark .ant-select-single .ant-select-selector {
+   color: #ffffff !important;
+}
+.dark .ant-select-arrow {
+   color: rgba(255, 255, 255, 0.45) !important;
+}
+.dark .ant-select-selection-placeholder {
+   color: rgba(255, 255, 255, 0.35) !important;
+}
+/* Force text color on all children inside Select selector in dark mode */
+.dark .ant-select .ant-select-selector * {
+   color: #ffffff !important;
+}
+
+.dark .ant-picker .ant-picker-input > input {
+   color: #ffffff !important;
+}
+.dark .ant-picker-input > input {
+   color: #ffffff !important;
+}
+.ant-picker .ant-picker-input > input {
+   color: inherit !important;
+}
+.dark .ant-picker-suffix {
+   color: rgba(255, 255, 255, 0.45) !important;
+}
+.dark .ant-picker-input > input::placeholder {
+   color: rgba(255, 255, 255, 0.35) !important;
+}
+
+/* DatePicker cells */
 .dark .ant-picker-cell {
-   color: #52525b !important; /* zinc-600 */
+   color: #3a3a3c !important;
 }
-
 .dark .ant-picker-cell-in-view {
-   color: #e4e4e7 !important; /* zinc-200 */
+   color: rgba(235, 235, 245, 0.9) !important;
 }
-
 .dark .ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner {
-   background-color: #7b41b4 !important;
+   background-color: #0a84ff !important;
    color: #ffffff !important;
 }
-
 .dark .ant-picker-ok button {
-   background-color: #7b41b4 !important;
-   border-color: #7b41b4 !important;
+   background-color: #0a84ff !important;
+   border-color: #0a84ff !important;
 }
-
 .dark .ant-picker-ok button:hover {
-   background-color: #6f5092 !important;
+   background-color: color-mix(in srgb, #0a84ff 85%, #000) !important;
 }
-
 .dark .ant-picker-cell-in-view.ant-picker-cell-today .ant-picker-cell-inner::before {
-   border-color: #7b41b4 !important;
+   border-color: #0a84ff !important;
 }
-
 .dark .ant-picker-cell:hover .ant-picker-cell-inner {
-   background-color: #27272a !important;
+   background-color: #2c2c2e !important;
 }
-
 .dark .ant-picker-header button {
-   color: #a1a1aa !important;
+   color: rgba(235, 235, 245, 0.45) !important;
 }
-
 .dark .ant-picker-header button:hover {
    color: #ffffff !important;
 }
-
 .dark .ant-picker-content th {
-   color: #a1a1aa !important;
-}
-
-.dark .ant-picker-time-panel-column > li.ant-picker-time-panel-cell-selected .ant-picker-time-panel-cell-inner {
-   background-color: #27272a !important;
+   color: rgba(235, 235, 245, 0.45) !important;
 }
 
 /* ================================================================
-   4. Hardcoded Color Interceptors for Dark Mode
+   6. Special — Transparent Modal
    ================================================================ */
-.dark .text-\[\#7b41b4\],
-.dark .text-\[\#7b41b4\]\/10 {
-   color: #c084fc !important;
-}
-
-.dark .text-\[\#6f5092\] {
-   color: #dbb8ff !important;
-}
-
-.dark .text-\[\#1a1c1c\] {
-   color: #ffffff !important;
-}
-
-.dark .text-emerald-700,
-.dark .text-emerald-600 {
-   color: #34d399 !important;
-}
-
-.dark .text-blue-700,
-.dark .text-blue-600 {
-   color: #60a5fa !important;
-}
-
-.dark .text-indigo-600 {
-   color: #818cf8 !important;
-}
-
-.dark .text-\[\#a93349\] {
-   color: #f87171 !important;
-}
-
-.dark .text-amber-800,
-.dark .text-amber-600,
-.dark .text-amber-500 {
-   color: #fbe044 !important;
-}
-
-.dark .text-rose-500 {
-   color: #f87171 !important;
-}
-
-.dark .bg-purple-50,
-.dark .bg-purple-50\/70,
-.dark .bg-purple-100,
-.dark .bg-\[\#efdbff\],
-.dark .bg-\[\#f0dbff\],
-.dark .bg-\[\#efdbff\]\/30,
-.dark .bg-\[\#dbb8ff\]\/30,
-.dark .bg-\[\#f0dbff\]\/30 {
-   background-color: rgba(192, 132, 252, 0.15) !important;
-   color: #c084fc !important;
-}
-
-.dark .bg-indigo-50,
-.dark .bg-indigo-100 {
-   background-color: rgba(99, 102, 241, 0.15) !important;
-}
-
-.dark .bg-emerald-50,
-.dark .bg-emerald-50\/80,
-.dark .bg-emerald-100 {
-   background-color: rgba(52, 211, 153, 0.15) !important;
-}
-
-.dark .bg-blue-50,
-.dark .bg-blue-50\/80,
-.dark .bg-blue-100 {
-   background-color: rgba(96, 165, 250, 0.15) !important;
-}
-
-.dark .bg-amber-50,
-.dark .bg-amber-100,
-.dark .bg-yellow-50 {
-   background-color: rgba(245, 158, 11, 0.15) !important;
-}
-
-.dark .bg-rose-50,
-.dark .bg-rose-100 {
-   background-color: rgba(244, 63, 94, 0.15) !important;
-}
-
-/* Outer layout dark colors overrides */
-.dark .bg-\[\#f8f7fb\],
-.dark .bg-\[\#f6f4fa\] {
-   background-color: #09090b !important;
-}
-
-.dark .hover\:bg-purple-50\/30:hover {
-   background-color: rgba(192, 132, 252, 0.1) !important;
-}
-
-.dark .divide-gray-100 > :not([hidden]) ~ :not([hidden]) {
-   border-color: rgba(63, 63, 70, 0.3) !important;
-}
-
-.dark .from-amber-50 {
-   --tw-gradient-from: rgba(245, 158, 11, 0.15) !important;
-}
-
-.dark .to-yellow-50 {
-   --tw-gradient-to: rgba(234, 179, 8, 0.05) !important;
-}
-
-.dark .from-\[\#efdbff\] {
-   --tw-gradient-from: rgba(192, 132, 252, 0.15) !important;
-}
-
-.dark .to-\[\#ddb8ff\] {
-   --tw-gradient-to: rgba(192, 132, 252, 0.05) !important;
-}
-
-.dark .to-\[\#d8b4fe\] {
-   --tw-gradient-to: rgba(192, 132, 252, 0.05) !important;
-}
-
-/* Transparent Modal content overrides */
 .transparent-modal .ant-modal-content {
    background-color: transparent !important;
    box-shadow: none !important;
    padding: 0 !important;
 }
 
+/* ================================================================
+   7. Apple Bottom Sheet Drawer
+   ================================================================ */
+
+/* Wrapper: round top corners */
+.ant-drawer-bottom .ant-drawer-content-wrapper {
+   border-radius: 28px 28px 0 0 !important;
+   overflow: hidden;
+}
+
+.ant-drawer-bottom .ant-drawer-content {
+   border-radius: 28px 28px 0 0 !important;
+   background-color: #ffffff !important;
+}
+
+/* Drag handle */
+.ant-drawer-bottom .ant-drawer-header {
+   position: relative;
+   padding-top: 20px !important;
+   border-bottom: 1px solid rgba(60, 60, 67, 0.06) !important;
+}
+.ant-drawer-bottom .ant-drawer-header::before {
+   content: "";
+   display: block;
+   position: absolute;
+   top: 10px;
+   left: 50%;
+   transform: translateX(-50%);
+   width: 36px;
+   height: 5px;
+   border-radius: 100px;
+   background-color: rgba(60, 60, 67, 0.18);
+}
+
+/* Title */
+.ant-drawer-bottom .ant-drawer-title {
+   font-size: 17px !important;
+   font-weight: 700 !important;
+   text-align: center !important;
+   color: #000000 !important;
+}
+
+/* Safe area */
+.ant-drawer-bottom .ant-drawer-body {
+   padding-bottom: max(16px, env(safe-area-inset-bottom)) !important;
+}
+
+/* Dark Drawer bottom */
+.dark .ant-drawer-bottom .ant-drawer-content {
+   background-color: #1c1c1e !important;
+}
+.dark .ant-drawer-bottom .ant-drawer-header {
+   background-color: #1c1c1e !important;
+   border-bottom-color: rgba(255, 255, 255, 0.05) !important;
+}
+.dark .ant-drawer-bottom .ant-drawer-header::before {
+   background-color: rgba(235, 235, 245, 0.22) !important;
+}
+.dark .ant-drawer-bottom .ant-drawer-title {
+   color: #ffffff !important;
+}
+.dark .ant-drawer-bottom .ant-drawer-body {
+   background-color: #1c1c1e !important;
+}
+.dark .ant-drawer-bottom .ant-drawer-footer {
+   background-color: #1c1c1e !important;
+   border-top-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* ================================================================
+   8. Apple Modal
+   ================================================================ */
+
+/* Light modal */
+.ant-modal-content {
+   border-radius: 28px !important;
+   background-color: #ffffff !important;
+   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12) !important;
+   overflow: hidden;
+}
+.ant-modal-header {
+   border-radius: 28px 28px 0 0 !important;
+   background-color: #ffffff !important;
+   border-bottom: 1px solid rgba(60, 60, 67, 0.06) !important;
+   padding: 20px 24px 16px !important;
+}
+.ant-modal-title {
+   font-size: 17px !important;
+   font-weight: 700 !important;
+   color: #000000 !important;
+}
+.ant-modal-body {
+   padding: 20px 24px !important;
+}
+/* ── Apple Payment Modal — zero out ALL padding/background ── */
+.apple-payment-modal .ant-modal-body,
+.apple-payment-modal.ant-modal .ant-modal-body,
+.ant-modal-root .apple-payment-modal .ant-modal-body,
+.ant-modal-wrap .apple-payment-modal .ant-modal-body,
+.apple-payment-modal-wrap .ant-modal .ant-modal-body,
+.apple-payment-modal-wrap .ant-modal-body,
+.apple-modal-body-inner {
+   padding: 0 !important;
+   background: transparent !important;
+}
+/* Also zero content wrapper padding */
+.apple-payment-modal .ant-modal-content {
+   padding: 0 !important;
+   background-color: transparent !important;
+   box-shadow: none !important;
+   border-radius: 28px !important;
+   overflow: hidden !important;
+}
+.ant-modal-footer {
+   border-top: 1px solid rgba(60, 60, 67, 0.06) !important;
+   background-color: #ffffff !important;
+   padding: 16px 24px !important;
+   border-radius: 0 0 28px 28px !important;
+   display: flex;
+   justify-content: flex-end;
+   gap: 10px;
+}
+.ant-modal-mask {
+   backdrop-filter: blur(10px) !important;
+   -webkit-backdrop-filter: blur(10px) !important;
+   background-color: rgba(0, 0, 0, 0.28) !important;
+}
+.ant-modal-close {
+   width: 28px !important;
+   height: 28px !important;
+   border-radius: 50% !important;
+   background-color: rgba(60, 60, 67, 0.06) !important;
+   top: 16px !important;
+   inset-inline-end: 16px !important;
+}
+.ant-modal-close:hover {
+   background-color: rgba(60, 60, 67, 0.1) !important;
+}
+.ant-modal-close .ant-modal-close-icon {
+   font-size: 12px !important;
+   color: rgba(60, 60, 67, 0.5) !important;
+}
+
+/* Dark modal */
+.dark .ant-modal-content {
+   background-color: #1c1c1e !important;
+   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55) !important;
+}
+.dark .ant-modal-header {
+   background-color: #1c1c1e !important;
+   border-bottom-color: rgba(255, 255, 255, 0.05) !important;
+}
+.dark .ant-modal-title {
+   color: #ffffff !important;
+}
+.dark .ant-modal-body {
+   background-color: #1c1c1e !important;
+   color: rgba(235, 235, 245, 0.9) !important;
+}
+.dark .ant-modal-footer {
+   background-color: #1c1c1e !important;
+   border-top-color: rgba(255, 255, 255, 0.05) !important;
+}
+.dark .ant-modal-mask {
+   background-color: rgba(0, 0, 0, 0.6) !important;
+}
+.dark .ant-modal-close {
+   background-color: rgba(255, 255, 255, 0.06) !important;
+}
+.dark .ant-modal-close:hover {
+   background-color: rgba(255, 255, 255, 0.1) !important;
+}
+.dark .ant-modal-close .ant-modal-close-icon {
+   color: rgba(235, 235, 245, 0.45) !important;
+}
+
+/* ================================================================
+   9. Apple Segmented Control (Tabs & Segmented)
+   ================================================================ */
+
+/* Card-type Tabs */
+.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab,
+.ant-tabs-card > div > .ant-tabs-nav .ant-tabs-tab {
+   border: none !important;
+   background: transparent !important;
+   border-radius: 8px !important;
+   padding: 6px 14px !important;
+   margin: 2px !important;
+   font-size: 13px !important;
+   font-weight: 500 !important;
+   color: rgba(60, 60, 67, 0.55) !important;
+   transition:
+      color var(--transition-fast),
+      background-color var(--transition-fast) !important;
+}
+.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab.ant-tabs-tab-active,
+.ant-tabs-card > div > .ant-tabs-nav .ant-tabs-tab.ant-tabs-tab-active {
+   background-color: #ffffff !important;
+   color: #000000 !important;
+   font-weight: 600 !important;
+   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+}
+.ant-tabs-card > .ant-tabs-nav,
+.ant-tabs-card > div > .ant-tabs-nav {
+   background-color: #e5e5ea !important;
+   border-radius: 10px !important;
+   padding: 2px !important;
+   border-bottom: none !important;
+}
+.ant-tabs-ink-bar {
+   display: none !important;
+}
+.ant-tabs-top > .ant-tabs-nav::before,
+.ant-tabs-top > div > .ant-tabs-nav::before {
+   border-bottom-color: transparent !important;
+}
+
+/* Dark Tabs */
+.dark .ant-tabs-card > .ant-tabs-nav,
+.dark .ant-tabs-card > div > .ant-tabs-nav {
+   background-color: #2c2c2e !important;
+}
+.dark .ant-tabs-card > .ant-tabs-nav .ant-tabs-tab,
+.dark .ant-tabs-card > div > .ant-tabs-nav .ant-tabs-tab {
+   color: rgba(235, 235, 245, 0.45) !important;
+}
+.dark .ant-tabs-card > .ant-tabs-nav .ant-tabs-tab.ant-tabs-tab-active,
+.dark .ant-tabs-card > div > .ant-tabs-nav .ant-tabs-tab.ant-tabs-tab-active {
+   background-color: #3a3a3c !important;
+   color: #ffffff !important;
+   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Segmented */
+.ant-segmented {
+   background-color: #e5e5ea !important;
+   border-radius: 10px !important;
+   padding: 2px !important;
+}
+.ant-segmented-item {
+   border-radius: 8px !important;
+   font-size: 13px !important;
+   font-weight: 500 !important;
+   color: rgba(60, 60, 67, 0.55) !important;
+}
+.ant-segmented-item-selected {
+   background-color: #ffffff !important;
+   color: #000000 !important;
+   font-weight: 600 !important;
+   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+}
+.dark .ant-segmented {
+   background-color: #2c2c2e !important;
+}
+.dark .ant-segmented-item {
+   color: rgba(235, 235, 245, 0.45) !important;
+}
+.dark .ant-segmented-item-selected {
+   background-color: #3a3a3c !important;
+   color: #ffffff !important;
+   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+}

@@ -24,12 +24,7 @@ export const authApi = {
     * POST /api/auth/register
     * Đăng ký tài khoản người dùng mới
     */
-   register: async (data: {
-      username: string;
-      email: string;
-      password?: string;
-      fullName: string;
-   }): Promise<ApiResponse<AuthResponseData>> => {
+   register: async (data: { username: string; email: string; password?: string; fullName: string }): Promise<ApiResponse<AuthResponseData>> => {
       const response = await axiosInstance.post<ApiResponse<AuthResponseData>>("/auth/register", data);
       return response.data;
    },
@@ -38,10 +33,7 @@ export const authApi = {
     * POST /api/auth/login
     * Đăng nhập người dùng bằng email/username và mật khẩu
     */
-   login: async (data: {
-      emailOrUsername: string;
-      password?: string;
-   }): Promise<ApiResponse<AuthResponseData>> => {
+   login: async (data: { emailOrUsername: string; password?: string }): Promise<ApiResponse<AuthResponseData>> => {
       const response = await axiosInstance.post<ApiResponse<AuthResponseData>>("/auth/login", data);
       return response.data;
    },

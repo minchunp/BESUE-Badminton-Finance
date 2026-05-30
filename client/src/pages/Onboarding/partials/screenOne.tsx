@@ -16,29 +16,28 @@ const ScreenOne = ({ onNextPage }: { onNextPage: () => void }) => {
          <div className="flex-1"></div>
 
          <div className="w-full flex justify-center items-center relative h-64 mb-8 animate-float">
-            <div className="absolute w-48 h-48 bg-[#d8b4fe] rounded-full blur-3xl opacity-40 animate-pulse"></div>
             <img
                src={onboarding_img1}
                alt="Cầu lông"
-               className="w-full h-full object-contain relative z-10 drop-shadow-[0_16px_32px_rgba(216,180,254,0.3)] rounded-xl!"
+               className="w-full h-full object-contain relative z-10 drop-shadow-[0_16px_32px_rgba(88, 86, 214, 0.18)] rounded-xl!"
             />
          </div>
 
-         <div className="glass-card rounded-2xl p-6 w-full">
+         <div className="bg-white dark:bg-[#1C1C1E] rounded-[24px] p-6 w-full border border-black/[0.05] dark:border-white/[0.06] shadow-sm">
             <div className="text-center mb-8">
-               <h1 className="text-[28px] leading-9 font-bold text-[#1a1c1c] mb-2 tracking-tight">Chào mừng đến BESUE</h1>
-               <p className="text-base text-[#4a454f]">Quản lý tài chính cầu lông vãng lai một cách thông minh và dễ dàng</p>
+               <h1 className="text-[28px] leading-9 font-bold text-black dark:text-white mb-2 tracking-tight">Chào mừng đến BESUE</h1>
+               <p className="text-base text-black/55 dark:text-white/55">Quản lý tài chính cầu lông vãng lai một cách thông minh và dễ dàng</p>
             </div>
 
             <div className="flex justify-center items-center gap-2 mb-8">
-               <div className="h-2 w-8 rounded-full bg-linear-to-r from-[#6f5092] to-[#c185fd] transition-all duration-300"></div>
-               <div className="h-2 w-2 rounded-full bg-[#cdc3d0]/40 transition-all duration-300"></div>
-               <div className="h-2 w-2 rounded-full bg-[#cdc3d0]/40 transition-all duration-300"></div>
+               <div className="h-2 w-8 rounded-full bg-[#0A84FF] transition-all duration-300"></div>
+               <div className="h-2 w-2 rounded-full bg-black/[0.12] dark:bg-white/[0.12] transition-all duration-300"></div>
+               <div className="h-2 w-2 rounded-full bg-black/[0.12] dark:bg-white/[0.12] transition-all duration-300"></div>
             </div>
 
             <button
                onClick={onNextPage}
-               className="w-full h-14 bg-linear-to-r from-[#6f5092] to-[#c185fd] text-white font-semibold text-[14px] rounded-full shadow-[0_8px_24px_rgba(111,80,146,0.3)] hover:shadow-[0_12px_32px_rgba(111,80,146,0.4)] active:scale-95 transition-all duration-300 flex items-center justify-center gap-2 relative overflow-hidden group"
+               className="w-full h-14 bg-[#0A84FF] text-white font-semibold text-[14px] rounded-2xl shadow-[0_4px_16px_rgba(88, 86, 214, 0.28)] active:scale-95 transition-all duration-300 flex items-center justify-center gap-2"
             >
                <span>Tiếp theo</span>
                <ArrowRight size={18} className="ml-1" />

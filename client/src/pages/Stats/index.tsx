@@ -43,7 +43,7 @@ const StatsPage = () => {
    const isEmpty = !isOverviewLoading && (overview?.sessionCount ?? 0) === 0;
 
    return (
-      <ConfigProvider theme={{ token: { colorPrimary: "#7b41b4", borderRadius: 16 } }}>
+      <ConfigProvider theme={{ token: { colorPrimary: "#0A84FF", borderRadius: 14 } }}>
          <motion.div variants={pageVariants} initial="hidden" animate="show" className="flex flex-col gap-5 pb-10 select-none font-sans">
             {/* Header + Period Selector */}
             <StatsHeader
