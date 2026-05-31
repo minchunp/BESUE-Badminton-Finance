@@ -1,4 +1,5 @@
 import axiosInstance from "../axios";
+import type { ApiResponse } from "../types";
 
 export interface IPersonPayment {
    isPaid: boolean;
@@ -49,12 +50,6 @@ export interface ISession {
       shuttleCost: number;
       profit: number;
    };
-}
-
-interface ApiResponse<T> {
-   success: boolean;
-   message?: string;
-   data: T;
 }
 
 export const sessionApi = {

@@ -1,15 +1,6 @@
 import axiosInstance from "../axios";
+import type { ApiResponse } from "../types";
 import type { StatsOverview, RevenueTrendPoint, CostBreakdown, SessionRow } from "../../pages/Stats/types";
-
-// ================================================================
-// Shared API Response wrapper
-// ================================================================
-
-interface ApiResponse<T> {
-   success: boolean;
-   message?: string;
-   data: T;
-}
 
 // ================================================================
 // Stats API Service

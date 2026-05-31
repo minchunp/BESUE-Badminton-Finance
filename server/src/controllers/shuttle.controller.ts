@@ -1,6 +1,14 @@
 import type { Request, Response } from "express";
 import Shuttle from "../models/shuttle.js";
 
+// ================================================================
+// Helper: extract error message safely (no `any`)
+// ================================================================
+const getErrorMessage = (error: unknown): string => {
+   if (error instanceof Error) return error.message;
+   return String(error);
+};
+
 // GET /api/shuttles (Lấy danh sách quả cầu)
 export const getShuttles = async (req: Request, res: Response): Promise<void> => {
    try {
@@ -10,11 +18,10 @@ export const getShuttles = async (req: Request, res: Response): Promise<void> =>
          message: "Retrieved the shuttle list successfully!",
          data: shuttles,
       });
-   } catch (error: any) {
+   } catch (error) {
       res.status(500).json({
          success: false,
-         message: "Error retrieving the shuttle list: " + error.message,
-         error,
+         message: "Error retrieving the shuttle list: " + getErrorMessage(error),
       });
    }
 };
@@ -38,11 +45,10 @@ export const getShuttleById = async (req: Request, res: Response): Promise<void>
          message: "Retrieved shuttle details successfully!",
          data: shuttle,
       });
-   } catch (error: any) {
+   } catch (error) {
       res.status(500).json({
          success: false,
-         message: "Error retrieving shuttle details: " + error.message,
-         error,
+         message: "Error retrieving shuttle details: " + getErrorMessage(error),
       });
    }
 };
@@ -50,7 +56,11 @@ export const getShuttleById = async (req: Request, res: Response): Promise<void>
 // POST /api/shuttles (Tạo loại quả cầu mới)
 export const createShuttle = async (req: Request, res: Response): Promise<void> => {
    try {
-      const { name, pricePerTube, quantityPerTube } = req.body;
+      const { name, pricePerTube, quantityPerTube } = req.body as {
+         name: string;
+         pricePerTube: number;
+         quantityPerTube?: number;
+      };
 
       if (!name || pricePerTube === undefined) {
          res.status(400).json({
@@ -74,11 +84,10 @@ export const createShuttle = async (req: Request, res: Response): Promise<void> 
          message: "Successful creation of shuttle type!",
          data: newShuttle,
       });
-   } catch (error: any) {
+   } catch (error) {
       res.status(500).json({
          success: false,
-         message: "Error while creating shuttle: " + error.message,
-         error,
+         message: "Error while creating shuttle: " + getErrorMessage(error),
       });
    }
 };
@@ -87,7 +96,11 @@ export const createShuttle = async (req: Request, res: Response): Promise<void> 
 export const updateShuttle = async (req: Request, res: Response): Promise<void> => {
    try {
       const { id } = req.params;
-      const { name, pricePerTube, quantityPerTube } = req.body;
+      const { name, pricePerTube, quantityPerTube } = req.body as {
+         name?: string;
+         pricePerTube?: number;
+         quantityPerTube?: number;
+      };
 
       const shuttle = await Shuttle.findById(id);
 
@@ -112,11 +125,10 @@ export const updateShuttle = async (req: Request, res: Response): Promise<void> 
          message: "The shuttle was updated successfully!",
          data: shuttle,
       });
-   } catch (error: any) {
+   } catch (error) {
       res.status(500).json({
          success: false,
-         message: "Error while updating shuttle: " + error.message,
-         error,
+         message: "Error while updating shuttle: " + getErrorMessage(error),
       });
    }
 };
@@ -140,11 +152,10 @@ export const deleteShuttle = async (req: Request, res: Response): Promise<void> 
          message: "The shuttle was deleted successfully!",
          data: deletedShuttle,
       });
-   } catch (error: any) {
+   } catch (error) {
       res.status(500).json({
          success: false,
-         message: "Error while deleting shuttle: " + error.message,
-         error,
+         message: "Error while deleting shuttle: " + getErrorMessage(error),
       });
    }
 };

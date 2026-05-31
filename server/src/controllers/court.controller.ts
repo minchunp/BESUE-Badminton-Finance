@@ -1,6 +1,14 @@
 import type { Request, Response } from "express";
 import Court from "../models/court.js";
 
+// ================================================================
+// Helper: extract error message safely (no `any`)
+// ================================================================
+const getErrorMessage = (error: unknown): string => {
+   if (error instanceof Error) return error.message;
+   return String(error);
+};
+
 // GET /api/courts (Lấy danh sách sân)
 export const getCourts = async (req: Request, res: Response): Promise<void> => {
    try {
@@ -10,11 +18,10 @@ export const getCourts = async (req: Request, res: Response): Promise<void> => {
          message: "Retrieved the court list successfully!",
          data: courts,
       });
-   } catch (error: any) {
+   } catch (error) {
       res.status(500).json({
          success: false,
-         message: "Error retrieving the court list: " + error.message,
-         error,
+         message: "Error retrieving the court list: " + getErrorMessage(error),
       });
    }
 };
@@ -38,11 +45,10 @@ export const getCourtById = async (req: Request, res: Response): Promise<void> =
          message: "Retrieved court details successfully!",
          data: court,
       });
-   } catch (error: any) {
+   } catch (error) {
       res.status(500).json({
          success: false,
-         message: "Error retrieving court details: " + error.message,
-         error,
+         message: "Error retrieving court details: " + getErrorMessage(error),
       });
    }
 };
@@ -50,7 +56,12 @@ export const getCourtById = async (req: Request, res: Response): Promise<void> =
 // POST /api/courts (Tạo sân mới)
 export const createCourt = async (req: Request, res: Response): Promise<void> => {
    try {
-      const { name, address, timeSlots, description } = req.body;
+      const { name, address, timeSlots, description } = req.body as {
+         name: string;
+         address?: string;
+         timeSlots?: unknown[];
+         description?: string;
+      };
 
       if (!name) {
          res.status(400).json({
@@ -63,7 +74,7 @@ export const createCourt = async (req: Request, res: Response): Promise<void> =>
       const newCourt = new Court({
          name,
          address,
-         timeSlots: timeSlots || [],
+         timeSlots: timeSlots ?? [],
          description,
       });
 
@@ -74,11 +85,10 @@ export const createCourt = async (req: Request, res: Response): Promise<void> =>
          message: "The court was set up successfully!",
          data: newCourt,
       });
-   } catch (error: any) {
+   } catch (error) {
       res.status(500).json({
          success: false,
-         message: "Error while creating court: " + error.message,
-         error,
+         message: "Error while creating court: " + getErrorMessage(error),
       });
    }
 };
@@ -87,13 +97,14 @@ export const createCourt = async (req: Request, res: Response): Promise<void> =>
 export const updateCourt = async (req: Request, res: Response): Promise<void> => {
    try {
       const { id } = req.params;
-      const { name, address, timeSlots, description } = req.body;
+      const { name, address, timeSlots, description } = req.body as {
+         name?: string;
+         address?: string;
+         timeSlots?: unknown[];
+         description?: string;
+      };
 
-      const updatedCourt = await Court.findByIdAndUpdate(
-         id,
-         { name, address, timeSlots, description },
-         { new: true, runValidators: true }
-      );
+      const updatedCourt = await Court.findByIdAndUpdate(id, { name, address, timeSlots, description }, { new: true, runValidators: true });
 
       if (!updatedCourt) {
          res.status(404).json({
@@ -108,11 +119,10 @@ export const updateCourt = async (req: Request, res: Response): Promise<void> =>
          message: "The court was updated successfully!",
          data: updatedCourt,
       });
-   } catch (error: any) {
+   } catch (error) {
       res.status(500).json({
          success: false,
-         message: "Error while updating court: " + error.message,
-         error,
+         message: "Error while updating court: " + getErrorMessage(error),
       });
    }
 };
@@ -136,11 +146,10 @@ export const deleteCourt = async (req: Request, res: Response): Promise<void> =>
          message: "The court was deleted successfully!",
          data: deletedCourt,
       });
-   } catch (error: any) {
+   } catch (error) {
       res.status(500).json({
          success: false,
-         message: "Error while deleting court: " + error.message,
-         error,
+         message: "Error while deleting court: " + getErrorMessage(error),
       });
    }
 };

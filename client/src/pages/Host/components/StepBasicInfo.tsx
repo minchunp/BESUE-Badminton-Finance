@@ -5,6 +5,7 @@ import { Calendar, MapPin, Layers, Plus, Minus, Sparkles, Coins, Clock, ChevronR
 import type { StepBasicInfoProps } from "../types";
 import { useTheme } from "../../../contexts/ThemeContext";
 import CustomSelect from "../../../components/CustomSelect";
+import { formatShortDate } from "../../../utils/playerUtils";
 
 const StepBasicInfo = ({
    date,
@@ -29,17 +30,6 @@ const StepBasicInfo = ({
    isPending,
 }: StepBasicInfoProps) => {
    const { isDarkMode } = useTheme();
-
-   const getFormattedDate = (dateStr: string) => {
-      try {
-         const d = new Date(dateStr);
-         const days = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
-         return `${days[d.getDay()]} , ${d.getDate()}/${d.getMonth() + 1}`;
-      } catch {
-         return dateStr;
-      }
-   };
-
    return (
       <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }} className="space-y-5">
          {/* Progress */}
@@ -239,7 +229,7 @@ const StepBasicInfo = ({
             <ul className="space-y-1.5 font-sans text-[13px] font-semibold text-black/55 dark:text-white/55">
                <li className="flex justify-between">
                   <span>Thời gian:</span>
-                  <span className="font-bold text-black dark:text-white">{getFormattedDate(date)}</span>
+                  <span className="font-bold text-black dark:text-white">{formatShortDate(date)}</span>
                </li>
                <li className="flex justify-between">
                   <span>Địa điểm:</span>

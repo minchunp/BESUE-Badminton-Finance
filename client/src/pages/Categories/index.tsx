@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Drawer, message, ConfigProvider, theme, Image } from "antd";
@@ -13,12 +12,34 @@ import ShuttleForm from "./components/ShuttleForm";
 import CourtForm from "./components/CourtForm";
 
 import { shuttleApi, courtApi } from "../../api/services/categories.api";
-import type { IShuttle, ICourt } from "./types";
+import type { IShuttle, ICourt, ITimeSlot } from "./types";
 
 import courtIcon from "../../assets/imgs/icons/court.png";
 import shuttleIcon from "../../assets/imgs/icons/shuttlecock.png";
 
 type TabType = "shuttle" | "court";
+
+// ================================================================
+// Types for form payloads — eliminates `any` in onFinish handler
+// ================================================================
+interface ShuttleFormValues {
+   name: string;
+   pricePerTube: number;
+   quantityPerTube?: number;
+}
+
+interface CourtFormValues {
+   name: string;
+   address?: string;
+   description?: string;
+   timeSlots?: ITimeSlot[];
+}
+
+type FormValues = ShuttleFormValues | CourtFormValues;
+
+interface AxiosErrorResponse {
+   response?: { data?: { message?: string } };
+}
 
 const CategoriesPage = () => {
    const { isDarkMode } = useTheme();
@@ -49,24 +70,24 @@ const CategoriesPage = () => {
    const createShuttleMutation = useMutation({
       mutationFn: shuttleApi.create,
       onSuccess: (res) => {
-         message.success(res.message || "Thêm ống cầu mới thành công!");
+         message.success(res.message ?? "Thêm ống cầu mới thành công!");
          queryClient.invalidateQueries({ queryKey: ["shuttles"] });
          handleCloseDrawer();
       },
-      onError: (err: any) => {
-         message.error(err.response?.data?.message || "Lỗi khi thêm ống cầu!");
+      onError: (err: AxiosErrorResponse) => {
+         message.error(err.response?.data?.message ?? "Lỗi khi thêm ống cầu!");
       },
    });
 
    const updateShuttleMutation = useMutation({
       mutationFn: ({ id, data }: { id: string; data: Partial<IShuttle> }) => shuttleApi.update(id, data),
       onSuccess: (res) => {
-         message.success(res.message || "Cập nhật ống cầu thành công!");
+         message.success(res.message ?? "Cập nhật ống cầu thành công!");
          queryClient.invalidateQueries({ queryKey: ["shuttles"] });
          handleCloseDrawer();
       },
-      onError: (err: any) => {
-         message.error(err.response?.data?.message || "Lỗi khi cập nhật ống cầu!");
+      onError: (err: AxiosErrorResponse) => {
+         message.error(err.response?.data?.message ?? "Lỗi khi cập nhật ống cầu!");
       },
    });
 
@@ -74,58 +95,54 @@ const CategoriesPage = () => {
    const createCourtMutation = useMutation({
       mutationFn: courtApi.create,
       onSuccess: (res) => {
-         message.success(res.message || "Thêm sân mới thành công!");
+         message.success(res.message ?? "Thêm sân mới thành công!");
          queryClient.invalidateQueries({ queryKey: ["courts"] });
          handleCloseDrawer();
       },
-      onError: (err: any) => {
-         message.error(err.response?.data?.message || "Lỗi khi thêm sân!");
+      onError: (err: AxiosErrorResponse) => {
+         message.error(err.response?.data?.message ?? "Lỗi khi thêm sân!");
       },
    });
 
    const updateCourtMutation = useMutation({
       mutationFn: ({ id, data }: { id: string; data: Partial<ICourt> }) => courtApi.update(id, data),
       onSuccess: (res) => {
-         message.success(res.message || "Cập nhật sân thành công!");
+         message.success(res.message ?? "Cập nhật sân thành công!");
          queryClient.invalidateQueries({ queryKey: ["courts"] });
          handleCloseDrawer();
       },
-      onError: (err: any) => {
-         message.error(err.response?.data?.message || "Lỗi khi cập nhật sân!");
+      onError: (err: AxiosErrorResponse) => {
+         message.error(err.response?.data?.message ?? "Lỗi khi cập nhật sân!");
       },
    });
 
    // 4. Integrated Form Submission Handler
-   const onFinish = (values: any) => {
+   const onFinish = (values: FormValues) => {
       if (activeTab === "shuttle") {
+         const sv = values as ShuttleFormValues;
          const shuttleData: Omit<IShuttle, "_id"> = {
-            name: values.name,
-            pricePerTube: values.pricePerTube,
-            quantityPerTube: values.quantityPerTube || 12,
-            pricePerPiece: Math.round(values.pricePerTube / (values.quantityPerTube || 12)),
+            name: sv.name,
+            pricePerTube: sv.pricePerTube,
+            quantityPerTube: sv.quantityPerTube ?? 12,
+            pricePerPiece: Math.round(sv.pricePerTube / (sv.quantityPerTube ?? 12)),
          };
 
          if (editingItem) {
-            updateShuttleMutation.mutate({
-               id: editingItem._id!,
-               data: shuttleData,
-            });
+            updateShuttleMutation.mutate({ id: editingItem._id!, data: shuttleData });
          } else {
             createShuttleMutation.mutate(shuttleData);
          }
       } else {
+         const cv = values as CourtFormValues;
          const courtData: Omit<ICourt, "_id"> = {
-            name: values.name,
-            address: values.address,
-            description: values.description,
-            timeSlots: values.timeSlots || [],
+            name: cv.name,
+            address: cv.address,
+            description: cv.description,
+            timeSlots: cv.timeSlots ?? [],
          };
 
          if (editingItem) {
-            updateCourtMutation.mutate({
-               id: editingItem._id!,
-               data: courtData,
-            });
+            updateCourtMutation.mutate({ id: editingItem._id!, data: courtData });
          } else {
             createCourtMutation.mutate(courtData);
          }

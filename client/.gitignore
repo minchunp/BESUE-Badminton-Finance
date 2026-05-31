@@ -12,6 +12,14 @@ dist
 dist-ssr
 *.local
 
+# ================================================================
+# Environment variables — NEVER commit .env files with secrets!
+# ================================================================
+.env
+.env.*
+# Cho phép file mẫu (không chứa secret thật)
+!.env.example
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

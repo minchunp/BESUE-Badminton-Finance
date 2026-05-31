@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Popconfirm, Modal, Image } from "antd";
 import { Calendar, Check, Users, ChevronRight, Trash2, Pencil, QrCode, Swords } from "lucide-react";
@@ -7,7 +7,7 @@ import type { StepPlayerListProps } from "../types";
 import QRBanking from "../../../assets/imgs/QR.png";
 import MatchTrackingTab from "./MatchTrackingTab";
 import PaymentModal from "./PaymentModal";
-import { expandPlayers, getPaymentBadgeInfo } from "../../../utils/playerUtils";
+import { expandPlayers, getPaymentBadgeInfo, formatShortDate } from "../../../utils/playerUtils";
 import type { PaymentBadgeInfo } from "../../../utils/playerUtils";
 
 // ================================================================
@@ -102,51 +102,54 @@ const StepPlayerList = ({
    const [paymentModalIdx, setPaymentModalIdx] = useState<number | null>(null);
    const [activeTab, setActiveTab] = useState<TabKey>("players");
 
-   const getFormattedDate = (dateStr: string) => {
-      try {
-         const d = new Date(dateStr);
-         const days = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
-         return `${days[d.getDay()]} , ${d.getDate()}/${d.getMonth() + 1}`;
-      } catch {
-         return dateStr;
-      }
-   };
+   const allPlayersChecked = useMemo(() => playersList.length > 0 && playersList.every((p) => p.isCheckedIn), [playersList]);
 
-   const allPlayersChecked = playersList.length > 0 && playersList.every((p) => p.isCheckedIn);
+   const totalMatchesBadge = useMemo(() => expandPlayers(playersList).reduce((a, p) => a + p.matches, 0), [playersList]);
 
    /** Open PaymentModal for a player (first time check-in or edit) */
-   const openPaymentModal = (idx: number) => {
-      setPaymentModalPlayer(playersList[idx]);
-      setPaymentModalIdx(idx);
-   };
+   const openPaymentModal = useCallback(
+      (idx: number) => {
+         setPaymentModalPlayer(playersList[idx] ?? null);
+         setPaymentModalIdx(idx);
+      },
+      [playersList],
+   );
 
    /** When checkbox is clicked on an already-checked player → uncheck directly */
-   const handleCheckboxClick = (idx: number) => {
-      const player = playersList[idx];
-      if (player.isCheckedIn) {
-         // Reset all payments when unchecking
-         onConfirmPayment(
-            idx,
-            false,
-            playersList[idx].individualPayments.map(() => ({ isPaid: false })),
-         );
-      } else {
-         openPaymentModal(idx);
-      }
-   };
+   const handleCheckboxClick = useCallback(
+      (idx: number) => {
+         const player = playersList[idx];
+         if (!player) return;
+         if (player.isCheckedIn) {
+            // Reset all payments when unchecking
+            onConfirmPayment(
+               idx,
+               false,
+               playersList[idx]!.individualPayments.map(() => ({ isPaid: false })),
+            );
+         } else {
+            openPaymentModal(idx);
+         }
+      },
+      [playersList, onConfirmPayment, openPaymentModal],
+   );
 
-   const handlePaymentConfirm = (playerIdx: number, payments: IPersonPayment[]) => {
-      onConfirmPayment(playerIdx, true, payments);
-      setPaymentModalPlayer(null);
-      setPaymentModalIdx(null);
-   };
+   const handlePaymentConfirm = useCallback(
+      (playerIdx: number, payments: IPersonPayment[]) => {
+         onConfirmPayment(playerIdx, true, payments);
+         setPaymentModalPlayer(null);
+         setPaymentModalIdx(null);
+      },
+      [onConfirmPayment],
+   );
 
-   const tabs: { key: TabKey; label: string; icon: React.ReactNode }[] = [
-      { key: "players", label: "Danh sách", icon: <Users size={13} strokeWidth={2.5} /> },
-      { key: "matches", label: "Số trận", icon: <Swords size={13} strokeWidth={2.5} /> },
-   ];
-
-   const totalMatchesBadge = expandPlayers(playersList).reduce((a, p) => a + p.matches, 0);
+   const tabs: { key: TabKey; label: string; icon: React.ReactNode }[] = useMemo(
+      () => [
+         { key: "players" as TabKey, label: "Danh sách", icon: <Users size={13} strokeWidth={2.5} /> },
+         { key: "matches" as TabKey, label: "Số trận", icon: <Swords size={13} strokeWidth={2.5} /> },
+      ],
+      [],
+   );
 
    return (
       <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} className="space-y-5">
@@ -166,7 +169,7 @@ const StepPlayerList = ({
             <div className="flex items-center gap-2 text-black/55 dark:text-white/55">
                <Calendar size={16} className="text-[#0A84FF]" />
                <span className="font-sans text-[11px] font-extrabold tracking-wide uppercase">
-                  {getFormattedDate(date)} • {numberOfCourts} sân • {activeShuttle?.name}
+                  {formatShortDate(date)} • {numberOfCourts} sân • {activeShuttle?.name}
                </span>
             </div>
          </div>

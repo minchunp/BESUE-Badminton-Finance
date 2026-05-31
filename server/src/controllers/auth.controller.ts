@@ -3,14 +3,21 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/user.js";
 import { type AuthenticatedRequest } from "../middlewares/auth.middleware.js";
+import { config } from "../server.js";
+
+// ================================================================
+// Helper: extract error message safely (no `any`)
+// ================================================================
+const getErrorMessage = (error: unknown): string => {
+   if (error instanceof Error) return error.message;
+   return String(error);
+};
 
 /** Generate a secure JWT token for the user */
 const generateToken = (userId: string): string => {
-   return jwt.sign(
-      { id: userId },
-      process.env.JWT_SECRET || "besue_jwt_secret_default",
-      { expiresIn: "30d" }
-   );
+   return jwt.sign({ id: userId }, config.jwtSecret, {
+      expiresIn: (config.jwtExpiresIn || "30d") as jwt.SignOptions["expiresIn"],
+   });
 };
 
 // ================================================================
@@ -18,7 +25,12 @@ const generateToken = (userId: string): string => {
 // ================================================================
 export const register = async (req: Request, res: Response): Promise<void> => {
    try {
-      const { username, email, password, fullName } = req.body;
+      const { username, email, password, fullName } = req.body as {
+         username: string;
+         email: string;
+         password: string;
+         fullName: string;
+      };
 
       // 1. Validate fields
       if (!username || !email || !password || !fullName) {
@@ -71,11 +83,11 @@ export const register = async (req: Request, res: Response): Promise<void> => {
             token,
          },
       });
-   } catch (error: any) {
+   } catch (error) {
       res.status(500).json({
          success: false,
          message: "Đã xảy ra lỗi trên máy chủ khi đăng ký tài khoản!",
-         error: error.message,
+         error: getErrorMessage(error),
       });
    }
 };
@@ -85,7 +97,10 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 // ================================================================
 export const login = async (req: Request, res: Response): Promise<void> => {
    try {
-      const { emailOrUsername, password } = req.body;
+      const { emailOrUsername, password } = req.body as {
+         emailOrUsername: string;
+         password: string;
+      };
 
       // 1. Validate fields
       if (!emailOrUsername || !password) {
@@ -132,11 +147,11 @@ export const login = async (req: Request, res: Response): Promise<void> => {
             token,
          },
       });
-   } catch (error: any) {
+   } catch (error) {
       res.status(500).json({
          success: false,
          message: "Đã xảy ra lỗi trên máy chủ khi đăng nhập!",
-         error: error.message,
+         error: getErrorMessage(error),
       });
    }
 };
@@ -144,20 +159,17 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 // ================================================================
 // 3. GET PROFILE - Xem thông tin tài khoản hiện tại
 // ================================================================
-export const getMe = async (
-   req: AuthenticatedRequest,
-   res: Response
-): Promise<void> => {
+export const getMe = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
    try {
       res.status(200).json({
          success: true,
          data: req.user,
       });
-   } catch (error: any) {
+   } catch (error) {
       res.status(500).json({
          success: false,
          message: "Đã xảy ra lỗi trên máy chủ khi lấy thông tin người dùng!",
-         error: error.message,
+         error: getErrorMessage(error),
       });
    }
 };

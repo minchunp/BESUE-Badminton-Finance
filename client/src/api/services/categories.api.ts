@@ -1,10 +1,6 @@
 import axiosInstance from "../axios";
+import type { ApiResponse } from "../types";
 import type { IShuttle, ICourt } from "../../pages/Categories/types";
-interface ApiResponse<T> {
-   success: boolean;
-   message: string;
-   data: T;
-}
 
 export const shuttleApi = {
    getAll: async (): Promise<ApiResponse<IShuttle[]>> => {

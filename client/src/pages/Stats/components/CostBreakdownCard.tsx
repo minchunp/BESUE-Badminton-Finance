@@ -98,13 +98,13 @@ const CostBreakdownCard = ({ data, isLoading }: CostBreakdownCardProps) => {
 
    if (isLoading) {
       return (
-         <div className="bg-white dark:bg-[#1C1C1E] border border-black/[0.05] dark:border-white/[0.06] shadow-sm rounded-[24px] p-5 animate-pulse space-y-3">
-            <div className="h-5 w-40 bg-black/[0.06] dark:bg-white/[0.06] rounded-full" />
+         <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-3xl p-5 animate-pulse space-y-3">
+            <div className="h-5 w-40 bg-black/6 dark:bg-white/6 rounded-full" />
             <div className="flex items-center gap-4">
-               <div className="w-32 h-32 bg-black/[0.06] dark:bg-white/[0.06] rounded-full" />
+               <div className="w-32 h-32 bg-black/6 dark:bg-white/6 rounded-full" />
                <div className="flex-1 space-y-3">
-                  <div className="h-8 bg-black/[0.04] dark:bg-white/[0.04] rounded-xl" />
-                  <div className="h-8 bg-black/[0.04] dark:bg-white/[0.04] rounded-xl" />
+                  <div className="h-8 bg-black/4 dark:bg-white/4 rounded-xl" />
+                  <div className="h-8 bg-black/4 dark:bg-white/4 rounded-xl" />
                </div>
             </div>
          </div>
@@ -123,7 +123,7 @@ const CostBreakdownCard = ({ data, isLoading }: CostBreakdownCardProps) => {
          initial={{ opacity: 0, y: 16 }}
          animate={{ opacity: 1, y: 0 }}
          transition={{ delay: 0.15, type: "spring", stiffness: 100 }}
-         className="bg-white dark:bg-[#1C1C1E] border border-black/[0.05] dark:border-white/[0.07] rounded-[20px] p-5 space-y-4"
+         className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/[0.07] rounded-[20px] p-5 space-y-4"
       >
          <div>
             <h3 className="font-sans text-sm font-black text-black dark:text-white">Phân tích chi phí</h3>
@@ -155,7 +155,7 @@ const CostBreakdownCard = ({ data, isLoading }: CostBreakdownCardProps) => {
                         <span className="font-sans text-[11px] font-black text-black dark:text-white">{item.pct}%</span>
                      </div>
                      {/* Progress bar */}
-                     <div className="h-1.5 w-full bg-black/[0.06] dark:bg-white/[0.06] rounded-full overflow-hidden">
+                     <div className="h-1.5 w-full bg-black/6 dark:bg-white/6 rounded-full overflow-hidden">
                         <motion.div
                            className="h-full rounded-full"
                            style={{ background: COLORS[i] }}

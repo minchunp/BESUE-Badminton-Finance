@@ -223,3 +223,17 @@ export const isToday = (dateStr: string): boolean => {
       return false;
    }
 };
+
+/**
+ * Short date format: "T6 , 31/5"
+ * Dùng chung cho StepBasicInfo & StepPlayerList (thay thế getFormattedDate inline)
+ */
+export const formatShortDate = (dateStr: string): string => {
+   try {
+      const d = new Date(dateStr);
+      const days = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
+      return `${days[d.getDay()]} , ${d.getDate()}/${d.getMonth() + 1}`;
+   } catch {
+      return dateStr;
+   }
+};

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trophy, Minus, Plus, Swords, Users, User, LayoutGrid, List } from "lucide-react";
 import type { IPlayer } from "../../../api/services/session.api";
@@ -90,16 +90,16 @@ const MatchTrackingTab = ({ playersList, onUpdateMatches, readOnly = false }: Ma
    const [viewMode, setViewMode] = useState<TrackingViewMode>("table");
    const [columnCount, setColumnCount] = useState(DEFAULT_COLUMN_COUNT);
 
-   const expanded = expandPlayers(playersList);
+   const expanded = useMemo(() => expandPlayers(playersList), [playersList]);
    const totalIndividuals = expanded.length;
-   const totalMatches = expanded.reduce((acc, p) => acc + p.matches, 0);
+   const totalMatches = useMemo(() => expanded.reduce((acc, p) => acc + p.matches, 0), [expanded]);
 
    // Sort by matches descending for leaderboard
-   const ranked = [...expanded].sort((a, b) => b.matches - a.matches);
-   const maxMatches = Math.max(...expanded.map((p) => p.matches), 1);
+   const ranked = useMemo(() => [...expanded].sort((a, b) => b.matches - a.matches), [expanded]);
+   const maxMatches = useMemo(() => Math.max(...expanded.map((p) => p.matches), 1), [expanded]);
 
-   const handleAddColumn = () => setColumnCount((c) => c + 1);
-   const handleRemoveColumn = () => setColumnCount((c) => Math.max(MIN_COLUMN_COUNT, c - 1));
+   const handleAddColumn = useCallback(() => setColumnCount((c) => c + 1), []);
+   const handleRemoveColumn = useCallback(() => setColumnCount((c) => Math.max(MIN_COLUMN_COUNT, c - 1)), []);
 
    if (playersList.length === 0) {
       return (
