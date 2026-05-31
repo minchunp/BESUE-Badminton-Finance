@@ -88,6 +88,10 @@ app.get("/", (_req: Request, res: Response) => {
 // ================================================================
 // Start Server
 // ================================================================
-app.listen(config.port, () => {
-   console.log(`🚀 Server running at http://localhost:${config.port} [${config.nodeEnv}]`);
-});
+if (!process.env.VERCEL) {
+   app.listen(config.port, () => {
+      console.log(`🚀 Server running at http://localhost:${config.port} [${config.nodeEnv}]`);
+   });
+}
+
+export default app;

@@ -16,7 +16,7 @@ const getErrorMessage = (error: unknown): string => {
 /** Generate a secure JWT token for the user */
 const generateToken = (userId: string): string => {
    return jwt.sign({ id: userId }, config.jwtSecret, {
-      expiresIn: (config.jwtExpiresIn || "30d") as jwt.SignOptions["expiresIn"],
+      expiresIn: config.jwtExpiresIn as any,
    });
 };
 
