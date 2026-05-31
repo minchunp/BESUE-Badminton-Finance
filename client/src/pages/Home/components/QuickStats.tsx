@@ -8,18 +8,18 @@ interface QuickStatsProps {
 }
 
 const iconMap: Record<string, LucideIcon> = {
-   revenue:  Coins,
+   revenue: Coins,
    sessions: Activity,
    shuttles: Package,
-   hours:    Clock,
+   hours: Clock,
 };
 
 /* Apple Fitness-style activity ring colors */
 const iconColorMap: Record<string, { icon: string; dot: string }> = {
-   revenue:  { icon: "text-[#FF9F0A]", dot: "bg-[#FF9F0A]" },  // Fitness orange
-   sessions: { icon: "text-[#0A84FF]", dot: "bg-[#0A84FF]" },  // Fitness blue
-   shuttles: { icon: "text-[#30D158]", dot: "bg-[#30D158]" },  // Fitness green
-   hours:    { icon: "text-[#FF375F]", dot: "bg-[#FF375F]" },  // Fitness red
+   revenue: { icon: "text-[#FF9F0A]", dot: "bg-[#FF9F0A]" }, // Fitness orange
+   sessions: { icon: "text-[#0A84FF]", dot: "bg-[#0A84FF]" }, // Fitness blue
+   shuttles: { icon: "text-[#30D158]", dot: "bg-[#30D158]" }, // Fitness green
+   hours: { icon: "text-[#FF375F]", dot: "bg-[#FF375F]" }, // Fitness red
 };
 
 const containerVariants = {
@@ -41,12 +41,7 @@ const itemVariants = {
 
 const QuickStats = ({ stats }: QuickStatsProps) => {
    return (
-      <motion.section
-         variants={containerVariants}
-         initial="hidden"
-         animate="show"
-         className="grid grid-cols-2 gap-3"
-      >
+      <motion.section variants={containerVariants} initial="hidden" animate="show" className="grid grid-cols-2 gap-3">
          {stats.map((stat) => {
             const IconComponent = iconMap[stat.icon] || Activity;
             const colors = iconColorMap[stat.icon] || {
@@ -59,7 +54,7 @@ const QuickStats = ({ stats }: QuickStatsProps) => {
                   key={stat.id}
                   variants={itemVariants}
                   whileTap={{ scale: 0.97 }}
-                  className="bg-white dark:bg-[#1C1C1E] rounded-[20px] p-4 flex flex-col justify-between min-h-[100px] border border-black/[0.05] dark:border-white/[0.07]"
+                  className="bg-white dark:bg-[#1C1C1E] rounded-[20px] p-4 flex flex-col justify-between min-h-25 border border-black/5 dark:border-white/[0.07]"
                >
                   {/* Label row with dot indicator */}
                   <div className="flex items-center gap-2 mb-2.5">
@@ -72,14 +67,8 @@ const QuickStats = ({ stats }: QuickStatsProps) => {
                   {/* Value + Icon row */}
                   <div className="flex items-end justify-between">
                      <div className="text-[22px] font-black tracking-tight leading-none text-black dark:text-white">
-                        {typeof stat.value === "number"
-                           ? stat.value.toLocaleString("vi-VN")
-                           : stat.value}
-                        {stat.unit && (
-                           <span className="text-[11px] font-semibold text-black/30 dark:text-white/30 ml-1">
-                              {stat.unit}
-                           </span>
-                        )}
+                        {typeof stat.value === "number" ? stat.value.toLocaleString("vi-VN") : stat.value}
+                        {stat.unit && <span className="text-[11px] font-semibold text-black/30 dark:text-white/30 ml-1">{stat.unit}</span>}
                      </div>
                      <IconComponent size={18} strokeWidth={2} className={`${colors.icon} opacity-60`} />
                   </div>

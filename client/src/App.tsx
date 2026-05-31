@@ -68,8 +68,8 @@ const LIGHT_TOKENS = {
    // Functional — Apple Fitness ring colors
    colorSuccess: "#30D158", // Activity ring green (Exercise)
    colorWarning: "#FF9F0A", // Activity ring orange (Stand)
-   colorError: "#FF375F",   // Activity ring pink-red (Move)
-   colorInfo: "#0A84FF",    // systemBlue
+   colorError: "#FF375F", // Activity ring pink-red (Move)
+   colorInfo: "#0A84FF", // systemBlue
 
    // Backgrounds
    colorBgBase: "#F2F2F7",
@@ -122,8 +122,8 @@ const DARK_TOKENS = {
    // Functional — Apple Fitness ring colors (dark)
    colorSuccess: "#30D158", // Activity ring green
    colorWarning: "#FF9F0A", // Activity ring orange
-   colorError: "#FF375F",   // Activity ring pink-red
-   colorInfo: "#0A84FF",    // systemBlue
+   colorError: "#FF375F", // Activity ring pink-red
+   colorInfo: "#0A84FF", // systemBlue
 
    // Backgrounds — pure black system
    colorBgBase: "#000000",
@@ -225,9 +225,7 @@ const AppThemeWrapper = ({ children }: { children: React.ReactNode }) => {
                   footerBg: isDarkMode ? "#1C1C1E" : "#FFFFFF",
                   titleFontSize: 17,
                   titleLineHeight: 1.4,
-                  boxShadow: isDarkMode
-                     ? "0 20px 60px rgba(0,0,0,0.55)"
-                     : "0 16px 48px rgba(0,0,0,0.12)",
+                  boxShadow: isDarkMode ? "0 20px 60px rgba(0,0,0,0.55)" : "0 16px 48px rgba(0,0,0,0.12)",
                },
 
                /* ──────────────────────────────────────────────

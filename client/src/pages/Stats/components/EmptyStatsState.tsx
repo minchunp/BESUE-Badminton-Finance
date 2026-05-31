@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
 import { BarChart3, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Image } from "antd";
+import mailboxIcon from "../../../assets/imgs/icons/mailbox.png";
 
 interface EmptyStatsStateProps {
    periodLabel: string;
@@ -18,11 +20,11 @@ const EmptyStatsState = ({ periodLabel }: EmptyStatsStateProps) => {
       >
          {/* Illustration */}
          <div className="relative mb-6">
-            <div className="w-24 h-24 rounded-[24px] bg-[#0A84FF]/12 border border-[#0A84FF]/20 flex items-center justify-center">
+            <div className="w-24 h-24 rounded-3xl bg-[#0A84FF]/12 border border-[#0A84FF]/20 flex items-center justify-center">
                <BarChart3 size={36} className="text-black/20 dark:text-white/20" strokeWidth={1.5} />
             </div>
-            <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-2xl bg-[#0A84FF]/15 border-2 border-white dark:border-black flex items-center justify-center shadow-sm">
-               <span className="text-sm">📭</span>
+            <div className="absolute -bottom-2 -right-1 w-10 h-10 rounded-full bg-[#0A84FF]/15 border-2 border-white dark:border-black flex items-center justify-center shadow-sm">
+               <Image style={{ width: 21, height: 21 }} preview={false} src={mailboxIcon} />
             </div>
          </div>
 

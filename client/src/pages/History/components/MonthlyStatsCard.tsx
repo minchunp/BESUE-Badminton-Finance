@@ -23,7 +23,7 @@ const MonthlyStatsCard = ({ completedCount, totalRevenue, totalProfit, monthLabe
          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
             <h3
                style={{
-                  fontSize: "11px",
+                  fontSize: "12px",
                   fontWeight: 700,
                   letterSpacing: "0.1em",
                   textTransform: "uppercase",

@@ -41,7 +41,7 @@ export const NoteList = ({ notes, filteredNotes, isLoading, searchQuery, setSear
                value={searchQuery}
                onChange={(e) => setSearchQuery(e.target.value)}
                placeholder="Tìm kiếm"
-               className="w-full h-9.5 bg-gray-150/80 dark:bg-zinc-800/80 hover:bg-gray-200/50 dark:hover:bg-zinc-800 border-none rounded-xl pl-11 pr-4 font-sans text-xs font-semibold text-gray-800 dark:text-white outline-none transition-all placeholder-gray-400"
+               className="w-full h-9.5 bg-gray-200/50 dark:bg-zinc-800/80 border-none rounded-xl pl-11 pr-4 font-sans text-xs font-semibold text-gray-800 dark:text-white outline-none transition-all placeholder-gray-400"
             />
          </div>
 
