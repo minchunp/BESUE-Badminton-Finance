@@ -1,21 +1,21 @@
 import axios from "axios";
 
-// Vite expose biến môi trường qua import.meta.env
-// Prefix VITE_ là bắt buộc để Vite inject vào bundle
-const BASE_URL = import.meta.env.VITE_API_BASE_URL as string;
+// Kiểm tra xem ứng dụng đang chạy ở môi trường Production (đã deploy) hay Local (development)
+const isProd = import.meta.env.PROD;
 
-if (!BASE_URL) {
-   console.warn("[axios] VITE_API_BASE_URL chưa được khai báo trong .env — fallback về localhost");
-}
+// Nếu ở Production, dùng relative path "/api" để tận dụng định tuyến của vercel.json
+// Nếu ở Local, dùng biến môi trường VITE_API_BASE_URL hoặc fallback về port 5001
+const BASE_URL = isProd ? "/api" : import.meta.env.VITE_API_BASE_URL || "http://localhost:5001/api";
 
 const axiosInstance = axios.create({
-   baseURL: BASE_URL || "http://localhost:5001/api",
+   baseURL: BASE_URL,
+   timeout: 10000, // Thêm timeout 10s bảo vệ request không bị treo vô hạn
    headers: {
       "Content-Type": "application/json",
    },
 });
 
-// Automatically inject JWT authorization header if token is present
+// Tự động inject JWT authorization header nếu token tồn tại
 axiosInstance.interceptors.request.use(
    (config) => {
       const token = localStorage.getItem("besue_token");
