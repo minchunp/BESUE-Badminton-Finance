@@ -78,7 +78,7 @@ const RecentHosts = ({ sessions }: RecentHostsProps) => {
                         variants={cardVariants}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => navigate(`/host/report/${session.id}`)}
-                        className="min-w-65 w-65 bg-white dark:bg-[#1C1C1E] rounded-[20px] p-4 flex flex-col gap-3 shrink-0 cursor-pointer border border-black/5 dark:border-white/[0.07] active:bg-black/[0.02] dark:active:bg-white/[0.03] transition-colors"
+                        className="min-w-65 w-65 bg-white dark:bg-[#1C1C1E] rounded-[20px] p-4 flex flex-col gap-3 shrink-0 cursor-pointer border border-black/5 dark:border-white/[0.07] active:bg-black/2 dark:active:bg-white/3 transition-colors"
                      >
                         {/* Top row */}
                         <div className="flex justify-between items-start">

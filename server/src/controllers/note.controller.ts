@@ -3,6 +3,14 @@ import Note from "../models/note.js";
 import { type AuthenticatedRequest } from "../middlewares/auth.middleware.js";
 
 // ================================================================
+// Helper: extract error message safely (no `any`)
+// ================================================================
+const getErrorMessage = (error: unknown): string => {
+   if (error instanceof Error) return error.message;
+   return String(error);
+};
+
+// ================================================================
 // 1. GET ALL NOTES - Lấy danh sách ghi chú của người dùng
 // ================================================================
 export const getNotes = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
@@ -15,11 +23,11 @@ export const getNotes = async (req: AuthenticatedRequest, res: Response): Promis
          success: true,
          data: notes,
       });
-   } catch (error: any) {
+   } catch (error) {
       res.status(500).json({
          success: false,
          message: "Lỗi máy chủ khi lấy danh sách ghi chú!",
-         error: error.message,
+         error: getErrorMessage(error),
       });
    }
 };
@@ -40,11 +48,11 @@ export const createNote = async (req: AuthenticatedRequest, res: Response): Prom
          message: "Tạo ghi chú mới thành công!",
          data: note,
       });
-   } catch (error: any) {
+   } catch (error) {
       res.status(500).json({
          success: false,
          message: "Lỗi máy chủ khi tạo ghi chú mới!",
-         error: error.message,
+         error: getErrorMessage(error),
       });
    }
 };
@@ -55,10 +63,10 @@ export const createNote = async (req: AuthenticatedRequest, res: Response): Prom
 export const updateNote = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
    try {
       const { id } = req.params;
-      const { title, content } = req.body;
+      const { title, content } = req.body as { title?: string; content?: string };
 
       // Find the note and ensure it belongs to the authenticated user
-      const note = await Note.findOne({ _id: id as string, userId: req.user!._id });
+      const note = await Note.findOne({ _id: String(id), userId: req.user!._id });
 
       if (!note) {
          res.status(404).json({
@@ -79,11 +87,11 @@ export const updateNote = async (req: AuthenticatedRequest, res: Response): Prom
          message: "Cập nhật ghi chú thành công!",
          data: note,
       });
-   } catch (error: any) {
+   } catch (error) {
       res.status(500).json({
          success: false,
          message: "Lỗi máy chủ khi cập nhật ghi chú!",
-         error: error.message,
+         error: getErrorMessage(error),
       });
    }
 };
@@ -96,7 +104,7 @@ export const deleteNote = async (req: AuthenticatedRequest, res: Response): Prom
       const { id } = req.params;
 
       // Find and delete, ensuring it belongs to the authenticated user
-      const note = await Note.findOneAndDelete({ _id: id as string, userId: req.user!._id });
+      const note = await Note.findOneAndDelete({ _id: String(id), userId: req.user!._id });
 
       if (!note) {
          res.status(404).json({
@@ -110,11 +118,11 @@ export const deleteNote = async (req: AuthenticatedRequest, res: Response): Prom
          success: true,
          message: "Xóa ghi chú thành công!",
       });
-   } catch (error: any) {
+   } catch (error) {
       res.status(500).json({
          success: false,
          message: "Lỗi máy chủ khi xóa ghi chú!",
-         error: error.message,
+         error: getErrorMessage(error),
       });
    }
 };

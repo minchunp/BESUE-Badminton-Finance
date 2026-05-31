@@ -1,7 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-hooks/set-state-in-effect */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
@@ -29,7 +27,31 @@ import {
    calcCollectedRevenue,
 } from "../../utils/playerUtils";
 
+// ================================================================
+// Types
+// ================================================================
+
 type WizardStep = 1 | 2 | 3 | 4 | 5;
+
+interface PlayerFormValues {
+   name?: string;
+   maleCount?: number;
+   femaleCount?: number;
+   isPaid?: boolean;
+   paymentMethod?: "cash" | "transfer";
+}
+
+interface AxiosErrorResponse {
+   response?: {
+      data?: {
+         message?: string;
+      };
+   };
+}
+
+// ================================================================
+// Component
+// ================================================================
 
 const HostPage = () => {
    const { isDarkMode } = useTheme();
@@ -39,7 +61,7 @@ const HostPage = () => {
    const queryId = searchParams.get("id");
    const queryStep = searchParams.get("step");
 
-   const activeId = routeId || queryId || null;
+   const activeId = routeId ?? queryId ?? null;
    const isViewOnly = !!routeId;
 
    // ==========================================
@@ -52,7 +74,7 @@ const HostPage = () => {
    // Step 1: Basic Info States
    const [date, setDate] = useState<string>(() => {
       const today = new Date();
-      return today.toISOString().split("T")[0];
+      return today.toISOString().split("T")[0]!;
    });
    const [selectedCourtId, setSelectedCourtId] = useState<string>("");
    const [numberOfCourts, setNumberOfCourts] = useState<number>(2);
@@ -90,22 +112,23 @@ const HostPage = () => {
       enabled: !!activeId,
    });
 
-   const courts = courtsResponse?.data || [];
-   const shuttles = shuttlesResponse?.data || [];
+   const courts = useMemo(() => courtsResponse?.data ?? [], [courtsResponse]);
+   const shuttles = useMemo(() => shuttlesResponse?.data ?? [], [shuttlesResponse]);
 
-   const activeCourt = courts.find((c) => c._id === selectedCourtId);
-   const activeShuttle = shuttles.find((s) => s._id === selectedShuttleId);
+   // Memoised derived lookups — avoid .find() on every render
+   const activeCourt = useMemo(() => courts.find((c) => c._id === selectedCourtId), [courts, selectedCourtId]);
+   const activeShuttle = useMemo(() => shuttles.find((s) => s._id === selectedShuttleId), [shuttles, selectedShuttleId]);
 
    // Auto-select first elements in lists if nothing selected yet
    useEffect(() => {
       if (courts.length > 0 && !selectedCourtId && !activeId) {
-         setSelectedCourtId(courts[0]._id!);
+         setSelectedCourtId(courts[0]!._id!);
       }
    }, [courts, selectedCourtId, activeId]);
 
    useEffect(() => {
       if (shuttles.length > 0 && !selectedShuttleId && !activeId) {
-         setSelectedShuttleId(shuttles[0]._id!);
+         setSelectedShuttleId(shuttles[0]!._id!);
       }
    }, [shuttles, selectedShuttleId, activeId]);
 
@@ -117,7 +140,7 @@ const HostPage = () => {
          setSessionData(session);
 
          if (session.date) {
-            setDate(new Date(session.date).toISOString().split("T")[0]);
+            setDate(new Date(session.date).toISOString().split("T")[0]!);
          }
          if (session.court?.courtId) {
             setSelectedCourtId(String(session.court.courtId));
@@ -141,7 +164,7 @@ const HostPage = () => {
             setPlayersList(session.players);
          }
          if (session.shuttle?.usedQuantity !== undefined) {
-            const quantityPerTube = activeShuttle?.quantityPerTube || 12;
+            const quantityPerTube = activeShuttle?.quantityPerTube ?? 12;
             const tubes = Math.floor(session.shuttle.usedQuantity / quantityPerTube);
             const pieces = session.shuttle.usedQuantity % quantityPerTube;
             setUsedTubes(tubes);
@@ -154,9 +177,11 @@ const HostPage = () => {
          if (routeId) {
             setStep(4);
          } else if (queryStep) {
-            setStep(Number(queryStep) as any);
+            const parsed = parseInt(queryStep, 10);
+            if (parsed >= 1 && parsed <= 5) setStep(parsed as WizardStep);
          } else if (session.currentStep) {
-            setStep(session.currentStep as any);
+            const cs = session.currentStep;
+            if (cs >= 1 && cs <= 5) setStep(cs as WizardStep);
          } else if (session.status === "completed") {
             setStep(4);
          } else {
@@ -175,8 +200,8 @@ const HostPage = () => {
          setSessionData(res.data);
          setStep(2);
       },
-      onError: (err: any) => {
-         message.error(err.response?.data?.message || "Lỗi khởi tạo buổi host");
+      onError: (err: AxiosErrorResponse) => {
+         message.error(err.response?.data?.message ?? "Lỗi khởi tạo buổi host");
       },
    });
 
@@ -186,8 +211,8 @@ const HostPage = () => {
          setSessionData(res.data);
          setStep(3);
       },
-      onError: (err: any) => {
-         message.error(err.response?.data?.message || "Lỗi cập nhật người chơi");
+      onError: (err: AxiosErrorResponse) => {
+         message.error(err.response?.data?.message ?? "Lỗi cập nhật người chơi");
       },
    });
 
@@ -196,8 +221,8 @@ const HostPage = () => {
       onSuccess: (res) => {
          setSessionData(res.data);
       },
-      onError: (err: any) => {
-         console.error("Lỗi tự động lưu danh sách người chơi:", err);
+      onError: (err: AxiosErrorResponse) => {
+         console.error("Lỗi tự động lưu danh sách người chơi:", err.response?.data?.message);
       },
    });
 
@@ -207,15 +232,15 @@ const HostPage = () => {
          setSessionData(res.data);
          setStep(4);
       },
-      onError: (err: any) => {
-         message.error(err.response?.data?.message || "Lỗi hoàn tất buổi host");
+      onError: (err: AxiosErrorResponse) => {
+         message.error(err.response?.data?.message ?? "Lỗi hoàn tất buổi host");
       },
    });
 
    // ==========================================
-   // 4. BUSINESS LOGIC HANDLERS
+   // 4. BUSINESS LOGIC HANDLERS — useCallback để tránh re-render
    // ==========================================
-   const handleNextStep1 = () => {
+   const handleNextStep1 = useCallback(() => {
       if (!selectedCourtId || !selectedShuttleId) {
          message.warning("Vui lòng chọn đầy đủ sân và quả cầu!");
          return;
@@ -226,8 +251,8 @@ const HostPage = () => {
 
       if (!courtObj || !shuttleObj) return;
 
-      const pricePerHour = courtObj.timeSlots?.[0]?.pricePerHour || 80000;
-      const pricePerPiece = shuttleObj.pricePerPiece || Math.round(shuttleObj.pricePerTube / shuttleObj.quantityPerTube);
+      const pricePerHour = courtObj.timeSlots?.[0]?.pricePerHour ?? 80000;
+      const pricePerPiece = shuttleObj.pricePerPiece ?? Math.round(shuttleObj.pricePerTube / shuttleObj.quantityPerTube);
 
       createSessionMutation.mutate({
          date,
@@ -248,106 +273,117 @@ const HostPage = () => {
             female: feeFemale,
          },
       });
-   };
+   }, [selectedCourtId, selectedShuttleId, courts, shuttles, date, numberOfCourts, hours, feeMale, feeFemale, createSessionMutation]);
 
-   // Step 2 Subform Handlers
-   const handleAddPlayerOpen = () => {
+   const handleAddPlayerOpen = useCallback(() => {
       setEditingPlayerIndex(null);
       setIsPlayerDrawerOpen(true);
-   };
+   }, []);
 
-   const handleEditPlayerOpen = (index: number) => {
+   const handleEditPlayerOpen = useCallback((index: number) => {
       setEditingPlayerIndex(index);
       setIsPlayerDrawerOpen(true);
-   };
+   }, []);
 
-   const handleSavePlayer = (playerValues: any) => {
-      const newMaleCount = playerValues.maleCount || 0;
-      const newFemaleCount = playerValues.femaleCount || 0;
+   const handleSavePlayer = useCallback(
+      (playerValues: PlayerFormValues) => {
+         const newMaleCount = playerValues.maleCount ?? 0;
+         const newFemaleCount = playerValues.femaleCount ?? 0;
 
-      // Preserve or resize individualMatches/individualPayments when editing
-      let individualMatches: number[];
-      let individualPayments: IPersonPayment[];
-      if (editingPlayerIndex !== null) {
-         const existingMatches = playersList[editingPlayerIndex].individualMatches ?? [];
-         individualMatches = resizeIndividualMatches(existingMatches, newMaleCount, newFemaleCount);
+         // Preserve or resize individualMatches/individualPayments when editing
+         let individualMatches: number[];
+         let individualPayments: IPersonPayment[];
+         if (editingPlayerIndex !== null) {
+            const existingMatches = playersList[editingPlayerIndex]?.individualMatches ?? [];
+            individualMatches = resizeIndividualMatches(existingMatches, newMaleCount, newFemaleCount);
 
-         const existingPayments = playersList[editingPlayerIndex].individualPayments ?? [];
-         individualPayments = resizeIndividualPayments(existingPayments, newMaleCount, newFemaleCount);
-      } else {
-         individualMatches = initIndividualMatches(newMaleCount, newFemaleCount);
-         individualPayments = initIndividualPayments(newMaleCount, newFemaleCount);
-      }
+            const existingPayments = playersList[editingPlayerIndex]?.individualPayments ?? [];
+            individualPayments = resizeIndividualPayments(existingPayments, newMaleCount, newFemaleCount);
+         } else {
+            individualMatches = initIndividualMatches(newMaleCount, newFemaleCount);
+            individualPayments = initIndividualPayments(newMaleCount, newFemaleCount);
+         }
 
-      const { isPaid, paymentMethod } = deriveGroupPaymentStatus(individualPayments);
+         const { isPaid, paymentMethod } = deriveGroupPaymentStatus(individualPayments);
 
-      const playerObj: IPlayer = {
-         name: playerValues.name,
-         maleCount: newMaleCount,
-         femaleCount: newFemaleCount,
-         isCheckedIn: editingPlayerIndex !== null ? playersList[editingPlayerIndex].isCheckedIn : false,
-         isPaid: editingPlayerIndex !== null ? isPaid : false,
-         paymentMethod: editingPlayerIndex !== null ? paymentMethod : undefined,
-         individualMatches,
-         individualPayments,
-      };
+         const playerObj: IPlayer = {
+            name: playerValues.name ?? "",
+            maleCount: newMaleCount,
+            femaleCount: newFemaleCount,
+            isCheckedIn: editingPlayerIndex !== null ? (playersList[editingPlayerIndex]?.isCheckedIn ?? false) : false,
+            isPaid: editingPlayerIndex !== null ? isPaid : false,
+            paymentMethod: editingPlayerIndex !== null ? paymentMethod : undefined,
+            individualMatches,
+            individualPayments,
+         };
 
-      const newList = [...playersList];
-      if (editingPlayerIndex !== null) {
-         newList[editingPlayerIndex] = playerObj;
-      } else {
-         newList.push(playerObj);
-      }
-      setPlayersList(newList);
-      setIsPlayerDrawerOpen(false);
+         const newList = [...playersList];
+         if (editingPlayerIndex !== null) {
+            newList[editingPlayerIndex] = playerObj;
+         } else {
+            newList.push(playerObj);
+         }
+         setPlayersList(newList);
+         setIsPlayerDrawerOpen(false);
 
-      if (sessionId) {
-         autoSavePlayersMutation.mutate({ id: sessionId, players: newList });
-      }
-   };
+         if (sessionId) {
+            autoSavePlayersMutation.mutate({ id: sessionId, players: newList });
+         }
+      },
+      [editingPlayerIndex, playersList, sessionId, autoSavePlayersMutation],
+   );
 
-   const handleConfirmPayment = (index: number, isCheckedIn: boolean, payments: IPersonPayment[]) => {
-      const newList = [...playersList];
-      const { isPaid, paymentMethod } = deriveGroupPaymentStatus(payments);
-      newList[index] = {
-         ...newList[index],
-         isCheckedIn,
-         isPaid,
-         paymentMethod,
-         individualPayments: payments,
-      };
-      setPlayersList(newList);
+   const handleConfirmPayment = useCallback(
+      (index: number, isCheckedIn: boolean, payments: IPersonPayment[]) => {
+         const newList = [...playersList];
+         const { isPaid, paymentMethod } = deriveGroupPaymentStatus(payments);
+         newList[index] = {
+            ...newList[index]!,
+            isCheckedIn,
+            isPaid,
+            paymentMethod,
+            individualPayments: payments,
+         };
+         setPlayersList(newList);
 
-      if (sessionId) {
-         autoSavePlayersMutation.mutate({ id: sessionId, players: newList });
-      }
-   };
+         if (sessionId) {
+            autoSavePlayersMutation.mutate({ id: sessionId, players: newList });
+         }
+      },
+      [playersList, sessionId, autoSavePlayersMutation],
+   );
 
-   const handleDeletePlayer = (index: number) => {
-      const newList = [...playersList];
-      newList.splice(index, 1);
-      setPlayersList(newList);
+   const handleDeletePlayer = useCallback(
+      (index: number) => {
+         const newList = [...playersList];
+         newList.splice(index, 1);
+         setPlayersList(newList);
 
-      if (sessionId) {
-         autoSavePlayersMutation.mutate({ id: sessionId, players: newList });
-      }
-   };
+         if (sessionId) {
+            autoSavePlayersMutation.mutate({ id: sessionId, players: newList });
+         }
+      },
+      [playersList, sessionId, autoSavePlayersMutation],
+   );
 
-   const handleUpdateMatches = (playerIdx: number, personIdx: number, delta: number) => {
-      const newList = [...playersList];
-      const existing = newList[playerIdx].individualMatches ?? [];
-      newList[playerIdx] = {
-         ...newList[playerIdx],
-         individualMatches: updateIndividualMatch(existing, personIdx, delta),
-      };
-      setPlayersList(newList);
+   const handleUpdateMatches = useCallback(
+      (playerIdx: number, personIdx: number, delta: number) => {
+         const newList = [...playersList];
+         const existing = newList[playerIdx]?.individualMatches ?? [];
+         newList[playerIdx] = {
+            ...newList[playerIdx]!,
+            individualMatches: updateIndividualMatch(existing, personIdx, delta),
+         };
+         setPlayersList(newList);
 
-      if (sessionId) {
-         autoSavePlayersMutation.mutate({ id: sessionId, players: newList });
-      }
-   };
+         if (sessionId) {
+            autoSavePlayersMutation.mutate({ id: sessionId, players: newList });
+         }
+      },
+      [playersList, sessionId, autoSavePlayersMutation],
+   );
 
-   const handleNextStep2 = () => {
+   const handleNextStep2 = useCallback(() => {
       if (playersList.length === 0) {
          message.warning("Vui lòng thêm ít nhất một người chơi vãng lai!");
          return;
@@ -356,12 +392,11 @@ const HostPage = () => {
          id: sessionId!,
          players: playersList,
       });
-   };
+   }, [playersList, sessionId, updatePlayersMutation]);
 
-   // Step 3 Handlers
-   const handleNextStep3 = () => {
+   const handleNextStep3 = useCallback(() => {
       if (!activeShuttle) return;
-      const quantityPerTube = activeShuttle.quantityPerTube || 12;
+      const quantityPerTube = activeShuttle.quantityPerTube ?? 12;
       const totalUsedQuantity = usedTubes * quantityPerTube + usedPieces;
 
       completeSessionMutation.mutate({
@@ -371,22 +406,43 @@ const HostPage = () => {
             notes: sessionNotes,
          },
       });
-   };
+   }, [activeShuttle, usedTubes, usedPieces, sessionId, sessionNotes, completeSessionMutation]);
 
    // ==========================================
-   // 5. HELPER STATS FOR RENDER
+   // 5. HELPER STATS FOR RENDER — useMemo để không tính lại mỗi render
    // ==========================================
-   const totalPlayersCount = playersList.reduce((acc, curr) => acc + curr.maleCount + curr.femaleCount, 0);
-   const totalExpectedRevenue = playersList.reduce((acc, curr) => acc + curr.maleCount * feeMale + curr.femaleCount * feeFemale, 0);
-   const totalCollectedRevenue = calcCollectedRevenue(playersList, feeMale, feeFemale);
-   const selectedPlayersCount = playersList.filter((p) => p.isCheckedIn).reduce((acc, curr) => acc + curr.maleCount + curr.femaleCount, 0);
+   const totalPlayersCount = useMemo(() => playersList.reduce((acc, curr) => acc + curr.maleCount + curr.femaleCount, 0), [playersList]);
 
-   const currentCourtCost = activeCourt ? (activeCourt.timeSlots?.[0]?.pricePerHour || 80000) * hours * numberOfCourts : 0;
-   const currentShuttlePricePerPiece = activeShuttle
-      ? activeShuttle.pricePerPiece || Math.round(activeShuttle.pricePerTube / activeShuttle.quantityPerTube)
-      : 0;
-   const currentShuttleCost = currentShuttlePricePerPiece * (usedTubes * (activeShuttle?.quantityPerTube || 12) + usedPieces);
+   const totalExpectedRevenue = useMemo(
+      () => playersList.reduce((acc, curr) => acc + curr.maleCount * feeMale + curr.femaleCount * feeFemale, 0),
+      [playersList, feeMale, feeFemale],
+   );
 
+   const totalCollectedRevenue = useMemo(() => calcCollectedRevenue(playersList, feeMale, feeFemale), [playersList, feeMale, feeFemale]);
+
+   const selectedPlayersCount = useMemo(
+      () => playersList.filter((p) => p.isCheckedIn).reduce((acc, curr) => acc + curr.maleCount + curr.femaleCount, 0),
+      [playersList],
+   );
+
+   const currentCourtCost = useMemo(
+      () => (activeCourt ? (activeCourt.timeSlots?.[0]?.pricePerHour ?? 80000) * hours * numberOfCourts : 0),
+      [activeCourt, hours, numberOfCourts],
+   );
+
+   const currentShuttlePricePerPiece = useMemo(
+      () => (activeShuttle ? (activeShuttle.pricePerPiece ?? Math.round(activeShuttle.pricePerTube / activeShuttle.quantityPerTube)) : 0),
+      [activeShuttle],
+   );
+
+   const currentShuttleCost = useMemo(
+      () => currentShuttlePricePerPiece * (usedTubes * (activeShuttle?.quantityPerTube ?? 12) + usedPieces),
+      [currentShuttlePricePerPiece, usedTubes, activeShuttle, usedPieces],
+   );
+
+   // ==========================================
+   // 6. RENDER
+   // ==========================================
    if (isLoadingCourts || isLoadingShuttles || (activeId && isLoadingSession)) {
       return (
          <div className="flex flex-col items-center justify-center min-h-screen gap-3 bg-[#F2F2F7] dark:bg-black">
@@ -557,11 +613,11 @@ const HostPage = () => {
                initialValues={
                   editingPlayerIndex !== null
                      ? {
-                          name: playersList[editingPlayerIndex].name,
-                          maleCount: playersList[editingPlayerIndex].maleCount,
-                          femaleCount: playersList[editingPlayerIndex].femaleCount,
-                          isPaid: playersList[editingPlayerIndex].isPaid,
-                          paymentMethod: playersList[editingPlayerIndex].paymentMethod || "cash",
+                          name: playersList[editingPlayerIndex]?.name,
+                          maleCount: playersList[editingPlayerIndex]?.maleCount,
+                          femaleCount: playersList[editingPlayerIndex]?.femaleCount,
+                          isPaid: playersList[editingPlayerIndex]?.isPaid,
+                          paymentMethod: playersList[editingPlayerIndex]?.paymentMethod ?? "cash",
                        }
                      : {
                           maleCount: 1,

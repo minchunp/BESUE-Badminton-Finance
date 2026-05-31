@@ -1,7 +1,15 @@
 import axios from "axios";
 
+// Vite expose biến môi trường qua import.meta.env
+// Prefix VITE_ là bắt buộc để Vite inject vào bundle
+const BASE_URL = import.meta.env.VITE_API_BASE_URL as string;
+
+if (!BASE_URL) {
+   console.warn("[axios] VITE_API_BASE_URL chưa được khai báo trong .env — fallback về localhost");
+}
+
 const axiosInstance = axios.create({
-   baseURL: "http://localhost:5001/api",
+   baseURL: BASE_URL || "http://localhost:5001/api",
    headers: {
       "Content-Type": "application/json",
    },
@@ -16,7 +24,7 @@ axiosInstance.interceptors.request.use(
       }
       return config;
    },
-   (error) => {
+   (error: unknown) => {
       return Promise.reject(error);
    },
 );
