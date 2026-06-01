@@ -964,3 +964,19 @@ h6 {
    color: #ffffff !important;
    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
 }
+
+/* ================================================================
+   9. Prevent iOS / Mobile Input Auto-Zoom
+   ================================================================ */
+@media screen and (max-width: 767px) {
+   input,
+   select,
+   textarea,
+   .ant-select-selection-item,
+   .ant-input,
+   .ant-select-selection-search-input,
+   .ant-select-selection-placeholder,
+   .ant-picker-input > input {
+      font-size: 16px !important;
+   }
+}

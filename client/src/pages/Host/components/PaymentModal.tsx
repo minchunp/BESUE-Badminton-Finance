@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-/* eslint-disable react-hooks/rules-of-hooks */
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Modal, ConfigProvider, theme } from "antd";
@@ -81,13 +80,12 @@ const PaymentModal = ({ player, playerIdx, onConfirm, onClose, feeMale, feeFemal
       setGroupMethod(player.paymentMethod ?? "cash");
    }, [player]);
 
-   if (!player || playerIdx === null) return null;
-
-   const total = player.maleCount + player.femaleCount;
+   const total = player ? player.maleCount + player.femaleCount : 0;
    const isMultiple = total > 1;
-   const expanded = expandPlayers([player]);
+   const expanded = useMemo(() => player ? expandPlayers([player]) : [], [player]);
 
    const buildFinalPayments = useCallback((): IPersonPayment[] => {
+      if (!player) return [];
       if (mode === "group") {
          return Array(total)
             .fill(null)
@@ -97,12 +95,13 @@ const PaymentModal = ({ player, playerIdx, onConfirm, onClose, feeMale, feeFemal
          isPaid: p.isPaid,
          paymentMethod: p.isPaid ? (p.paymentMethod ?? "cash") : undefined,
       }));
-   }, [mode, total, groupIsPaid, groupMethod, perPersonPayments]);
+   }, [player, mode, total, groupIsPaid, groupMethod, perPersonPayments]);
 
    const handleConfirm = useCallback(() => {
-      onConfirm(playerIdx!, buildFinalPayments());
+      if (!player || playerIdx === null) return;
+      onConfirm(playerIdx, buildFinalPayments());
       onClose();
-   }, [playerIdx, buildFinalPayments, onConfirm, onClose]);
+   }, [player, playerIdx, buildFinalPayments, onConfirm, onClose]);
 
    const updatePersonPayment = useCallback((personIdx: number, patch: Partial<IPersonPayment>) => {
       setPerPersonPayments((prev) => prev.map((p, i) => (i === personIdx ? { ...p, ...patch } : p)));
@@ -112,23 +111,27 @@ const PaymentModal = ({ player, playerIdx, onConfirm, onClose, feeMale, feeFemal
       () => deriveGroupPaymentStatus(mode === "individual" ? perPersonPayments : buildFinalPayments()),
       [mode, perPersonPayments, buildFinalPayments],
    );
+
    const paidInIndividual = useMemo(() => perPersonPayments.filter((p) => p.isPaid).length, [perPersonPayments]);
 
-   const totalGroupFee = player.maleCount * feeMale + player.femaleCount * feeFemale;
+   const totalGroupFee = player ? player.maleCount * feeMale + player.femaleCount * feeFemale : 0;
 
    const paidAmount = useMemo(() => {
+      if (!player) return 0;
       if (mode === "group") return groupIsPaid ? totalGroupFee : 0;
       return perPersonPayments.reduce((acc, p, i) => {
          if (!p.isPaid) return acc;
          const person = expanded[i];
          return acc + (person?.gender === "male" ? feeMale : feeFemale);
       }, 0);
-   }, [mode, groupIsPaid, totalGroupFee, perPersonPayments, expanded, feeMale, feeFemale]);
+   }, [player, mode, groupIsPaid, totalGroupFee, perPersonPayments, expanded, feeMale, feeFemale]);
 
    const isConfirmDisabled = useMemo(
       () => !derivedPaid && mode === "group" && !groupIsPaid && paidInIndividual === 0,
       [derivedPaid, mode, groupIsPaid, paidInIndividual],
    );
+
+   if (!player || playerIdx === null) return null;
 
    // Avatar color based on name
    const avatarColors = ["#0A84FF", "#30D158", "#FF9F0A", "#FF375F", "#BF5AF2", "#5AC8FA"];
