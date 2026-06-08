@@ -57,7 +57,7 @@ export const getOverview = async (req, res) => {
                     },
                 },
             ]);
-            return result[0] ?? {
+            return (result[0] ?? {
                 totalRevenue: 0,
                 totalCash: 0,
                 totalTransfer: 0,
@@ -66,22 +66,13 @@ export const getOverview = async (req, res) => {
                 totalProfit: 0,
                 sessionCount: 0,
                 totalShuttleUsed: 0,
-            };
+            });
         };
-        const [current, prev] = await Promise.all([
-            aggregatePeriod(matchCurrent),
-            aggregatePeriod(matchPrev),
-        ]);
+        const [current, prev] = await Promise.all([aggregatePeriod(matchCurrent), aggregatePeriod(matchPrev)]);
         const totalCost = (current.courtCost ?? 0) + (current.shuttleCost ?? 0);
-        const profitMargin = current.totalRevenue > 0
-            ? Math.round((current.totalProfit / current.totalRevenue) * 100)
-            : 0;
-        const revenueChange = prev.totalRevenue > 0
-            ? Math.round(((current.totalRevenue - prev.totalRevenue) / prev.totalRevenue) * 100)
-            : null;
-        const profitChange = prev.totalProfit > 0
-            ? Math.round(((current.totalProfit - prev.totalProfit) / Math.abs(prev.totalProfit)) * 100)
-            : null;
+        const profitMargin = current.totalRevenue > 0 ? Math.round((current.totalProfit / current.totalRevenue) * 100) : 0;
+        const revenueChange = prev.totalRevenue > 0 ? Math.round(((current.totalRevenue - prev.totalRevenue) / prev.totalRevenue) * 100) : null;
+        const profitChange = prev.totalProfit > 0 ? Math.round(((current.totalProfit - prev.totalProfit) / Math.abs(prev.totalProfit)) * 100) : null;
         res.status(200).json({
             success: true,
             data: {
@@ -224,7 +215,8 @@ export const getSessionsTable = async (req, res) => {
         res.status(200).json({ success: true, data: rows });
     }
     catch (error) {
-        res.status(500).json({ success: false, message: "Lỗi lấy danh sách buổi host", error });
+        const msg = error instanceof Error ? error.message : String(error);
+        res.status(500).json({ success: false, message: "Lỗi lấy danh sách buổi host", error: msg });
     }
 };
 // ================================================================
@@ -245,9 +237,7 @@ export const getStatistics = async (req, res) => {
             { $match: { date: { $gte: startDate } } },
             {
                 $group: {
-                    _id: type === "weekly"
-                        ? { $dateToString: { format: "%Y-%W", date: "$date" } }
-                        : { $dateToString: { format: "%Y-%m", date: "$date" } },
+                    _id: type === "weekly" ? { $dateToString: { format: "%Y-%W", date: "$date" } } : { $dateToString: { format: "%Y-%m", date: "$date" } },
                     totalRevenue: { $sum: "$summary.totalRevenue" },
                     totalCourtCost: { $sum: "$summary.courtCost" },
                     totalShuttleCost: { $sum: "$summary.shuttleCost" },
@@ -263,7 +253,8 @@ export const getStatistics = async (req, res) => {
         res.status(200).json(stats);
     }
     catch (error) {
-        res.status(500).json({ message: "Error when retrieving statistics: ", error });
+        const msg = error instanceof Error ? error.message : String(error);
+        res.status(500).json({ message: "Error when retrieving statistics: " + msg });
     }
 };
 //# sourceMappingURL=stats.controller.js.map

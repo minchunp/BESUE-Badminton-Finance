@@ -1,6 +1,8 @@
 import { useState, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Trophy, Minus, Plus, Swords, Users, User, LayoutGrid, List } from "lucide-react";
+import { Trophy, Minus, Plus, Swords, Users, User, LayoutGrid, List, Pencil, X } from "lucide-react";
+import { Modal, ConfigProvider, theme } from "antd";
+import { useTheme } from "../../../contexts/ThemeContext";
 import type { IPlayer } from "../../../api/services/session.api";
 import { expandPlayers } from "../../../utils/playerUtils";
 import MatchTableView from "./MatchTableView";
@@ -15,8 +17,11 @@ interface MatchTrackingTabProps {
    playersList: IPlayer[];
    /** Called with (playerIdx, personIdx, delta) — parent updates individualMatches */
    onUpdateMatches: (playerIdx: number, personIdx: number, delta: number) => void;
+   /** Called when saving individual notes */
+   onUpdateNote: (playerIdx: number, personIdx: number, note: string) => void;
    /** Read-only mode — hides +/- controls (used from History) */
    readOnly?: boolean;
+   searchQuery?: string;
 }
 
 // ================================================================
@@ -40,16 +45,6 @@ const rowVariants = {
 const RANK_BADGES: Record<number, string> = { 1: "🥇", 2: "🥈", 3: "🥉" };
 const DEFAULT_COLUMN_COUNT = 8;
 const MIN_COLUMN_COUNT = 8;
-
-const AVATAR_COLORS = [
-   "bg-[#0A84FF]/12 text-[#0A84FF]",
-   "bg-[#FF375F]/10 text-[#FF375F]",
-   "bg-[#007AFF]/10 text-[#007AFF]",
-   "bg-[#30D158]/12 text-[#30D158]",
-   "bg-[#FF9F0A]/12 text-[#FF9F0A]",
-   "bg-[#5AC8FA]/12 text-[#5AC8FA]",
-   "bg-[#FF2D55]/10 text-[#FF2D55]",
-];
 
 // ================================================================
 // ViewModeToggle — Apple Segmented Control
@@ -86,16 +81,38 @@ const ViewModeToggle = ({ mode, onChange }: { mode: TrackingViewMode; onChange: 
 // Component
 // ================================================================
 
-const MatchTrackingTab = ({ playersList, onUpdateMatches, readOnly = false }: MatchTrackingTabProps) => {
+const MatchTrackingTab = ({ playersList, onUpdateMatches, onUpdateNote, readOnly = false, searchQuery = "" }: MatchTrackingTabProps) => {
+   const { isDarkMode } = useTheme();
+   const bg = isDarkMode ? "#1C1C1E" : "#ffffff";
+   const bgBody = isDarkMode ? "#000000" : "#F2F2F7";
+   const border = isDarkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)";
    const [viewMode, setViewMode] = useState<TrackingViewMode>("table");
    const [columnCount, setColumnCount] = useState(DEFAULT_COLUMN_COUNT);
+   const [editingNote, setEditingNote] = useState<{
+      playerIdx: number;
+      personIdx: number;
+      displayName: string;
+      note: string;
+   } | null>(null);
 
    const expanded = useMemo(() => expandPlayers(playersList), [playersList]);
    const totalIndividuals = expanded.length;
    const totalMatches = useMemo(() => expanded.reduce((acc, p) => acc + p.matches, 0), [expanded]);
 
+   const filteredExpanded = useMemo(() => {
+      const query = searchQuery.toLowerCase().trim();
+      if (!query) return expanded;
+      return expanded.filter((person) => {
+         const nameMatch = person.displayName.toLowerCase().includes(query);
+         const noteMatch = person.payment?.note?.toLowerCase().includes(query) ?? false;
+         const parentName = playersList[person.playerIdx]?.name ?? "";
+         const parentMatch = parentName.toLowerCase().includes(query);
+         return nameMatch || noteMatch || parentMatch;
+      });
+   }, [expanded, searchQuery, playersList]);
+
    // Sort by matches descending for leaderboard
-   const ranked = useMemo(() => [...expanded].sort((a, b) => b.matches - a.matches), [expanded]);
+   const ranked = useMemo(() => [...filteredExpanded].sort((a, b) => b.matches - a.matches), [filteredExpanded]);
    const maxMatches = useMemo(() => Math.max(...expanded.map((p) => p.matches), 1), [expanded]);
 
    const handleAddColumn = useCallback(() => setColumnCount((c) => c + 1), []);
@@ -171,114 +188,134 @@ const MatchTrackingTab = ({ playersList, onUpdateMatches, readOnly = false }: Ma
                   {/* Ranked rows */}
                   <motion.div variants={containerVariants} initial="hidden" animate="show" className="space-y-2">
                      <AnimatePresence>
-                        {ranked.map((person, rankIdx) => {
-                           const progress = maxMatches > 0 ? (person.matches / maxMatches) * 100 : 0;
-                           const badge = RANK_BADGES[rankIdx + 1];
-                           const avatarColor = AVATAR_COLORS[person.playerIdx % AVATAR_COLORS.length];
-                           const isFriend = person.personIdx > 0;
-                           const isTop = rankIdx === 0 && person.matches > 0;
+                        {ranked.length === 0 ? (
+                           <div className="py-12 bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-3xl flex flex-col items-center justify-center">
+                              <Users size={32} className="text-black/20 dark:text-white/20 mb-2" />
+                              <span className="text-xs font-semibold text-black/35 dark:text-white/35">Không tìm thấy kết quả phù hợp</span>
+                           </div>
+                        ) : (
+                           ranked.map((person, rankIdx) => {
+                              const progress = maxMatches > 0 ? (person.matches / maxMatches) * 100 : 0;
+                              const badge = RANK_BADGES[rankIdx + 1];
+                              const isFriend = person.personIdx > 0;
+                              const isTop = rankIdx === 0 && person.matches > 0;
 
-                           return (
-                              <motion.div
-                                 key={`${person.playerIdx}-${person.personIdx}`}
-                                 variants={rowVariants}
-                                 layout
-                                 className={`rounded-[12px] p-3.5 border overflow-hidden ${
-                                    isTop
-                                       ? "bg-[#FF9F0A]/5 dark:bg-[#FF9F0A]/8 border-[#FF9F0A]/20 dark:border-[#FF9F0A]/18"
-                                       : "bg-white dark:bg-[#1C1C1E] border-black/4 dark:border-white/6"
-                                 }`}
-                              >
-                                 <div className="flex items-center gap-3">
-                                    {/* Rank badge */}
-                                    <div className="w-6 text-center shrink-0">
-                                       {badge && person.matches > 0 ? (
-                                          <span className="text-base leading-none">{badge}</span>
-                                       ) : (
-                                          <span className="text-[11px] font-bold text-black/22 dark:text-white/22">#{rankIdx + 1}</span>
-                                       )}
-                                    </div>
-
-                                    {/* Avatar */}
-                                    <div className="relative shrink-0">
-                                       <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold ${avatarColor}`}>
-                                          {person.displayName.charAt(0).toUpperCase()}
+                              return (
+                                 <motion.div
+                                    key={`${person.playerIdx}-${person.personIdx}`}
+                                    variants={rowVariants}
+                                    layout
+                                    className={`rounded-xl p-3.5 border overflow-hidden ${
+                                       isTop
+                                          ? "bg-[#FF9F0A]/5 dark:bg-[#FF9F0A]/8 border-[#FF9F0A]/20 dark:border-[#FF9F0A]/18"
+                                          : "bg-white dark:bg-[#1C1C1E] border-black/4 dark:border-white/6"
+                                    }`}
+                                 >
+                                    <div className="flex items-center gap-3">
+                                       {/* Rank badge */}
+                                       <div className="w-6 text-center shrink-0">
+                                          {badge && person.matches > 0 ? (
+                                             <span className="text-base leading-none">{badge}</span>
+                                          ) : (
+                                             <span className="text-[11px] font-bold text-black/22 dark:text-white/22">#{rankIdx + 1}</span>
+                                          )}
                                        </div>
-                                    </div>
 
-                                    {/* Name + gender + progress bar */}
-                                    <div className="flex-1 min-w-0">
-                                       <div className="flex justify-between items-start mb-1.5">
-                                          <div className="min-w-0 pr-2">
-                                             <p
-                                                className={`text-[13px] font-bold truncate leading-none ${isTop ? "text-[#FF9F0A]" : "text-black dark:text-white"}`}
+                                       {/* Name + gender + progress bar */}
+                                       <div className="flex-1 min-w-0">
+                                          <div className="flex justify-between items-start mb-1.5">
+                                             <div
+                                                className={`min-w-0 pr-2 ${!readOnly ? "cursor-pointer hover:opacity-80" : ""} transition-opacity flex flex-col`}
+                                                onClick={
+                                                   !readOnly
+                                                      ? () =>
+                                                           setEditingNote({
+                                                              playerIdx: person.playerIdx,
+                                                              personIdx: person.personIdx,
+                                                              displayName: person.displayName,
+                                                              note: person.payment?.note ?? "",
+                                                           })
+                                                      : undefined
+                                                }
                                              >
-                                                {person.displayName}
-                                             </p>
-                                             <div className="flex items-center gap-1 mt-0.5">
-                                                {isFriend && (
-                                                   <span className="text-[9px] font-semibold text-black/25 dark:text-white/25 uppercase tracking-wide">
-                                                      Bạn của ·
+                                                <div className="flex items-center gap-1.5">
+                                                   <p
+                                                      className={`text-[13px] font-bold truncate leading-none ${isTop ? "text-[#FF9F0A]" : "text-black dark:text-white"}`}
+                                                   >
+                                                      {person.displayName}
+                                                   </p>
+                                                   {!readOnly && <Pencil size={10} className="text-black/35 dark:text-white/35 shrink-0" />}
+                                                </div>
+                                                <div className="flex items-center gap-1 mt-0.5">
+                                                   {isFriend && (
+                                                      <span className="text-[9px] font-semibold text-black/25 dark:text-white/25 uppercase tracking-wide">
+                                                         Bạn của ·
+                                                      </span>
+                                                   )}
+                                                   <span
+                                                      className={`text-[9px] font-bold uppercase tracking-wide ${
+                                                         person.gender === "male" ? "text-[#007AFF]" : "text-[#FF2D55]"
+                                                      }`}
+                                                   >
+                                                      {person.gender === "male" ? "♂ Nam" : "♀ Nữ"}
+                                                   </span>
+                                                </div>
+                                                {person.payment?.note && (
+                                                   <span className="text-[9px] font-semibold italic text-[#FF9F0A] mt-1 bg-[#FF9F0A]/10 px-1.5 py-0.5 rounded-md self-start">
+                                                      Ghi chú: {person.payment.note}
                                                    </span>
                                                 )}
-                                                <span
-                                                   className={`text-[9px] font-bold uppercase tracking-wide ${
-                                                      person.gender === "male" ? "text-[#007AFF]" : "text-[#FF2D55]"
-                                                   }`}
-                                                >
-                                                   {person.gender === "male" ? "♂ Nam" : "♀ Nữ"}
-                                                </span>
                                              </div>
+                                             <span
+                                                className={`text-sm font-black shrink-0 leading-none mt-0.5 tabular-nums ${isTop ? "text-[#FF9F0A]" : "text-[#0A84FF]"}`}
+                                             >
+                                                {person.matches}
+                                                <span className="text-[10px] font-medium ml-0.5 opacity-50">tr</span>
+                                             </span>
                                           </div>
-                                          <span
-                                             className={`text-sm font-black shrink-0 leading-none mt-0.5 tabular-nums ${isTop ? "text-[#FF9F0A]" : "text-[#0A84FF]"}`}
-                                          >
-                                             {person.matches}
-                                             <span className="text-[10px] font-medium ml-0.5 opacity-50">tr</span>
-                                          </span>
+
+                                          {/* Progress bar */}
+                                          <div className="h-1.5 w-full bg-black/6 dark:bg-white/6 rounded-full overflow-hidden">
+                                             <motion.div
+                                                className={`h-full rounded-full ${isTop ? "bg-[#FF9F0A]" : "bg-[#0A84FF]"}`}
+                                                initial={{ width: 0 }}
+                                                animate={{ width: `${progress}%` }}
+                                                transition={{ type: "spring", stiffness: 90, damping: 16, delay: 0.08 }}
+                                             />
+                                          </div>
                                        </div>
 
-                                       {/* Progress bar */}
-                                       <div className="h-1.5 w-full bg-black/6 dark:bg-white/6 rounded-full overflow-hidden">
-                                          <motion.div
-                                             className={`h-full rounded-full ${isTop ? "bg-[#FF9F0A]" : "bg-[#0A84FF]"}`}
-                                             initial={{ width: 0 }}
-                                             animate={{ width: `${progress}%` }}
-                                             transition={{ type: "spring", stiffness: 90, damping: 16, delay: 0.08 }}
-                                          />
-                                       </div>
+                                       {/* +/- controls (hidden in readOnly mode) */}
+                                       {!readOnly && (
+                                          <div className="flex items-center gap-1.5 shrink-0 ml-0.5">
+                                             <motion.button
+                                                whileTap={{ scale: 0.85 }}
+                                                onClick={() => onUpdateMatches(person.playerIdx, person.personIdx, -1)}
+                                                disabled={person.matches <= 0}
+                                                className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors border-none ${
+                                                   person.matches <= 0
+                                                      ? "bg-black/4 dark:bg-white/4 text-black/20 dark:text-white/20 cursor-not-allowed"
+                                                      : "bg-[#FF375F]/10 text-[#FF375F] hover:bg-[#FF375F]/18 cursor-pointer"
+                                                }`}
+                                             >
+                                                <Minus size={13} strokeWidth={2.5} />
+                                             </motion.button>
+
+                                             <motion.button
+                                                whileTap={{ scale: 0.85 }}
+                                                whileHover={{ scale: 1.06 }}
+                                                onClick={() => onUpdateMatches(person.playerIdx, person.personIdx, 1)}
+                                                className="w-8 h-8 rounded-full flex items-center justify-center bg-[#0A84FF] text-white cursor-pointer transition-all border-none shadow-sm"
+                                             >
+                                                <Plus size={13} strokeWidth={2.5} />
+                                             </motion.button>
+                                          </div>
+                                       )}
                                     </div>
-
-                                    {/* +/- controls (hidden in readOnly mode) */}
-                                    {!readOnly && (
-                                       <div className="flex items-center gap-1.5 shrink-0 ml-0.5">
-                                          <motion.button
-                                             whileTap={{ scale: 0.85 }}
-                                             onClick={() => onUpdateMatches(person.playerIdx, person.personIdx, -1)}
-                                             disabled={person.matches <= 0}
-                                             className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors border-none ${
-                                                person.matches <= 0
-                                                   ? "bg-black/4 dark:bg-white/4 text-black/20 dark:text-white/20 cursor-not-allowed"
-                                                   : "bg-[#FF375F]/10 text-[#FF375F] hover:bg-[#FF375F]/18 cursor-pointer"
-                                             }`}
-                                          >
-                                             <Minus size={13} strokeWidth={2.5} />
-                                          </motion.button>
-
-                                          <motion.button
-                                             whileTap={{ scale: 0.85 }}
-                                             whileHover={{ scale: 1.06 }}
-                                             onClick={() => onUpdateMatches(person.playerIdx, person.personIdx, 1)}
-                                             className="w-8 h-8 rounded-full flex items-center justify-center bg-[#0A84FF] text-white cursor-pointer transition-all border-none shadow-sm"
-                                          >
-                                             <Plus size={13} strokeWidth={2.5} />
-                                          </motion.button>
-                                       </div>
-                                    )}
-                                 </div>
-                              </motion.div>
-                           );
-                        })}
+                                 </motion.div>
+                              );
+                           })
+                        )}
                      </AnimatePresence>
                   </motion.div>
 
@@ -313,16 +350,127 @@ const MatchTrackingTab = ({ playersList, onUpdateMatches, readOnly = false }: Ma
                      onRemoveColumn={handleRemoveColumn}
                      readOnly={readOnly}
                      onUpdateMatches={onUpdateMatches}
+                     onEditNote={(playerIdx, personIdx, displayName, note) => {
+                        if (!readOnly) {
+                           setEditingNote({ playerIdx, personIdx, displayName, note });
+                        }
+                     }}
+                     searchQuery={searchQuery}
                   />
 
                   {!readOnly && (
                      <p className="text-center text-[10px] font-medium text-black/25 dark:text-white/25 uppercase tracking-wider pt-1">
-                        Chạm ô để cập nhật · Cuộn ngang để xem thêm
+                        Chạm ô để cập nhật · Nhấn tên vãng lai để thêm ghi chú · Cuộn ngang để xem thêm
                      </p>
                   )}
                </motion.div>
             )}
          </AnimatePresence>
+
+         {/* Edit Note Modal */}
+         <ConfigProvider
+            theme={{
+               algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
+               token: { colorPrimary: "#0A84FF", borderRadius: 18 },
+            }}
+         >
+            <Modal
+               open={!!editingNote}
+               onCancel={() => setEditingNote(null)}
+               footer={null}
+               centered
+               closable={false}
+               width={360}
+               className="apple-payment-modal"
+               wrapClassName="apple-payment-modal-wrap"
+               classNames={{ body: "apple-modal-body-inner" }}
+               styles={{
+                  mask: {
+                     backdropFilter: "blur(16px)",
+                     WebkitBackdropFilter: "blur(16px)",
+                     background: "rgba(0,0,0,0.5)",
+                  },
+                  body: { padding: 0, background: "transparent" },
+               }}
+            >
+               <div className="font-sans select-none">
+                  {/* Header */}
+                  <div
+                     style={{
+                        padding: "10px 0px 15px",
+                        borderBottom: `1px solid ${border}`,
+                        background: bg,
+                     }}
+                  >
+                     <div className="flex items-center justify-between">
+                        <h3 className="text-[16px] font-black text-black dark:text-white m-0 leading-tight">Ghi chú: {editingNote?.displayName}</h3>
+                        <button
+                           type="button"
+                           onClick={() => setEditingNote(null)}
+                           className="w-7.5 h-7.5 rounded-full flex items-center justify-center cursor-pointer border-none transition-opacity hover:opacity-70"
+                           style={{
+                              background: isDarkMode ? "rgba(255,255,255,0.1)" : "rgba(60,60,67,0.08)",
+                              color: isDarkMode ? "rgba(235,235,245,0.6)" : "rgba(60,60,67,0.6)",
+                           }}
+                        >
+                           <X size={14} strokeWidth={2.5} />
+                        </button>
+                     </div>
+                  </div>
+
+                  {/* Body */}
+                  <div
+                     style={{
+                        padding: "20px",
+                        background: bgBody,
+                     }}
+                  >
+                     <textarea
+                        value={editingNote?.note ?? ""}
+                        onChange={(e) => setEditingNote((prev) => (prev ? { ...prev, note: e.target.value } : null))}
+                        placeholder="Nhập ghi chú cho người chơi này (ví dụ: Bạn của A, đi trễ, đánh tốt...)"
+                        rows={4}
+                        className="w-full p-3.5 rounded-xl bg-black/4 dark:bg-white/4 border border-black/5 dark:border-white/5 text-xs font-semibold focus:outline-none focus:border-[#0A84FF] text-black dark:text-white resize-none placeholder-black/25 dark:placeholder-white/25"
+                     />
+                  </div>
+
+                  {/* Footer */}
+                  <div
+                     style={{
+                        padding: "16px 0px 20px",
+                        borderTop: `1px solid ${border}`,
+                        background: bg,
+                     }}
+                  >
+                     <div className="flex gap-2.5">
+                        <button
+                           type="button"
+                           onClick={() => setEditingNote(null)}
+                           className="flex-1 h-10 rounded-xl text-xs font-bold transition-opacity hover:opacity-75 active:scale-[0.97] cursor-pointer border-none"
+                           style={{
+                              background: isDarkMode ? "rgba(255,255,255,0.1)" : "rgba(60,60,67,0.08)",
+                              color: isDarkMode ? "#ffffff" : "#000000",
+                           }}
+                        >
+                           Hủy
+                        </button>
+                        <button
+                           type="button"
+                           onClick={() => {
+                              if (editingNote) {
+                                 onUpdateNote(editingNote.playerIdx, editingNote.personIdx, editingNote.note);
+                                 setEditingNote(null);
+                              }
+                           }}
+                           className="flex-1 h-10 rounded-xl text-xs font-bold transition-all duration-200 active:scale-[0.97] border-none bg-[#0A84FF] text-white shadow-[0_2px_8px_rgba(10,132,255,0.25)] hover:opacity-90 cursor-pointer"
+                        >
+                           Lưu
+                        </button>
+                     </div>
+                  </div>
+               </div>
+            </Modal>
+         </ConfigProvider>
       </motion.div>
    );
 };

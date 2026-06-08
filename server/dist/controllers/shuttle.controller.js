@@ -1,4 +1,12 @@
 import Shuttle from "../models/shuttle.js";
+// ================================================================
+// Helper: extract error message safely (no `any`)
+// ================================================================
+const getErrorMessage = (error) => {
+    if (error instanceof Error)
+        return error.message;
+    return String(error);
+};
 // GET /api/shuttles (Lấy danh sách quả cầu)
 export const getShuttles = async (req, res) => {
     try {
@@ -12,8 +20,7 @@ export const getShuttles = async (req, res) => {
     catch (error) {
         res.status(500).json({
             success: false,
-            message: "Error retrieving the shuttle list: " + error.message,
-            error,
+            message: "Error retrieving the shuttle list: " + getErrorMessage(error),
         });
     }
 };
@@ -38,8 +45,7 @@ export const getShuttleById = async (req, res) => {
     catch (error) {
         res.status(500).json({
             success: false,
-            message: "Error retrieving shuttle details: " + error.message,
-            error,
+            message: "Error retrieving shuttle details: " + getErrorMessage(error),
         });
     }
 };
@@ -70,8 +76,7 @@ export const createShuttle = async (req, res) => {
     catch (error) {
         res.status(500).json({
             success: false,
-            message: "Error while creating shuttle: " + error.message,
-            error,
+            message: "Error while creating shuttle: " + getErrorMessage(error),
         });
     }
 };
@@ -106,8 +111,7 @@ export const updateShuttle = async (req, res) => {
     catch (error) {
         res.status(500).json({
             success: false,
-            message: "Error while updating shuttle: " + error.message,
-            error,
+            message: "Error while updating shuttle: " + getErrorMessage(error),
         });
     }
 };
@@ -132,8 +136,7 @@ export const deleteShuttle = async (req, res) => {
     catch (error) {
         res.status(500).json({
             success: false,
-            message: "Error while deleting shuttle: " + error.message,
-            error,
+            message: "Error while deleting shuttle: " + getErrorMessage(error),
         });
     }
 };

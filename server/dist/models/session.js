@@ -21,6 +21,7 @@ const SessionSchema = new Schema({
             maleCount: { type: Number, default: 0 },
             femaleCount: { type: Number, default: 0 },
             isCheckedIn: { type: Boolean, default: false },
+            isPresent: { type: Boolean, default: false },
             isPaid: { type: Boolean, default: false },
             paymentMethod: { type: String, enum: ["cash", "transfer"] },
             individualMatches: { type: [Number], default: [] },
@@ -29,6 +30,9 @@ const SessionSchema = new Schema({
                     {
                         isPaid: { type: Boolean, default: false },
                         paymentMethod: { type: String, enum: ["cash", "transfer"] },
+                        customFee: { type: Number },
+                        note: { type: String, default: "" },
+                        isPresent: { type: Boolean, default: false },
                     },
                 ],
                 default: [],

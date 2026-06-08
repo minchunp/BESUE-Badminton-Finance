@@ -43,21 +43,6 @@ const StepBasicInfo = ({
             </div>
          </div>
 
-         {/* Title box */}
-         <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-3xl p-4">
-            <div className="flex items-center gap-4">
-               <div className="w-12 h-12 rounded-2xl bg-[#0A84FF]/10 text-[#0A84FF] flex items-center justify-center shrink-0">
-                  <Sparkles size={22} strokeWidth={2.5} />
-               </div>
-               <div>
-                  <h2 className="font-sans text-[15px] font-extrabold text-black dark:text-white tracking-tight leading-tight">
-                     Thiết lập thông tin cơ bản
-                  </h2>
-                  <p className="font-sans text-xs font-semibold text-black/55 dark:text-white/55 mt-0.5">Khởi tạo nền tảng cho buổi giao lưu</p>
-               </div>
-            </div>
-         </div>
-
          {/* Date selection card */}
          <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[14px] p-4 flex items-center justify-between">
             <div className="flex items-center gap-3 w-full">

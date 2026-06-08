@@ -1,6 +1,7 @@
 import {} from "express";
 import jwt from "jsonwebtoken";
 import User, {} from "../models/user.js";
+import { config } from "../server.js";
 export const protect = async (req, res, next) => {
     try {
         let token;
@@ -15,8 +16,8 @@ export const protect = async (req, res, next) => {
             });
             return;
         }
-        // Verify token
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || "besue_jwt_secret_default");
+        // Verify token — dùng config.jwtSecret (đã được validate lúc startup)
+        const decoded = jwt.verify(token, config.jwtSecret);
         // Find user from database
         const user = await User.findById(decoded.id);
         if (!user) {

@@ -2,6 +2,8 @@ import mongoose, { type Document } from "mongoose";
 export interface IPersonPayment {
     isPaid: boolean;
     paymentMethod?: "cash" | "transfer";
+    customFee?: number;
+    note?: string;
 }
 export interface IPlayer {
     _id?: string;
@@ -9,6 +11,7 @@ export interface IPlayer {
     maleCount: number;
     femaleCount: number;
     isCheckedIn: boolean;
+    isPresent: boolean;
     isPaid: boolean;
     paymentMethod?: "cash" | "transfer";
     /** Per-person match count. Length = maleCount + femaleCount */

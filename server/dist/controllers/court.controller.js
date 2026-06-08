@@ -1,4 +1,12 @@
 import Court from "../models/court.js";
+// ================================================================
+// Helper: extract error message safely (no `any`)
+// ================================================================
+const getErrorMessage = (error) => {
+    if (error instanceof Error)
+        return error.message;
+    return String(error);
+};
 // GET /api/courts (Lấy danh sách sân)
 export const getCourts = async (req, res) => {
     try {
@@ -12,8 +20,7 @@ export const getCourts = async (req, res) => {
     catch (error) {
         res.status(500).json({
             success: false,
-            message: "Error retrieving the court list: " + error.message,
-            error,
+            message: "Error retrieving the court list: " + getErrorMessage(error),
         });
     }
 };
@@ -38,8 +45,7 @@ export const getCourtById = async (req, res) => {
     catch (error) {
         res.status(500).json({
             success: false,
-            message: "Error retrieving court details: " + error.message,
-            error,
+            message: "Error retrieving court details: " + getErrorMessage(error),
         });
     }
 };
@@ -57,7 +63,7 @@ export const createCourt = async (req, res) => {
         const newCourt = new Court({
             name,
             address,
-            timeSlots: timeSlots || [],
+            timeSlots: timeSlots ?? [],
             description,
         });
         await newCourt.save();
@@ -70,8 +76,7 @@ export const createCourt = async (req, res) => {
     catch (error) {
         res.status(500).json({
             success: false,
-            message: "Error while creating court: " + error.message,
-            error,
+            message: "Error while creating court: " + getErrorMessage(error),
         });
     }
 };
@@ -97,8 +102,7 @@ export const updateCourt = async (req, res) => {
     catch (error) {
         res.status(500).json({
             success: false,
-            message: "Error while updating court: " + error.message,
-            error,
+            message: "Error while updating court: " + getErrorMessage(error),
         });
     }
 };
@@ -123,8 +127,7 @@ export const deleteCourt = async (req, res) => {
     catch (error) {
         res.status(500).json({
             success: false,
-            message: "Error while deleting court: " + error.message,
-            error,
+            message: "Error while deleting court: " + getErrorMessage(error),
         });
     }
 };

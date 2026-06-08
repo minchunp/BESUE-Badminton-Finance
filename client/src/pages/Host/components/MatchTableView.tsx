@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Plus, Minus, Swords } from "lucide-react";
 import type { IPlayer } from "../../../api/services/session.api";
@@ -16,21 +16,9 @@ interface MatchTableViewProps {
    /** If true, hides interactive controls (used in MatchStatsModal) */
    readOnly?: boolean;
    onUpdateMatches?: (playerIdx: number, personIdx: number, delta: number) => void;
+   onEditNote?: (playerIdx: number, personIdx: number, displayName: string, note: string) => void;
+   searchQuery?: string;
 }
-
-// ================================================================
-// Avatar colors palette (Apple system colors)
-// ================================================================
-
-const AVATAR_COLORS: { bg: string; text: string }[] = [
-   { bg: "rgba(10,132,255,0.14)", text: "#0A84FF" },
-   { bg: "rgba(255,55,95,0.12)", text: "#FF375F" },
-   { bg: "rgba(48,209,88,0.12)", text: "#30D158" },
-   { bg: "rgba(255,159,10,0.12)", text: "#FF9F0A" },
-   { bg: "rgba(90,200,250,0.14)", text: "#5AC8FA" },
-   { bg: "rgba(191,90,242,0.12)", text: "#BF5AF2" },
-   { bg: "rgba(255,45,85,0.12)", text: "#FF2D55" },
-];
 
 // ================================================================
 // Constants
@@ -68,9 +56,30 @@ const MatchCell = ({ matched, readOnly, onClick }: { matched: boolean; readOnly:
 // Main Component
 // ================================================================
 
-const MatchTableView = ({ playersList, columnCount, onAddColumn, onRemoveColumn, readOnly = false, onUpdateMatches }: MatchTableViewProps) => {
+const MatchTableView = ({
+   playersList,
+   columnCount,
+   onAddColumn,
+   onRemoveColumn,
+   readOnly = false,
+   onUpdateMatches,
+   onEditNote,
+   searchQuery = "",
+}: MatchTableViewProps) => {
    const scrollRef = useRef<HTMLDivElement>(null);
-   const expanded = expandPlayers(playersList);
+   const expanded = useMemo(() => expandPlayers(playersList), [playersList]);
+
+   const filteredExpanded = useMemo(() => {
+      const query = searchQuery.toLowerCase().trim();
+      if (!query) return expanded;
+      return expanded.filter((person) => {
+         const nameMatch = person.displayName.toLowerCase().includes(query);
+         const noteMatch = person.payment?.note?.toLowerCase().includes(query) ?? false;
+         const parentName = playersList[person.playerIdx]?.name ?? "";
+         const parentMatch = parentName.toLowerCase().includes(query);
+         return nameMatch || noteMatch || parentMatch;
+      });
+   }, [expanded, searchQuery, playersList]);
 
    if (playersList.length === 0) {
       return (
@@ -83,6 +92,21 @@ const MatchTableView = ({ playersList, columnCount, onAddColumn, onRemoveColumn,
                <Swords size={24} className="text-[#0A84FF]/50" />
             </div>
             <p className="text-sm font-semibold text-black/40 dark:text-white/40">Chưa có vãng lai nào</p>
+         </motion.div>
+      );
+   }
+
+   if (filteredExpanded.length === 0) {
+      return (
+         <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex flex-col items-center justify-center py-16 text-center"
+         >
+            <div className="w-14 h-14 rounded-full bg-[#0A84FF]/10 flex items-center justify-center mb-4">
+               <Swords size={24} className="text-[#0A84FF]/50" />
+            </div>
+            <p className="text-sm font-semibold text-black/40 dark:text-white/40">Không tìm thấy kết quả phù hợp</p>
          </motion.div>
       );
    }
@@ -131,36 +155,35 @@ const MatchTableView = ({ playersList, columnCount, onAddColumn, onRemoveColumn,
                      <div
                         className="shrink-0 flex items-center justify-center gap-0 sticky right-0 z-20 bg-white dark:bg-[#1C1C1E] border-l border-black/6 dark:border-white/6"
                         style={{ width: COL_MATCH_W }}
-                     >
-                        {!readOnly && (
-                           <div className="flex flex-col gap-0.5">
-                              <button
-                                 onClick={onAddColumn}
-                                 className="w-6 h-5 flex items-center justify-center rounded-md bg-[#0A84FF]/12 text-[#0A84FF] hover:bg-[#0A84FF]/22 active:scale-90 transition-all cursor-pointer border-none"
-                                 title="Thêm cột"
-                              >
-                                 <Plus size={11} strokeWidth={2.5} />
-                              </button>
-                              {columnCount > 8 && onRemoveColumn && (
-                                 <button
-                                    onClick={onRemoveColumn}
-                                    className="w-6 h-5 flex items-center justify-center rounded-md bg-[#FF375F]/10 text-[#FF375F] hover:bg-[#FF375F]/20 active:scale-90 transition-all cursor-pointer border-none"
-                                    title="Bớt cột"
-                                 >
-                                    <Minus size={11} strokeWidth={2.5} />
-                                 </button>
-                              )}
-                           </div>
-                        )}
-                        {readOnly && <span className="text-[9px] font-bold uppercase tracking-wide text-black/25 dark:text-white/25">Tổng</span>}
-                     </div>
-                  </div>
-
-                  {/* ── DATA ROWS ── */}
-                  {expanded.map((person, rowIdx) => {
-                     const avatarStyle = AVATAR_COLORS[person.playerIdx % AVATAR_COLORS.length];
-                     const isFriend = person.personIdx > 0;
-                     const isLastRow = rowIdx === expanded.length - 1;
+                      >
+                         {!readOnly && (
+                            <div className="flex flex-col gap-0.5">
+                               <button
+                                  onClick={onAddColumn}
+                                  className="w-6 h-5 flex items-center justify-center rounded-md bg-[#0A84FF]/12 text-[#0A84FF] hover:bg-[#0A84FF]/22 active:scale-90 transition-all cursor-pointer border-none"
+                                  title="Thêm cột"
+                               >
+                                  <Plus size={11} strokeWidth={2.5} />
+                               </button>
+                               {columnCount > 8 && onRemoveColumn && (
+                                  <button
+                                     onClick={onRemoveColumn}
+                                     className="w-6 h-5 flex items-center justify-center rounded-md bg-[#FF375F]/10 text-[#FF375F] hover:bg-[#FF375F]/20 active:scale-90 transition-all cursor-pointer border-none"
+                                     title="Bớt cột"
+                                  >
+                                     <Minus size={11} strokeWidth={2.5} />
+                                  </button>
+                               )}
+                            </div>
+                         )}
+                         {readOnly && <span className="text-[9px] font-bold uppercase tracking-wide text-black/25 dark:text-white/25">Tổng</span>}
+                      </div>
+                   </div>
+ 
+                   {/* ── DATA ROWS ── */}
+                   {filteredExpanded.map((person, rowIdx) => {
+                      const isFriend = person.personIdx > 0;
+                      const isLastRow = rowIdx === filteredExpanded.length - 1;
 
                      return (
                         <div
@@ -169,19 +192,16 @@ const MatchTableView = ({ playersList, columnCount, onAddColumn, onRemoveColumn,
                         >
                            {/* ── Name cell (sticky left) ── */}
                            <div
-                              className="shrink-0 flex items-center gap-2 px-3 py-2.5 border-r border-black/6 dark:border-white/6 sticky left-0 z-10 bg-white dark:bg-[#1C1C1E]"
+                              onClick={() => {
+                                 if (!readOnly && onEditNote) {
+                                    onEditNote(person.playerIdx, person.personIdx, person.displayName, person.payment?.note ?? "");
+                                 }
+                              }}
+                              className={`shrink-0 flex items-center gap-2 px-3 py-2 border-r border-black/6 dark:border-white/6 sticky left-0 z-10 bg-white dark:bg-[#1C1C1E] ${!readOnly && onEditNote ? "cursor-pointer hover:bg-black/2 dark:hover:bg-white/2" : ""}`}
                               style={{ width: COL_NAME_W }}
                            >
-                              {/* Avatar */}
-                              <div
-                                 className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0"
-                                 style={{ background: avatarStyle.bg, color: avatarStyle.text }}
-                              >
-                                 {person.displayName.charAt(0).toUpperCase()}
-                              </div>
-
-                              {/* Name + gender */}
-                              <div className="min-w-0 flex-1">
+                              {/* Name + gender + note */}
+                              <div className="min-w-0 flex-1 flex flex-col justify-center">
                                  <p className="text-[11px] font-bold text-black dark:text-white truncate leading-tight">
                                     {isFriend ? (
                                        <>
@@ -197,6 +217,11 @@ const MatchTableView = ({ playersList, columnCount, onAddColumn, onRemoveColumn,
                                  >
                                     {person.gender === "male" ? "♂ Nam" : "♀ Nữ"}
                                  </span>
+                                 {person.payment?.note && (
+                                    <span className="text-[8px] font-bold italic text-[#FF9F0A] mt-0.5 truncate max-w-full" title={person.payment.note}>
+                                       * {person.payment.note}
+                                    </span>
+                                 )}
                               </div>
                            </div>
 

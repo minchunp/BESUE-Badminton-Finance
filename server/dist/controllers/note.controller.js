@@ -2,6 +2,14 @@ import {} from "express";
 import Note from "../models/note.js";
 import {} from "../middlewares/auth.middleware.js";
 // ================================================================
+// Helper: extract error message safely (no `any`)
+// ================================================================
+const getErrorMessage = (error) => {
+    if (error instanceof Error)
+        return error.message;
+    return String(error);
+};
+// ================================================================
 // 1. GET ALL NOTES - Lấy danh sách ghi chú của người dùng
 // ================================================================
 export const getNotes = async (req, res) => {
@@ -18,7 +26,7 @@ export const getNotes = async (req, res) => {
         res.status(500).json({
             success: false,
             message: "Lỗi máy chủ khi lấy danh sách ghi chú!",
-            error: error.message,
+            error: getErrorMessage(error),
         });
     }
 };
@@ -42,7 +50,7 @@ export const createNote = async (req, res) => {
         res.status(500).json({
             success: false,
             message: "Lỗi máy chủ khi tạo ghi chú mới!",
-            error: error.message,
+            error: getErrorMessage(error),
         });
     }
 };
@@ -54,7 +62,7 @@ export const updateNote = async (req, res) => {
         const { id } = req.params;
         const { title, content } = req.body;
         // Find the note and ensure it belongs to the authenticated user
-        const note = await Note.findOne({ _id: id, userId: req.user._id });
+        const note = await Note.findOne({ _id: String(id), userId: req.user._id });
         if (!note) {
             res.status(404).json({
                 success: false,
@@ -78,7 +86,7 @@ export const updateNote = async (req, res) => {
         res.status(500).json({
             success: false,
             message: "Lỗi máy chủ khi cập nhật ghi chú!",
-            error: error.message,
+            error: getErrorMessage(error),
         });
     }
 };
@@ -89,7 +97,7 @@ export const deleteNote = async (req, res) => {
     try {
         const { id } = req.params;
         // Find and delete, ensuring it belongs to the authenticated user
-        const note = await Note.findOneAndDelete({ _id: id, userId: req.user._id });
+        const note = await Note.findOneAndDelete({ _id: String(id), userId: req.user._id });
         if (!note) {
             res.status(404).json({
                 success: false,
@@ -106,7 +114,7 @@ export const deleteNote = async (req, res) => {
         res.status(500).json({
             success: false,
             message: "Lỗi máy chủ khi xóa ghi chú!",
-            error: error.message,
+            error: getErrorMessage(error),
         });
     }
 };

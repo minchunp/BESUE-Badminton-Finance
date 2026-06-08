@@ -20,7 +20,7 @@
 
    /* ── Borders ── */
    --border-card: rgba(60, 60, 67, 0.13);
-   --border-input: rgba(60, 60, 67, 0.20);
+   --border-input: rgba(60, 60, 67, 0.2);
    --border-divider: rgba(60, 60, 67, 0.08);
 
    /* ── Typography ── */
@@ -695,10 +695,19 @@ h6 {
 /* ================================================================
    6. Special — Transparent Modal
    ================================================================ */
-.transparent-modal .ant-modal-content {
+.transparent-modal .ant-modal-content,
+.transparent-modal.ant-modal .ant-modal-content,
+.dark .transparent-modal .ant-modal-content {
    background-color: transparent !important;
    box-shadow: none !important;
    padding: 0 !important;
+}
+
+.transparent-modal .ant-modal-body,
+.transparent-modal.ant-modal .ant-modal-body,
+.dark .transparent-modal .ant-modal-body {
+   padding: 0 !important;
+   background-color: transparent !important;
 }
 
 /* ================================================================
@@ -778,7 +787,7 @@ h6 {
 .ant-modal-content {
    border-radius: 20px !important;
    background-color: #ffffff !important;
-   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.10) !important;
+   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.1) !important;
    overflow: hidden;
 }
 .ant-modal-header {

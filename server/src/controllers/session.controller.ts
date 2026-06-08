@@ -36,7 +36,7 @@ const calculateSessionFinance = (
          // Per-individual calculation
          individualPayments.forEach((p, personIdx) => {
             if (p.isPaid) {
-               const fee = personIdx < player.maleCount ? feeSettings.male : feeSettings.female;
+               const fee = p.customFee !== undefined ? p.customFee : (personIdx < player.maleCount ? feeSettings.male : feeSettings.female);
                totalRevenue += fee;
                if (p.paymentMethod === "cash") totalCash += fee;
                if (p.paymentMethod === "transfer") totalTransfer += fee;
@@ -109,9 +109,10 @@ export const createSession = async (req: Request, res: Response) => {
 export const updateSessionPlayers = async (req: Request, res: Response) => {
    try {
       const { id } = req.params;
-      const { players, currentStep } = req.body as {
+      const { players, currentStep, feeSettings } = req.body as {
          players: ISession["players"];
          currentStep?: number;
+         feeSettings?: ISession["feeSettings"];
       };
 
       const currentSession = await Session.findById(id);
@@ -120,6 +121,9 @@ export const updateSessionPlayers = async (req: Request, res: Response) => {
          return;
       }
 
+      if (feeSettings) {
+         currentSession.feeSettings = feeSettings;
+      }
       currentSession.players = players;
       currentSession.currentStep = typeof currentStep === "number" ? currentStep : 3;
 

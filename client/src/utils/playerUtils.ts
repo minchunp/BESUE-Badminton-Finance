@@ -100,12 +100,12 @@ export const updateIndividualMatch = (matches: number[], personIdx: number, delt
 
 /** Khởi tạo individualPayments: tất cả chưa đóng */
 export const initIndividualPayments = (maleCount: number, femaleCount: number): IPersonPayment[] =>
-   new Array(maleCount + femaleCount).fill(null).map(() => ({ isPaid: false }));
+   new Array(maleCount + femaleCount).fill(null).map(() => ({ isPaid: false, isPresent: false }));
 
 /** Resize giữ data cũ khi chỉnh sửa số lượng */
 export const resizeIndividualPayments = (existing: IPersonPayment[], newMaleCount: number, newFemaleCount: number): IPersonPayment[] => {
    const newTotal = newMaleCount + newFemaleCount;
-   const padded = [...existing, ...new Array(Math.max(0, newTotal - existing.length)).fill(null).map(() => ({ isPaid: false }))];
+   const padded = [...existing, ...new Array(Math.max(0, newTotal - existing.length)).fill(null).map(() => ({ isPaid: false, isPresent: false }))];
    return padded.slice(0, newTotal);
 };
 
@@ -171,7 +171,7 @@ export const calcCollectedRevenue = (players: IPlayer[], feeMale: number, feeFem
          // Use per-person data
          payments.forEach((p, personIdx) => {
             if (p.isPaid) {
-               total += personIdx < player.maleCount ? feeMale : feeFemale;
+               total += p.customFee !== undefined ? p.customFee : personIdx < player.maleCount ? feeMale : feeFemale;
             }
          });
       } else {
@@ -182,6 +182,24 @@ export const calcCollectedRevenue = (players: IPlayer[], feeMale: number, feeFem
       }
    });
    return total;
+};
+
+/**
+ * Calculates the total expected fee of a player group, accounting for individual customFee overrides.
+ */
+export const getPlayerTotalFee = (player: IPlayer, feeMale: number, feeFemale: number): number => {
+   const payments = player.individualPayments ?? [];
+   const totalCount = player.maleCount + player.femaleCount;
+   let sum = 0;
+   for (let personIdx = 0; personIdx < totalCount; personIdx++) {
+      const p = payments[personIdx];
+      if (p && p.customFee !== undefined) {
+         sum += p.customFee;
+      } else {
+         sum += personIdx < player.maleCount ? feeMale : feeFemale;
+      }
+   }
+   return sum;
 };
 
 // ================================================================

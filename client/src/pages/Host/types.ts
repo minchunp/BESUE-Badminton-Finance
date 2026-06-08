@@ -32,6 +32,8 @@ export interface StepPlayerListProps {
    playersList: IPlayer[];
    feeMale: number;
    feeFemale: number;
+   setFeeMale: (fee: number) => void;
+   setFeeFemale: (fee: number) => void;
    totalPlayersCount: number;
    totalExpectedRevenue: number;
    totalCollectedRevenue: number;
@@ -40,6 +42,8 @@ export interface StepPlayerListProps {
    onEditPlayer: (index: number) => void;
    onDeletePlayer: (index: number) => void;
    onConfirmPayment: (index: number, isCheckedIn: boolean, payments: IPersonPayment[]) => void;
+   onTogglePresence: (index: number, updatedPayments?: IPersonPayment[]) => void;
+   onUpdatePlayerNote: (playerIdx: number, personIdx: number, note: string) => void;
    onUpdateMatches: (playerIdx: number, personIdx: number, delta: number) => void;
    onNext: () => void;
    isPending: boolean;

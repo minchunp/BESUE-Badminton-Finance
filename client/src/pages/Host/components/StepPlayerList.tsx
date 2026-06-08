@@ -1,14 +1,16 @@
 import { useState, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Popconfirm, Modal, Image } from "antd";
-import { Calendar, Check, Users, ChevronRight, Trash2, Pencil, QrCode, Swords } from "lucide-react";
+import { Popconfirm, Modal, Image, ConfigProvider, theme } from "antd";
+import { Calendar, Check, Users, ChevronRight, Trash2, Pencil, QrCode, Swords, Plus, Search, X } from "lucide-react";
+import { useTheme } from "../../../contexts/ThemeContext";
 import type { IPlayer, IPersonPayment } from "../../../api/services/session.api";
 import type { StepPlayerListProps } from "../types";
 import QRBanking from "../../../assets/imgs/QR.png";
 import MatchTrackingTab from "./MatchTrackingTab";
 import PaymentModal from "./PaymentModal";
-import { expandPlayers, getPaymentBadgeInfo, formatShortDate } from "../../../utils/playerUtils";
+import { expandPlayers, getPaymentBadgeInfo, formatShortDate, getPlayerTotalFee, initIndividualPayments } from "../../../utils/playerUtils";
 import type { PaymentBadgeInfo } from "../../../utils/playerUtils";
+import { useDebounce } from "../../../hooks/useDebounce";
 
 // ================================================================
 // Animation variants
@@ -85,6 +87,8 @@ const StepPlayerList = ({
    playersList,
    feeMale,
    feeFemale,
+   setFeeMale,
+   setFeeFemale,
    totalPlayersCount,
    totalExpectedRevenue,
    totalCollectedRevenue,
@@ -93,14 +97,76 @@ const StepPlayerList = ({
    onEditPlayer,
    onDeletePlayer,
    onConfirmPayment,
+   onTogglePresence,
+   onUpdatePlayerNote,
    onUpdateMatches,
    onNext,
    isPending,
 }: StepPlayerListProps) => {
+   const { isDarkMode } = useTheme();
+   const bg = isDarkMode ? "#1C1C1E" : "#ffffff";
+   const bgBody = isDarkMode ? "#000000" : "#F2F2F7";
+   const border = isDarkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)";
    const [isQrOpen, setIsQrOpen] = useState(false);
    const [paymentModalPlayer, setPaymentModalPlayer] = useState<IPlayer | null>(null);
    const [paymentModalIdx, setPaymentModalIdx] = useState<number | null>(null);
    const [activeTab, setActiveTab] = useState<TabKey>("players");
+   const [isAdjustFeesOpen, setIsAdjustFeesOpen] = useState(false);
+
+   // Search states
+   const [searchQuery, setSearchQuery] = useState("");
+   const debouncedSearchQuery = useDebounce(searchQuery, 300);
+
+   // Presence modal states
+   const [presenceModalPlayer, setPresenceModalPlayer] = useState<IPlayer | null>(null);
+   const [presenceModalIdx, setPresenceModalIdx] = useState<number | null>(null);
+   const [presenceModalPayments, setPresenceModalPayments] = useState<IPersonPayment[]>([]);
+
+   // handlePresenceClick callback
+   const handlePresenceClick = useCallback(
+      (idx: number) => {
+         const player = playersList[idx];
+         if (!player) return;
+
+         const totalCount = player.maleCount + player.femaleCount;
+         const payments = [...(player.individualPayments ?? [])];
+         if (payments.length < totalCount) {
+            const seeded = initIndividualPayments(player.maleCount, player.femaleCount);
+            payments.push(...seeded.slice(payments.length));
+         }
+
+         if (totalCount === 1) {
+            onTogglePresence(idx);
+         } else {
+            setPresenceModalPlayer(player);
+            setPresenceModalIdx(idx);
+            setPresenceModalPayments(payments.map((p) => ({ ...p })));
+         }
+      },
+      [playersList, onTogglePresence],
+   );
+
+   // Filter playersList for "Danh sách" tab
+   const filteredPlayersList = useMemo(() => {
+      if (!debouncedSearchQuery.trim()) return playersList;
+      const query = debouncedSearchQuery.toLowerCase().trim();
+      return playersList.filter((player) => {
+         const nameMatch = player.name.toLowerCase().includes(query);
+         const noteMatch = player.individualPayments?.some((p) => p.note && p.note.toLowerCase().includes(query)) ?? false;
+
+         const total = player.maleCount + player.femaleCount;
+         let friendNameMatch = false;
+         for (let i = 0; i < total; i++) {
+            const friendName = i === 0 ? player.name : i === 1 ? `Bạn của ${player.name}` : `Bạn của ${player.name} ${i - 1}`;
+            if (friendName.toLowerCase().includes(query)) {
+               friendNameMatch = true;
+               break;
+            }
+         }
+
+         return nameMatch || noteMatch || friendNameMatch;
+      });
+   }, [playersList, debouncedSearchQuery]);
 
    const allPlayersChecked = useMemo(() => playersList.length > 0 && playersList.every((p) => p.isCheckedIn), [playersList]);
 
@@ -172,7 +238,50 @@ const StepPlayerList = ({
                   {formatShortDate(date)} • {numberOfCourts} sân • {activeShuttle?.name}
                </span>
             </div>
+            <button
+               onClick={() => setIsAdjustFeesOpen(!isAdjustFeesOpen)}
+               className="text-[10px] font-extrabold uppercase tracking-wider text-[#0A84FF] hover:opacity-85 transition-opacity cursor-pointer bg-transparent border-none outline-none select-none"
+            >
+               {isAdjustFeesOpen ? "Đóng chỉnh phí" : "Chỉnh phí thu"}
+            </button>
          </div>
+
+         {/* Fees Adjustment Section */}
+         <AnimatePresence>
+            {isAdjustFeesOpen && (
+               <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="overflow-hidden bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-2xl p-4 space-y-3"
+               >
+                  <p className="font-sans text-[10px] font-black tracking-wide uppercase text-black/45 dark:text-white/45">
+                     Điều chỉnh số tiền thu vãng lai
+                  </p>
+                  <div className="grid grid-cols-2 gap-3">
+                     <div className="space-y-1">
+                        <label className="text-[9px] font-bold uppercase tracking-wider text-black/35 dark:text-white/35">Nam (đ)</label>
+                        <input
+                           type="number"
+                           value={feeMale}
+                           onChange={(e) => setFeeMale(Number(e.target.value))}
+                           className="w-full h-10 px-3 rounded-xl bg-black/4 dark:bg-white/4 border border-black/5 dark:border-white/5 text-xs font-bold focus:outline-none focus:border-[#0A84FF] text-black dark:text-white"
+                        />
+                     </div>
+                     <div className="space-y-1">
+                        <label className="text-[9px] font-bold uppercase tracking-wider text-black/35 dark:text-white/35">Nữ (đ)</label>
+                        <input
+                           type="number"
+                           value={feeFemale}
+                           onChange={(e) => setFeeFemale(Number(e.target.value))}
+                           className="w-full h-10 px-3 rounded-xl bg-black/4 dark:bg-white/4 border border-black/5 dark:border-white/5 text-xs font-bold focus:outline-none focus:border-[#0A84FF] text-black dark:text-white"
+                        />
+                     </div>
+                  </div>
+               </motion.div>
+            )}
+         </AnimatePresence>
 
          {/* Stats bento grid */}
          <div className="grid grid-cols-3 gap-3">
@@ -192,6 +301,16 @@ const StepPlayerList = ({
                   {totalCollectedRevenue > 0 ? `${(totalCollectedRevenue / 1000).toFixed(0)}k` : "0đ"}
                </span>
             </div>
+         </div>
+
+         {/* Checkbox Legend */}
+         <div className="flex justify-center gap-4 text-[9px] font-bold uppercase tracking-wider text-black/35 dark:text-white/35 px-1 select-none">
+            <span className="flex items-center gap-1">
+               <span className="w-2.5 h-2.5 rounded bg-[#30D158]" /> Điểm danh (Có mặt)
+            </span>
+            <span className="flex items-center gap-1">
+               <span className="w-2.5 h-2.5 rounded bg-[#0A84FF]" /> Đóng phí (Thanh toán)
+            </span>
          </div>
 
          {/* Tab Navigation */}
@@ -221,6 +340,28 @@ const StepPlayerList = ({
             ))}
          </div>
 
+         {/* Search Input */}
+         <div className="px-1">
+            <div className="relative">
+               <input
+                  type="text"
+                  placeholder="Tìm kiếm vãng lai hoặc ghi chú..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full h-11 pl-10 pr-10 rounded-2xl bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 text-sm font-semibold focus:outline-none focus:border-[#0A84FF] text-black dark:text-white placeholder-black/25 dark:placeholder-white/25"
+               />
+               <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-black/25 dark:text-white/25" />
+               {searchQuery && (
+                  <button
+                     onClick={() => setSearchQuery("")}
+                     className="absolute right-3.5 top-1/2 -translate-y-1/2 text-black/35 dark:text-white/35 hover:text-black/55 dark:hover:text-white/55 bg-transparent border-none cursor-pointer flex items-center justify-center p-0.5 rounded-full hover:bg-black/5 dark:hover:bg-white/5"
+                  >
+                     <X size={14} strokeWidth={2.5} />
+                  </button>
+               )}
+            </div>
+         </div>
+
          {/* Tab content */}
          <AnimatePresence mode="wait">
             {activeTab === "players" ? (
@@ -240,11 +381,21 @@ const StepPlayerList = ({
                            + Thêm người chơi
                         </button>
                      </div>
+                  ) : filteredPlayersList.length === 0 ? (
+                     <div className="py-12 bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-3xl flex flex-col items-center justify-center">
+                        <Users size={32} className="text-black/20 dark:text-white/20 mb-2" />
+                        <span className="text-xs font-semibold text-black/35 dark:text-white/35">Không tìm thấy kết quả phù hợp</span>
+                     </div>
                   ) : (
                      <motion.div variants={containerVariants} initial="hidden" animate="show" className="space-y-3">
-                        {playersList.map((player, idx) => {
-                           const totalFee = player.maleCount * feeMale + player.femaleCount * feeFemale;
+                        {filteredPlayersList.map((player) => {
+                           const idx = playersList.indexOf(player);
+                           if (idx === -1) return null;
+                           const totalFee = getPlayerTotalFee(player, feeMale, feeFemale);
                            const badgeInfo = getPaymentBadgeInfo(player);
+
+                           const presentCount = player.individualPayments?.filter((p) => p.isPresent).length ?? 0;
+                           const totalCount = player.maleCount + player.femaleCount;
 
                            return (
                               <motion.div
@@ -254,10 +405,34 @@ const StepPlayerList = ({
                                     player.isCheckedIn ? "" : "opacity-75"
                                  }`}
                               >
-                                 <div className="flex items-center gap-3.5 min-w-0">
-                                    {/* Checkbox */}
+                                 <div className="flex items-center gap-2.5 min-w-0">
+                                    {/* Check-in Attendance Checkbox */}
+                                    <button
+                                       onClick={() => handlePresenceClick(idx)}
+                                       title={presentCount === totalCount ? "Đã có mặt ở sân" : "Chưa có mặt ở sân"}
+                                       className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 border transition-all cursor-pointer ${
+                                          presentCount === totalCount
+                                             ? "bg-[#30D158] border-[#30D158] text-white"
+                                             : presentCount > 0
+                                               ? "bg-[#30D158]/20 border-[#30D158] text-[#30D158]"
+                                               : "bg-white dark:bg-[#2C2C2E] border-black/10 dark:border-white/10 text-transparent"
+                                       }`}
+                                    >
+                                       {presentCount === totalCount ? (
+                                          <Check size={14} strokeWidth={3} />
+                                       ) : presentCount > 0 ? (
+                                          <span className="text-[9px] font-black">
+                                             {presentCount}/{totalCount}
+                                          </span>
+                                       ) : (
+                                          <Check size={14} strokeWidth={3} />
+                                       )}
+                                    </button>
+
+                                    {/* Payment Checkbox */}
                                     <button
                                        onClick={() => handleCheckboxClick(idx)}
+                                       title={player.isCheckedIn ? "Đã thanh toán" : "Chưa thanh toán"}
                                        className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 border transition-all cursor-pointer ${
                                           player.isCheckedIn
                                              ? "bg-[#0A84FF] border-[#0A84FF] text-white"
@@ -332,20 +507,206 @@ const StepPlayerList = ({
                </motion.div>
             ) : (
                <motion.div key="matches-tab" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                  <MatchTrackingTab playersList={playersList} onUpdateMatches={onUpdateMatches} />
+                  <MatchTrackingTab
+                     playersList={playersList}
+                     onUpdateMatches={onUpdateMatches}
+                     onUpdateNote={onUpdatePlayerNote}
+                     searchQuery={debouncedSearchQuery}
+                  />
                </motion.div>
             )}
          </AnimatePresence>
+
+         {/* Floating Add button */}
+         <button
+            onClick={onAddPlayer}
+            aria-label="Thêm người chơi"
+            className="fixed bottom-32 right-4 z-60! w-24 h-10 bg-[#30D158] shadow-[0_4px_16px_rgba(48,209,88,0.28)] rounded-full flex items-center justify-center space-x-1 text-white hover:scale-105 active:scale-95 transition-transform select-none cursor-pointer border-none"
+         >
+            <Plus size={18} strokeWidth={2.5} />
+            <span className="font-sans text-xs font-extrabold tracking-wide">Thêm</span>
+         </button>
 
          {/* Floating QR button */}
          <button
             onClick={() => setIsQrOpen(true)}
             aria-label="Hiện mã QR"
-            className="fixed bottom-20 right-4 z-60! bg-[#0A84FF] shadow-[0_4px_16px_rgba(88,86,214,0.28)] rounded-full px-4 py-2.5 flex items-center space-x-1.5 text-white hover:scale-105 active:scale-95 transition-transform select-none cursor-pointer"
+            className="fixed bottom-20 right-4 z-60! w-24 h-10 bg-[#0A84FF] shadow-[0_4px_16px_rgba(10,132,255,0.28)] rounded-full flex items-center justify-center space-x-1 text-white hover:scale-105 active:scale-95 transition-transform select-none cursor-pointer border-none"
          >
             <QrCode size={18} strokeWidth={2.5} />
             <span className="font-sans text-xs font-extrabold tracking-wide">QR</span>
          </button>
+
+         {/* Presence Attendance Modal */}
+         <ConfigProvider
+            theme={{
+               algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
+               token: { colorPrimary: "#0A84FF", borderRadius: 18 },
+            }}
+         >
+            <Modal
+               open={!!presenceModalPlayer}
+               onCancel={() => {
+                  setPresenceModalPlayer(null);
+                  setPresenceModalIdx(null);
+               }}
+               footer={null}
+               centered
+               closable={false}
+               width={360}
+               className="apple-payment-modal"
+               wrapClassName="apple-payment-modal-wrap"
+               classNames={{ body: "apple-modal-body-inner" }}
+               styles={{
+                  mask: {
+                     backdropFilter: "blur(16px)",
+                     WebkitBackdropFilter: "blur(16px)",
+                     background: "rgba(0,0,0,0.5)",
+                  },
+                  body: { padding: 0, background: "transparent" },
+               }}
+            >
+               <div className="font-sans select-none">
+                  {/* Header */}
+                  <div
+                     style={{
+                        padding: "10px 0px 15px",
+                        borderBottom: `1px solid ${border}`,
+                        background: bg,
+                     }}
+                  >
+                     <div className="flex items-center justify-between">
+                        <h3 className="text-[16px] font-black text-black dark:text-white m-0 leading-tight">
+                           Điểm danh vãng lai: {presenceModalPlayer?.name}
+                        </h3>
+                        <button
+                           type="button"
+                           onClick={() => {
+                              setPresenceModalPlayer(null);
+                              setPresenceModalIdx(null);
+                           }}
+                           className="w-7.5 h-7.5 rounded-full flex items-center justify-center cursor-pointer border-none transition-opacity hover:opacity-70"
+                           style={{
+                              background: isDarkMode ? "rgba(255,255,255,0.1)" : "rgba(60,60,67,0.08)",
+                              color: isDarkMode ? "rgba(235,235,245,0.6)" : "rgba(60,60,67,0.6)",
+                           }}
+                        >
+                           <X size={14} strokeWidth={2.5} />
+                        </button>
+                     </div>
+                  </div>
+
+                  {/* Body */}
+                  <div
+                     style={{
+                        padding: "16px 20px",
+                        background: bgBody,
+                        maxHeight: "44vh",
+                        overflowY: "auto",
+                     }}
+                     className="space-y-2.5"
+                  >
+                     {presenceModalPlayer &&
+                        expandPlayers([presenceModalPlayer]).map((person) => {
+                           const payment = presenceModalPayments[person.personIdx] ?? { isPaid: false, isPresent: false };
+                           const isMale = person.gender === "male";
+                           return (
+                              <div
+                                 key={person.personIdx}
+                                 className="rounded-xl p-3.5 transition-all duration-200"
+                                 style={{
+                                    background: bg,
+                                    border: payment.isPresent ? "1px solid rgba(48,209,88,0.25)" : `1px solid ${border}`,
+                                 }}
+                              >
+                                 <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2.5">
+                                       <div
+                                          className="w-8 h-8 rounded-xl flex items-center justify-center text-[11px] font-black"
+                                          style={{
+                                             background: isMale ? "rgba(10,132,255,0.1)" : "rgba(255,55,95,0.1)",
+                                             border: `1px solid ${isMale ? "rgba(10,132,255,0.2)" : "rgba(255,55,95,0.2)"}`,
+                                             color: isMale ? "#0A84FF" : "#FF375F",
+                                          }}
+                                       >
+                                          {person.displayName.charAt(0).toUpperCase()}
+                                       </div>
+                                       <div>
+                                          <p className="text-[13px] font-black text-black dark:text-white m-0 leading-tight">{person.displayName}</p>
+                                          <span className={`text-[10px] font-bold ${isMale ? "text-[#0A84FF]" : "text-[#FF375F]"}`}>
+                                             {isMale ? "♂ Nam" : "♀ Nữ"}
+                                          </span>
+                                          {payment.note && (
+                                             <p className="text-[10px] font-medium text-black/45 dark:text-white/45 m-0 mt-0.5">
+                                                Ghi chú: {payment.note}
+                                             </p>
+                                          )}
+                                       </div>
+                                    </div>
+
+                                    {/* Checkbox for presence */}
+                                    <button
+                                       type="button"
+                                       onClick={() => {
+                                          setPresenceModalPayments((prev) =>
+                                             prev.map((p, i) => (i === person.personIdx ? { ...p, isPresent: !p.isPresent } : p)),
+                                          );
+                                       }}
+                                       className={`w-6 h-6 rounded-lg flex items-center justify-center border transition-all cursor-pointer ${
+                                          payment.isPresent
+                                             ? "bg-[#30D158] border-[#30D158] text-white"
+                                             : "bg-white dark:bg-[#2C2C2E] border-black/10 dark:border-white/10 text-transparent hover:border-black/25 dark:hover:border-white/25"
+                                       }`}
+                                    >
+                                       <Check size={14} strokeWidth={3} />
+                                    </button>
+                                 </div>
+                              </div>
+                           );
+                        })}
+                  </div>
+
+                  {/* Footer */}
+                  <div
+                     style={{
+                        padding: "16px 0px 20px",
+                        borderTop: `1px solid ${border}`,
+                        background: bg,
+                     }}
+                  >
+                     <div className="flex gap-2.5">
+                        <button
+                           type="button"
+                           onClick={() => {
+                              setPresenceModalPlayer(null);
+                              setPresenceModalIdx(null);
+                           }}
+                           className="flex-1 h-12 rounded-2xl text-sm font-black transition-opacity hover:opacity-75 active:scale-[0.97] cursor-pointer border-none"
+                           style={{
+                              background: isDarkMode ? "rgba(255,255,255,0.1)" : "rgba(60,60,67,0.08)",
+                              color: isDarkMode ? "#ffffff" : "#000000",
+                           }}
+                        >
+                           Hủy
+                        </button>
+                        <button
+                           type="button"
+                           onClick={() => {
+                              if (presenceModalIdx !== null && presenceModalPayments.length > 0) {
+                                 onTogglePresence(presenceModalIdx, presenceModalPayments);
+                              }
+                              setPresenceModalPlayer(null);
+                              setPresenceModalIdx(null);
+                           }}
+                           className="flex-1 h-12 rounded-2xl text-sm font-black transition-all duration-200 active:scale-[0.97] border-none bg-[#0A84FF] text-white shadow-[0_4px_16px_rgba(10,132,255,0.4)] hover:opacity-90 cursor-pointer"
+                        >
+                           Xác nhận
+                        </button>
+                     </div>
+                  </div>
+               </div>
+            </Modal>
+         </ConfigProvider>
 
          {/* Sticky bottom actions */}
          <div className="pt-4 flex items-center justify-between gap-4">

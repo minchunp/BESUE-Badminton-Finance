@@ -4,6 +4,9 @@ import type { ApiResponse } from "../types";
 export interface IPersonPayment {
    isPaid: boolean;
    paymentMethod?: "cash" | "transfer";
+   customFee?: number;
+   note?: string;
+   isPresent?: boolean;
 }
 
 export interface IPlayer {
@@ -12,6 +15,7 @@ export interface IPlayer {
    maleCount: number;
    femaleCount: number;
    isCheckedIn: boolean;
+   isPresent: boolean;
    isPaid: boolean;
    paymentMethod?: "cash" | "transfer";
    individualMatches: number[];
@@ -76,10 +80,11 @@ export const sessionApi = {
       return response.data;
    },
 
-   updatePlayers: async (id: string, players: Omit<IPlayer, "_id">[], currentStep?: number): Promise<ApiResponse<ISession>> => {
+   updatePlayers: async (id: string, players: Omit<IPlayer, "_id">[], currentStep?: number, feeSettings?: ISession["feeSettings"]): Promise<ApiResponse<ISession>> => {
       const response = await axiosInstance.put<ApiResponse<ISession>>(`/sessions/${id}/players`, {
          players,
          currentStep,
+         feeSettings,
       });
       return response.data;
    },

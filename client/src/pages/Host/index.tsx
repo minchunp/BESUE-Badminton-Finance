@@ -25,6 +25,7 @@ import {
    resizeIndividualPayments,
    deriveGroupPaymentStatus,
    calcCollectedRevenue,
+   getPlayerTotalFee,
 } from "../../utils/playerUtils";
 
 // ================================================================
@@ -206,7 +207,8 @@ const HostPage = () => {
    });
 
    const updatePlayersMutation = useMutation({
-      mutationFn: ({ id, players }: { id: string; players: Omit<IPlayer, "_id">[] }) => sessionApi.updatePlayers(id, players, 3),
+      mutationFn: ({ id, players, feeSettings }: { id: string; players: Omit<IPlayer, "_id">[]; feeSettings?: ISession["feeSettings"] }) => 
+         sessionApi.updatePlayers(id, players, 3, feeSettings),
       onSuccess: (res) => {
          setSessionData(res.data);
          setStep(3);
@@ -217,7 +219,8 @@ const HostPage = () => {
    });
 
    const autoSavePlayersMutation = useMutation({
-      mutationFn: ({ id, players }: { id: string; players: Omit<IPlayer, "_id">[] }) => sessionApi.updatePlayers(id, players, 2),
+      mutationFn: ({ id, players, feeSettings }: { id: string; players: Omit<IPlayer, "_id">[]; feeSettings?: ISession["feeSettings"] }) => 
+         sessionApi.updatePlayers(id, players, 2, feeSettings),
       onSuccess: (res) => {
          setSessionData(res.data);
       },
@@ -311,6 +314,7 @@ const HostPage = () => {
             maleCount: newMaleCount,
             femaleCount: newFemaleCount,
             isCheckedIn: editingPlayerIndex !== null ? (playersList[editingPlayerIndex]?.isCheckedIn ?? false) : false,
+            isPresent: editingPlayerIndex !== null ? (playersList[editingPlayerIndex]?.isPresent ?? false) : false,
             isPaid: editingPlayerIndex !== null ? isPaid : false,
             paymentMethod: editingPlayerIndex !== null ? paymentMethod : undefined,
             individualMatches,
@@ -327,10 +331,10 @@ const HostPage = () => {
          setIsPlayerDrawerOpen(false);
 
          if (sessionId) {
-            autoSavePlayersMutation.mutate({ id: sessionId, players: newList });
+            autoSavePlayersMutation.mutate({ id: sessionId, players: newList, feeSettings: { male: feeMale, female: feeFemale } });
          }
       },
-      [editingPlayerIndex, playersList, sessionId, autoSavePlayersMutation],
+      [editingPlayerIndex, playersList, sessionId, autoSavePlayersMutation, feeMale, feeFemale],
    );
 
    const handleConfirmPayment = useCallback(
@@ -347,10 +351,87 @@ const HostPage = () => {
          setPlayersList(newList);
 
          if (sessionId) {
-            autoSavePlayersMutation.mutate({ id: sessionId, players: newList });
+            autoSavePlayersMutation.mutate({ id: sessionId, players: newList, feeSettings: { male: feeMale, female: feeFemale } });
          }
       },
-      [playersList, sessionId, autoSavePlayersMutation],
+      [playersList, sessionId, autoSavePlayersMutation, feeMale, feeFemale],
+   );
+
+   const handleTogglePresence = useCallback(
+      (index: number, updatedPayments?: IPersonPayment[]) => {
+         const newList = [...playersList];
+         const player = newList[index];
+         if (!player) return;
+
+         let newPayments = updatedPayments;
+         if (!newPayments) {
+            newPayments = [...(player.individualPayments ?? [])];
+            const total = player.maleCount + player.femaleCount;
+            if (newPayments.length < total) {
+               const seeded = initIndividualPayments(player.maleCount, player.femaleCount);
+               newPayments.push(...seeded.slice(newPayments.length));
+            }
+            if (newPayments[0]) {
+               newPayments[0] = {
+                  ...newPayments[0],
+                  isPresent: !newPayments[0].isPresent,
+               };
+            }
+         }
+
+         const allPresent = newPayments.every((p) => p.isPresent);
+
+         newList[index] = {
+            ...player,
+            isPresent: allPresent,
+            individualPayments: newPayments,
+         };
+         setPlayersList(newList);
+         if (sessionId) {
+            autoSavePlayersMutation.mutate({
+               id: sessionId,
+               players: newList,
+               feeSettings: { male: feeMale, female: feeFemale },
+            });
+         }
+      },
+      [playersList, sessionId, feeMale, feeFemale, autoSavePlayersMutation],
+   );
+
+   const handleUpdatePlayerNote = useCallback(
+      (playerIdx: number, personIdx: number, note: string) => {
+         const newList = [...playersList];
+         const player = newList[playerIdx];
+         if (!player) return;
+
+         const payments = [...(player.individualPayments ?? [])];
+         const total = player.maleCount + player.femaleCount;
+         
+         if (payments.length < total) {
+            const seeded = initIndividualPayments(player.maleCount, player.femaleCount);
+            payments.push(...seeded.slice(payments.length));
+         }
+
+         payments[personIdx] = {
+            ...payments[personIdx]!,
+            note,
+         };
+
+         newList[playerIdx] = {
+            ...player,
+            individualPayments: payments,
+         };
+
+         setPlayersList(newList);
+         if (sessionId) {
+            autoSavePlayersMutation.mutate({
+               id: sessionId,
+               players: newList,
+               feeSettings: { male: feeMale, female: feeFemale },
+            });
+         }
+      },
+      [playersList, sessionId, feeMale, feeFemale, autoSavePlayersMutation],
    );
 
    const handleDeletePlayer = useCallback(
@@ -360,10 +441,10 @@ const HostPage = () => {
          setPlayersList(newList);
 
          if (sessionId) {
-            autoSavePlayersMutation.mutate({ id: sessionId, players: newList });
+            autoSavePlayersMutation.mutate({ id: sessionId, players: newList, feeSettings: { male: feeMale, female: feeFemale } });
          }
       },
-      [playersList, sessionId, autoSavePlayersMutation],
+      [playersList, sessionId, autoSavePlayersMutation, feeMale, feeFemale],
    );
 
    const handleUpdateMatches = useCallback(
@@ -377,11 +458,33 @@ const HostPage = () => {
          setPlayersList(newList);
 
          if (sessionId) {
-            autoSavePlayersMutation.mutate({ id: sessionId, players: newList });
+            autoSavePlayersMutation.mutate({ id: sessionId, players: newList, feeSettings: { male: feeMale, female: feeFemale } });
          }
       },
-      [playersList, sessionId, autoSavePlayersMutation],
+      [playersList, sessionId, autoSavePlayersMutation, feeMale, feeFemale],
    );
+
+   const handleSetFeeMale = useCallback((fee: number) => {
+      setFeeMale(fee);
+      if (sessionId) {
+         autoSavePlayersMutation.mutate({
+            id: sessionId,
+            players: playersList,
+            feeSettings: { male: fee, female: feeFemale },
+         });
+      }
+   }, [sessionId, playersList, feeFemale, autoSavePlayersMutation]);
+
+   const handleSetFeeFemale = useCallback((fee: number) => {
+      setFeeFemale(fee);
+      if (sessionId) {
+         autoSavePlayersMutation.mutate({
+            id: sessionId,
+            players: playersList,
+            feeSettings: { male: feeMale, female: fee },
+         });
+      }
+   }, [sessionId, playersList, feeMale, autoSavePlayersMutation]);
 
    const handleNextStep2 = useCallback(() => {
       if (playersList.length === 0) {
@@ -391,8 +494,9 @@ const HostPage = () => {
       updatePlayersMutation.mutate({
          id: sessionId!,
          players: playersList,
+         feeSettings: { male: feeMale, female: feeFemale },
       });
-   }, [playersList, sessionId, updatePlayersMutation]);
+   }, [playersList, sessionId, updatePlayersMutation, feeMale, feeFemale]);
 
    const handleNextStep3 = useCallback(() => {
       if (!activeShuttle) return;
@@ -414,14 +518,20 @@ const HostPage = () => {
    const totalPlayersCount = useMemo(() => playersList.reduce((acc, curr) => acc + curr.maleCount + curr.femaleCount, 0), [playersList]);
 
    const totalExpectedRevenue = useMemo(
-      () => playersList.reduce((acc, curr) => acc + curr.maleCount * feeMale + curr.femaleCount * feeFemale, 0),
+      () => playersList.reduce((acc, curr) => acc + getPlayerTotalFee(curr, feeMale, feeFemale), 0),
       [playersList, feeMale, feeFemale],
    );
 
    const totalCollectedRevenue = useMemo(() => calcCollectedRevenue(playersList, feeMale, feeFemale), [playersList, feeMale, feeFemale]);
 
    const selectedPlayersCount = useMemo(
-      () => playersList.filter((p) => p.isCheckedIn).reduce((acc, curr) => acc + curr.maleCount + curr.femaleCount, 0),
+      () => playersList.reduce((acc, curr) => {
+         const payments = curr.individualPayments ?? [];
+         if (payments.length > 0) {
+            return acc + payments.filter((pay) => pay.isPresent).length;
+         }
+         return acc + (curr.isPresent ? (curr.maleCount + curr.femaleCount) : 0);
+      }, 0),
       [playersList],
    );
 
@@ -559,6 +669,8 @@ const HostPage = () => {
                         playersList={playersList}
                         feeMale={feeMale}
                         feeFemale={feeFemale}
+                        setFeeMale={handleSetFeeMale}
+                        setFeeFemale={handleSetFeeFemale}
                         totalPlayersCount={totalPlayersCount}
                         totalExpectedRevenue={totalExpectedRevenue}
                         totalCollectedRevenue={totalCollectedRevenue}
@@ -567,6 +679,8 @@ const HostPage = () => {
                         onEditPlayer={handleEditPlayerOpen}
                         onDeletePlayer={handleDeletePlayer}
                         onConfirmPayment={handleConfirmPayment}
+                        onTogglePresence={handleTogglePresence}
+                        onUpdatePlayerNote={handleUpdatePlayerNote}
                         onUpdateMatches={handleUpdateMatches}
                         onNext={handleNextStep2}
                         isPending={updatePlayersMutation.isPending}

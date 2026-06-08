@@ -68,17 +68,61 @@ const PaymentModal = ({ player, playerIdx, onConfirm, onClose, feeMale, feeFemal
    const [groupIsPaid, setGroupIsPaid] = useState(false);
    const [groupMethod, setGroupMethod] = useState<"cash" | "transfer">("cash");
    const [perPersonPayments, setPerPersonPayments] = useState<IPersonPayment[]>([]);
+   const [isCustomGroupFee, setIsCustomGroupFee] = useState(false);
+   const [customGroupFeeValue, setCustomGroupFeeValue] = useState(0);
 
    useEffect(() => {
       if (!player) return;
-      setMode("group");
-      const existing = player.individualPayments ?? [];
+
       const total = player.maleCount + player.femaleCount;
-      const seeded = existing.length === total ? existing.map((p) => ({ ...p })) : initIndividualPayments(player.maleCount, player.femaleCount);
+      const isFirstTime = !player.isCheckedIn;
+
+      const existing = player.individualPayments ?? [];
+      let seeded = existing.length === total ? existing.map((p) => ({ ...p })) : initIndividualPayments(player.maleCount, player.femaleCount);
+
+      if (isFirstTime) {
+         setGroupIsPaid(true);
+         setGroupMethod("cash");
+
+         const hasAnyPresent = seeded.some((p) => p.isPresent);
+         seeded = seeded.map((p, idx) => ({
+            ...p,
+            isPaid: hasAnyPresent ? (p.isPresent ?? false) : (idx === 0),
+            paymentMethod: p.paymentMethod ?? "cash",
+         }));
+
+         if (total > 1 && hasAnyPresent && !seeded.every((p) => p.isPresent)) {
+            setMode("individual");
+         } else {
+            setMode("group");
+         }
+      } else {
+         setGroupIsPaid(player.isPaid ?? false);
+         setGroupMethod(player.paymentMethod ?? "cash");
+
+         const hasMixedPaid = seeded.some((p) => p.isPaid) && seeded.some((p) => !p.isPaid);
+         const hasCustomFees = seeded.some((p) => p.customFee !== undefined);
+         if (total > 1 && (hasMixedPaid || hasCustomFees)) {
+            setMode("individual");
+         } else {
+            setMode("group");
+         }
+      }
+
       setPerPersonPayments(seeded);
-      setGroupIsPaid(player.isPaid ?? false);
-      setGroupMethod(player.paymentMethod ?? "cash");
-   }, [player]);
+
+      const hasAnyCustomFee = seeded.some((p) => p.customFee !== undefined);
+      setIsCustomGroupFee(hasAnyCustomFee);
+      if (hasAnyCustomFee) {
+         const sumCustom = seeded.reduce((acc, p, idx) => {
+            if (p.customFee !== undefined) return acc + p.customFee;
+            return acc + (idx < player.maleCount ? feeMale : feeFemale);
+         }, 0);
+         setCustomGroupFeeValue(sumCustom);
+      } else {
+         setCustomGroupFeeValue(player.maleCount * feeMale + player.femaleCount * feeFemale);
+      }
+   }, [player, feeMale, feeFemale]);
 
    const total = player ? player.maleCount + player.femaleCount : 0;
    const isMultiple = total > 1;
@@ -89,13 +133,19 @@ const PaymentModal = ({ player, playerIdx, onConfirm, onClose, feeMale, feeFemal
       if (mode === "group") {
          return Array(total)
             .fill(null)
-            .map(() => ({ isPaid: groupIsPaid, paymentMethod: groupIsPaid ? groupMethod : undefined }));
+            .map(() => ({
+               isPaid: groupIsPaid,
+               paymentMethod: groupIsPaid ? groupMethod : undefined,
+               customFee: isCustomGroupFee ? customGroupFeeValue / total : undefined,
+            }));
       }
       return perPersonPayments.map((p) => ({
          isPaid: p.isPaid,
          paymentMethod: p.isPaid ? (p.paymentMethod ?? "cash") : undefined,
+         customFee: p.customFee,
+         note: p.note,
       }));
-   }, [player, mode, total, groupIsPaid, groupMethod, perPersonPayments]);
+   }, [player, mode, total, groupIsPaid, groupMethod, isCustomGroupFee, customGroupFeeValue, perPersonPayments]);
 
    const handleConfirm = useCallback(() => {
       if (!player || playerIdx === null) return;
@@ -118,13 +168,14 @@ const PaymentModal = ({ player, playerIdx, onConfirm, onClose, feeMale, feeFemal
 
    const paidAmount = useMemo(() => {
       if (!player) return 0;
-      if (mode === "group") return groupIsPaid ? totalGroupFee : 0;
+      if (mode === "group") return groupIsPaid ? (isCustomGroupFee ? customGroupFeeValue : totalGroupFee) : 0;
       return perPersonPayments.reduce((acc, p, i) => {
          if (!p.isPaid) return acc;
+         if (p.customFee !== undefined) return acc + p.customFee;
          const person = expanded[i];
          return acc + (person?.gender === "male" ? feeMale : feeFemale);
       }, 0);
-   }, [player, mode, groupIsPaid, totalGroupFee, perPersonPayments, expanded, feeMale, feeFemale]);
+   }, [player, mode, groupIsPaid, totalGroupFee, isCustomGroupFee, customGroupFeeValue, perPersonPayments, expanded, feeMale, feeFemale]);
 
    const isConfirmDisabled = useMemo(
       () => !derivedPaid && mode === "group" && !groupIsPaid && paidInIndividual === 0,
@@ -223,7 +274,7 @@ const PaymentModal = ({ player, playerIdx, onConfirm, onClose, feeMale, feeFemal
                      style={{ background: isDarkMode ? "rgba(10,132,255,0.12)" : "rgba(10,132,255,0.08)", border: "1px solid rgba(10,132,255,0.2)" }}
                   >
                      <span className="text-[11px] font-bold uppercase tracking-wider text-[#0A84FF]/70">Phí cần thu</span>
-                     <span className="text-[15px] font-black text-[#0A84FF]">{totalGroupFee.toLocaleString("vi-VN")}đ</span>
+                     <span className="text-[15px] font-black text-[#0A84FF]">{(isCustomGroupFee ? customGroupFeeValue : totalGroupFee).toLocaleString("vi-VN")}đ</span>
                   </div>
 
                   {/* Mode toggle */}
@@ -308,6 +359,42 @@ const PaymentModal = ({ player, playerIdx, onConfirm, onClose, feeMale, feeFemal
                                  </motion.div>
                               )}
                            </AnimatePresence>
+
+                           {/* Group Custom Fee card */}
+                           <div className="rounded-[12px] p-3.5 space-y-2.5" style={{ background: bg, border: `1px solid ${border}` }}>
+                              <div className="flex items-center justify-between">
+                                 <span className="text-[10px] font-bold text-black/35 dark:text-white/35 uppercase tracking-widest">
+                                    Điều chỉnh tiền thu
+                                 </span>
+                                 <input
+                                    type="checkbox"
+                                    checked={isCustomGroupFee}
+                                    onChange={(e) => {
+                                       const checked = e.target.checked;
+                                       setIsCustomGroupFee(checked);
+                                       if (!checked) {
+                                          setCustomGroupFeeValue(totalGroupFee);
+                                       }
+                                    }}
+                                    className="cursor-pointer w-4 h-4 rounded border-black/10 dark:border-white/10 accent-[#0A84FF]"
+                                 />
+                              </div>
+                              {isCustomGroupFee && (
+                                 <motion.div
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: "auto" }}
+                                    className="overflow-hidden pt-1.5"
+                                 >
+                                    <input
+                                       type="number"
+                                       value={customGroupFeeValue}
+                                       onChange={(e) => setCustomGroupFeeValue(Number(e.target.value))}
+                                       placeholder="Nhập số tiền thu..."
+                                       className="w-full h-10 px-3 rounded-xl bg-black/4 dark:bg-white/4 border border-black/5 dark:border-white/5 text-xs font-bold text-black dark:text-white focus:outline-none focus:border-[#0A84FF]"
+                                    />
+                                 </motion.div>
+                              )}
+                           </div>
                         </motion.div>
                      )}
 
@@ -368,9 +455,20 @@ const PaymentModal = ({ player, playerIdx, onConfirm, onClose, feeMale, feeFemal
                                              {person.displayName.charAt(0).toUpperCase()}
                                           </div>
                                           <div>
-                                             <p className="text-[13px] font-black text-black dark:text-white m-0 leading-tight">
-                                                {person.displayName}
-                                             </p>
+                                             <div className="flex items-center gap-1.5">
+                                                <p className="text-[13px] font-black text-black dark:text-white m-0 leading-tight">
+                                                   {person.displayName}
+                                                </p>
+                                                <span
+                                                   className={`text-[8px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded-md select-none ${
+                                                      person.payment?.isPresent
+                                                         ? "bg-[#30D158]/12 text-[#30D158]"
+                                                         : "bg-black/6 dark:bg-white/8 text-black/35 dark:text-white/35"
+                                                   }`}
+                                                >
+                                                   {person.payment?.isPresent ? "Có mặt" : "Vắng"}
+                                                </span>
+                                             </div>
                                              <span className={`text-[10px] font-bold ${isMale ? "text-[#0A84FF]" : "text-[#FF375F]"}`}>
                                                 {isMale ? "♂ Nam" : "♀ Nữ"} · {(isMale ? feeMale : feeFemale).toLocaleString("vi-VN")}đ
                                              </span>
@@ -405,6 +503,39 @@ const PaymentModal = ({ player, playerIdx, onConfirm, onClose, feeMale, feeFemal
                                           </motion.div>
                                        )}
                                     </AnimatePresence>
+
+                                    {/* Individual Custom Fee Toggle & Input */}
+                                    <div className="mt-3.5 space-y-1.5 border-t border-black/5 dark:border-white/5 pt-2 select-none">
+                                       <div className="flex items-center justify-between">
+                                          <span className="text-[9px] font-bold text-black/35 dark:text-white/35 uppercase tracking-wider">
+                                             Điều chỉnh tiền thu
+                                          </span>
+                                          <input
+                                             type="checkbox"
+                                             checked={payment.customFee !== undefined}
+                                             onChange={(e) => {
+                                                const checked = e.target.checked;
+                                                updatePersonPayment(person.personIdx, {
+                                                   customFee: checked ? (isMale ? feeMale : feeFemale) : undefined,
+                                                });
+                                             }}
+                                             className="cursor-pointer w-3.5 h-3.5 rounded border-black/10 dark:border-white/10 accent-[#0A84FF]"
+                                          />
+                                       </div>
+                                       {payment.customFee !== undefined && (
+                                          <input
+                                             type="number"
+                                             value={payment.customFee}
+                                             onChange={(e) => {
+                                                updatePersonPayment(person.personIdx, {
+                                                   customFee: Number(e.target.value),
+                                                });
+                                             }}
+                                             placeholder="Nhập số tiền..."
+                                             className="w-full h-8 px-2.5 rounded-lg bg-black/4 dark:bg-white/4 border border-black/5 dark:border-white/5 text-xs font-bold text-black dark:text-white focus:outline-none focus:border-[#0A84FF]"
+                                          />
+                                       )}
+                                    </div>
                                  </div>
                               );
                            })}
@@ -437,7 +568,9 @@ const PaymentModal = ({ player, playerIdx, onConfirm, onClose, feeMale, feeFemal
                         >
                            {paidAmount.toLocaleString("vi-VN")}đ
                         </span>
-                        <span className="text-[12px] font-semibold text-black/25 dark:text-white/25">/ {totalGroupFee.toLocaleString("vi-VN")}đ</span>
+                        <span className="text-[12px] font-semibold text-black/25 dark:text-white/25">
+                           / {(isCustomGroupFee ? customGroupFeeValue : totalGroupFee).toLocaleString("vi-VN")}đ
+                        </span>
                      </div>
                   </div>
 

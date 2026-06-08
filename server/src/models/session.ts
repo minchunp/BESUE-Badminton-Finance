@@ -3,6 +3,8 @@ import mongoose, { Schema, type Document } from "mongoose";
 export interface IPersonPayment {
    isPaid: boolean;
    paymentMethod?: "cash" | "transfer";
+   customFee?: number;
+   note?: string;
 }
 
 export interface IPlayer {
@@ -11,6 +13,7 @@ export interface IPlayer {
    maleCount: number;
    femaleCount: number;
    isCheckedIn: boolean;
+   isPresent: boolean;
    isPaid: boolean;
    paymentMethod?: "cash" | "transfer";
    /** Per-person match count. Length = maleCount + femaleCount */
@@ -75,6 +78,7 @@ const SessionSchema: Schema = new Schema(
             maleCount: { type: Number, default: 0 },
             femaleCount: { type: Number, default: 0 },
             isCheckedIn: { type: Boolean, default: false },
+            isPresent: { type: Boolean, default: false },
             isPaid: { type: Boolean, default: false },
             paymentMethod: { type: String, enum: ["cash", "transfer"] },
             individualMatches: { type: [Number], default: [] },
@@ -83,6 +87,9 @@ const SessionSchema: Schema = new Schema(
                   {
                      isPaid: { type: Boolean, default: false },
                      paymentMethod: { type: String, enum: ["cash", "transfer"] },
+                     customFee: { type: Number },
+                     note: { type: String, default: "" },
+                     isPresent: { type: Boolean, default: false },
                   },
                ],
                default: [],
