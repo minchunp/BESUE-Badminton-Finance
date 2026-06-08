@@ -1,5 +1,6 @@
-import type { Request, Response } from "express";
+import type { Response } from "express";
 import Court from "../models/court.js";
+import { type AuthenticatedRequest } from "../middlewares/auth.middleware.js";
 
 // ================================================================
 // Helper: extract error message safely (no `any`)
@@ -10,9 +11,9 @@ const getErrorMessage = (error: unknown): string => {
 };
 
 // GET /api/courts (Lấy danh sách sân)
-export const getCourts = async (req: Request, res: Response): Promise<void> => {
+export const getCourts = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
    try {
-      const courts = await Court.find().sort({ createdAt: -1 });
+      const courts = await Court.find({ userId: req.user!._id }).sort({ createdAt: -1 });
       res.status(200).json({
          success: true,
          message: "Retrieved the court list successfully!",
@@ -27,10 +28,10 @@ export const getCourts = async (req: Request, res: Response): Promise<void> => {
 };
 
 // GET /api/courts/:id (Lấy chi tiết sân)
-export const getCourtById = async (req: Request, res: Response): Promise<void> => {
+export const getCourtById = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
    try {
       const { id } = req.params;
-      const court = await Court.findById(id);
+      const court = await Court.findOne({ _id: String(id), userId: req.user!._id });
 
       if (!court) {
          res.status(404).json({
@@ -54,7 +55,7 @@ export const getCourtById = async (req: Request, res: Response): Promise<void> =
 };
 
 // POST /api/courts (Tạo sân mới)
-export const createCourt = async (req: Request, res: Response): Promise<void> => {
+export const createCourt = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
    try {
       const { name, address, timeSlots, description } = req.body as {
          name: string;
@@ -76,6 +77,7 @@ export const createCourt = async (req: Request, res: Response): Promise<void> =>
          address,
          timeSlots: timeSlots ?? [],
          description,
+         userId: req.user!._id,
       });
 
       await newCourt.save();
@@ -94,7 +96,7 @@ export const createCourt = async (req: Request, res: Response): Promise<void> =>
 };
 
 // PUT /api/courts/:id (Cập nhật sân)
-export const updateCourt = async (req: Request, res: Response): Promise<void> => {
+export const updateCourt = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
    try {
       const { id } = req.params;
       const { name, address, timeSlots, description } = req.body as {
@@ -104,7 +106,11 @@ export const updateCourt = async (req: Request, res: Response): Promise<void> =>
          description?: string;
       };
 
-      const updatedCourt = await Court.findByIdAndUpdate(id, { name, address, timeSlots, description }, { new: true, runValidators: true });
+      const updatedCourt = await Court.findOneAndUpdate(
+         { _id: String(id), userId: req.user!._id },
+         { name, address, timeSlots, description },
+         { new: true, runValidators: true }
+      );
 
       if (!updatedCourt) {
          res.status(404).json({
@@ -128,10 +134,10 @@ export const updateCourt = async (req: Request, res: Response): Promise<void> =>
 };
 
 // DELETE /api/courts/:id (Xóa sân)
-export const deleteCourt = async (req: Request, res: Response): Promise<void> => {
+export const deleteCourt = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
    try {
       const { id } = req.params;
-      const deletedCourt = await Court.findByIdAndDelete(id);
+      const deletedCourt = await Court.findOneAndDelete({ _id: String(id), userId: req.user!._id });
 
       if (!deletedCourt) {
          res.status(404).json({

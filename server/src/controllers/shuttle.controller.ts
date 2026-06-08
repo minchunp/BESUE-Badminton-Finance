@@ -1,5 +1,6 @@
-import type { Request, Response } from "express";
+import type { Response } from "express";
 import Shuttle from "../models/shuttle.js";
+import { type AuthenticatedRequest } from "../middlewares/auth.middleware.js";
 
 // ================================================================
 // Helper: extract error message safely (no `any`)
@@ -10,9 +11,9 @@ const getErrorMessage = (error: unknown): string => {
 };
 
 // GET /api/shuttles (Lấy danh sách quả cầu)
-export const getShuttles = async (req: Request, res: Response): Promise<void> => {
+export const getShuttles = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
    try {
-      const shuttles = await Shuttle.find().sort({ createdAt: -1 });
+      const shuttles = await Shuttle.find({ userId: req.user!._id }).sort({ createdAt: -1 });
       res.status(200).json({
          success: true,
          message: "Retrieved the shuttle list successfully!",
@@ -27,10 +28,10 @@ export const getShuttles = async (req: Request, res: Response): Promise<void> =>
 };
 
 // GET /api/shuttles/:id (Lấy chi tiết quả cầu)
-export const getShuttleById = async (req: Request, res: Response): Promise<void> => {
+export const getShuttleById = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
    try {
       const { id } = req.params;
-      const shuttle = await Shuttle.findById(id);
+      const shuttle = await Shuttle.findOne({ _id: String(id), userId: req.user!._id });
 
       if (!shuttle) {
          res.status(404).json({
@@ -54,7 +55,7 @@ export const getShuttleById = async (req: Request, res: Response): Promise<void>
 };
 
 // POST /api/shuttles (Tạo loại quả cầu mới)
-export const createShuttle = async (req: Request, res: Response): Promise<void> => {
+export const createShuttle = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
    try {
       const { name, pricePerTube, quantityPerTube } = req.body as {
          name: string;
@@ -74,6 +75,7 @@ export const createShuttle = async (req: Request, res: Response): Promise<void> 
          name,
          pricePerTube,
          quantityPerTube: quantityPerTube !== undefined ? quantityPerTube : 12,
+         userId: req.user!._id,
       });
 
       // Saving will automatically trigger the pre('save') hook to calculate pricePerPiece
@@ -93,7 +95,7 @@ export const createShuttle = async (req: Request, res: Response): Promise<void> 
 };
 
 // PUT /api/shuttles/:id (Cập nhật loại quả cầu)
-export const updateShuttle = async (req: Request, res: Response): Promise<void> => {
+export const updateShuttle = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
    try {
       const { id } = req.params;
       const { name, pricePerTube, quantityPerTube } = req.body as {
@@ -102,7 +104,7 @@ export const updateShuttle = async (req: Request, res: Response): Promise<void> 
          quantityPerTube?: number;
       };
 
-      const shuttle = await Shuttle.findById(id);
+      const shuttle = await Shuttle.findOne({ _id: String(id), userId: req.user!._id });
 
       if (!shuttle) {
          res.status(404).json({
@@ -134,10 +136,10 @@ export const updateShuttle = async (req: Request, res: Response): Promise<void> 
 };
 
 // DELETE /api/shuttles/:id (Xóa loại quả cầu)
-export const deleteShuttle = async (req: Request, res: Response): Promise<void> => {
+export const deleteShuttle = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
    try {
       const { id } = req.params;
-      const deletedShuttle = await Shuttle.findByIdAndDelete(id);
+      const deletedShuttle = await Shuttle.findOneAndDelete({ _id: String(id), userId: req.user!._id });
 
       if (!deletedShuttle) {
          res.status(404).json({

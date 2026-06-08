@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/user.js";
 import { type AuthenticatedRequest } from "../middlewares/auth.middleware.js";
-import { config } from "../server.js";
+import { config } from "../configs/env.config.js";
 
 // ================================================================
 // Helper: extract error message safely (no `any`)

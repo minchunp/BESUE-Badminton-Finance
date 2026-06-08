@@ -1,4 +1,5 @@
 import Shuttle from "../models/shuttle.js";
+import {} from "../middlewares/auth.middleware.js";
 // ================================================================
 // Helper: extract error message safely (no `any`)
 // ================================================================
@@ -10,7 +11,7 @@ const getErrorMessage = (error) => {
 // GET /api/shuttles (Lấy danh sách quả cầu)
 export const getShuttles = async (req, res) => {
     try {
-        const shuttles = await Shuttle.find().sort({ createdAt: -1 });
+        const shuttles = await Shuttle.find({ userId: req.user._id }).sort({ createdAt: -1 });
         res.status(200).json({
             success: true,
             message: "Retrieved the shuttle list successfully!",
@@ -28,7 +29,7 @@ export const getShuttles = async (req, res) => {
 export const getShuttleById = async (req, res) => {
     try {
         const { id } = req.params;
-        const shuttle = await Shuttle.findById(id);
+        const shuttle = await Shuttle.findOne({ _id: String(id), userId: req.user._id });
         if (!shuttle) {
             res.status(404).json({
                 success: false,
@@ -64,6 +65,7 @@ export const createShuttle = async (req, res) => {
             name,
             pricePerTube,
             quantityPerTube: quantityPerTube !== undefined ? quantityPerTube : 12,
+            userId: req.user._id,
         });
         // Saving will automatically trigger the pre('save') hook to calculate pricePerPiece
         await newShuttle.save();
@@ -85,7 +87,7 @@ export const updateShuttle = async (req, res) => {
     try {
         const { id } = req.params;
         const { name, pricePerTube, quantityPerTube } = req.body;
-        const shuttle = await Shuttle.findById(id);
+        const shuttle = await Shuttle.findOne({ _id: String(id), userId: req.user._id });
         if (!shuttle) {
             res.status(404).json({
                 success: false,
@@ -119,7 +121,7 @@ export const updateShuttle = async (req, res) => {
 export const deleteShuttle = async (req, res) => {
     try {
         const { id } = req.params;
-        const deletedShuttle = await Shuttle.findByIdAndDelete(id);
+        const deletedShuttle = await Shuttle.findOneAndDelete({ _id: String(id), userId: req.user._id });
         if (!deletedShuttle) {
             res.status(404).json({
                 success: false,

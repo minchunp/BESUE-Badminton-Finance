@@ -1,4 +1,5 @@
 import Court from "../models/court.js";
+import {} from "../middlewares/auth.middleware.js";
 // ================================================================
 // Helper: extract error message safely (no `any`)
 // ================================================================
@@ -10,7 +11,7 @@ const getErrorMessage = (error) => {
 // GET /api/courts (Lấy danh sách sân)
 export const getCourts = async (req, res) => {
     try {
-        const courts = await Court.find().sort({ createdAt: -1 });
+        const courts = await Court.find({ userId: req.user._id }).sort({ createdAt: -1 });
         res.status(200).json({
             success: true,
             message: "Retrieved the court list successfully!",
@@ -28,7 +29,7 @@ export const getCourts = async (req, res) => {
 export const getCourtById = async (req, res) => {
     try {
         const { id } = req.params;
-        const court = await Court.findById(id);
+        const court = await Court.findOne({ _id: String(id), userId: req.user._id });
         if (!court) {
             res.status(404).json({
                 success: false,
@@ -65,6 +66,7 @@ export const createCourt = async (req, res) => {
             address,
             timeSlots: timeSlots ?? [],
             description,
+            userId: req.user._id,
         });
         await newCourt.save();
         res.status(201).json({
@@ -85,7 +87,7 @@ export const updateCourt = async (req, res) => {
     try {
         const { id } = req.params;
         const { name, address, timeSlots, description } = req.body;
-        const updatedCourt = await Court.findByIdAndUpdate(id, { name, address, timeSlots, description }, { new: true, runValidators: true });
+        const updatedCourt = await Court.findOneAndUpdate({ _id: String(id), userId: req.user._id }, { name, address, timeSlots, description }, { new: true, runValidators: true });
         if (!updatedCourt) {
             res.status(404).json({
                 success: false,
@@ -110,7 +112,7 @@ export const updateCourt = async (req, res) => {
 export const deleteCourt = async (req, res) => {
     try {
         const { id } = req.params;
-        const deletedCourt = await Court.findByIdAndDelete(id);
+        const deletedCourt = await Court.findOneAndDelete({ _id: String(id), userId: req.user._id });
         if (!deletedCourt) {
             res.status(404).json({
                 success: false,

@@ -4,6 +4,7 @@ export interface IShuttle extends Document {
     pricePerTube: number;
     pricePerPiece: number;
     quantityPerTube: number;
+    userId: mongoose.Types.ObjectId;
 }
 declare const _default: mongoose.Model<IShuttle, {}, {}, {}, mongoose.Document<unknown, {}, IShuttle, {}, mongoose.DefaultSchemaOptions> & IShuttle & Required<{
     _id: mongoose.Types.ObjectId;

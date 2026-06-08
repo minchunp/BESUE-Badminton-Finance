@@ -9,6 +9,7 @@ const CourtSchema = new Schema({
     address: { type: String },
     timeSlots: { type: [TimeSlotSchema], default: [] },
     description: { type: String },
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
 }, { timestamps: true });
 export default mongoose.model("Court", CourtSchema);
 //# sourceMappingURL=court.js.map

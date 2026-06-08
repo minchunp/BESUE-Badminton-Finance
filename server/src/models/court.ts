@@ -11,6 +11,7 @@ export interface ICourt extends Document {
    address?: string;
    timeSlots: ITimeSlot[];
    description?: string;
+   userId: mongoose.Types.ObjectId;
 }
 
 const TimeSlotSchema = new Schema<ITimeSlot>(
@@ -19,7 +20,7 @@ const TimeSlotSchema = new Schema<ITimeSlot>(
       endHour: { type: String, required: true },
       pricePerHour: { type: Number, required: true },
    },
-   { _id: false }
+   { _id: false },
 );
 
 const CourtSchema = new Schema<ICourt>(
@@ -28,8 +29,9 @@ const CourtSchema = new Schema<ICourt>(
       address: { type: String },
       timeSlots: { type: [TimeSlotSchema], default: [] },
       description: { type: String },
+      userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
    },
-   { timestamps: true }
+   { timestamps: true },
 );
 
 export default mongoose.model<ICourt>("Court", CourtSchema);

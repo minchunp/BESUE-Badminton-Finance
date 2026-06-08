@@ -1,7 +1,7 @@
 import {} from "express";
 import jwt from "jsonwebtoken";
 import User, {} from "../models/user.js";
-import { config } from "../server.js";
+import { config } from "../configs/env.config.js";
 export const protect = async (req, res, next) => {
     try {
         let token;

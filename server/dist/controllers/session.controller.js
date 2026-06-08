@@ -1,4 +1,5 @@
 import Session from "../models/session.js";
+import {} from "../middlewares/auth.middleware.js";
 // ================================================================
 // Helper: extract error message safely (no `any`)
 // ================================================================
@@ -68,6 +69,7 @@ export const createSession = async (req, res) => {
             feeSettings,
             players: [],
             currentStep: 2,
+            userId: req.user._id,
         });
         const pricePerHour = court?.pricePerHour ?? 0;
         const numberOfCourts = court?.numberOfCourts ?? 1;
@@ -88,7 +90,7 @@ export const updateSessionPlayers = async (req, res) => {
     try {
         const { id } = req.params;
         const { players, currentStep, feeSettings } = req.body;
-        const currentSession = await Session.findById(id);
+        const currentSession = await Session.findOne({ _id: String(id), userId: req.user._id });
         if (!currentSession) {
             res.status(404).json({ success: false, message: "Không tìm thấy buổi host" });
             return;
@@ -114,7 +116,7 @@ export const completeSession = async (req, res) => {
     try {
         const { id } = req.params;
         const { usedQuantity, notes } = req.body;
-        const currentSession = await Session.findById(id);
+        const currentSession = await Session.findOne({ _id: String(id), userId: req.user._id });
         if (!currentSession) {
             res.status(404).json({ success: false, message: "Không tìm thấy buổi host" });
             return;
@@ -139,7 +141,7 @@ export const completeSession = async (req, res) => {
 export const getSessionById = async (req, res) => {
     try {
         const { id } = req.params;
-        const foundSession = await Session.findById(id);
+        const foundSession = await Session.findOne({ _id: String(id), userId: req.user._id });
         if (!foundSession) {
             res.status(404).json({ success: false, message: "Không tìm thấy buổi host" });
             return;
@@ -155,7 +157,7 @@ export const getSessionById = async (req, res) => {
 // ================================================================
 export const getAllSessions = async (req, res) => {
     try {
-        const sessions = await Session.find().sort({ createdAt: -1 });
+        const sessions = await Session.find({ userId: req.user._id }).sort({ createdAt: -1 });
         res.status(200).json({ success: true, data: sessions });
     }
     catch (error) {

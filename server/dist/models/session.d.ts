@@ -50,6 +50,7 @@ export interface ISession extends Document {
         shuttleCost: number;
         profit: number;
     };
+    userId: mongoose.Types.ObjectId;
 }
 declare const _default: mongoose.Model<ISession, {}, {}, {}, mongoose.Document<unknown, {}, ISession, {}, mongoose.DefaultSchemaOptions> & ISession & Required<{
     _id: mongoose.Types.ObjectId;

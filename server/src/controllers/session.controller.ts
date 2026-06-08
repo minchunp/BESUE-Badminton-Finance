@@ -1,6 +1,7 @@
-import type { Request, Response } from "express";
+import type { Response } from "express";
 import Session from "../models/session.js";
 import type { ISession } from "../models/session.js";
+import { type AuthenticatedRequest } from "../middlewares/auth.middleware.js";
 
 // ================================================================
 // Helper: extract error message safely (no `any`)
@@ -71,7 +72,7 @@ const calculateSessionFinance = (
 // ================================================================
 // POST /api/sessions — Tạo buổi host mới
 // ================================================================
-export const createSession = async (req: Request, res: Response) => {
+export const createSession = async (req: AuthenticatedRequest, res: Response) => {
    try {
       const { date, court, shuttle, feeSettings } = req.body as {
          date: string;
@@ -88,6 +89,7 @@ export const createSession = async (req: Request, res: Response) => {
          feeSettings,
          players: [],
          currentStep: 2,
+         userId: req.user!._id,
       });
 
       const pricePerHour = court?.pricePerHour ?? 0;
@@ -106,7 +108,7 @@ export const createSession = async (req: Request, res: Response) => {
 // ================================================================
 // PUT /api/sessions/:id/players — Cập nhật danh sách người chơi
 // ================================================================
-export const updateSessionPlayers = async (req: Request, res: Response) => {
+export const updateSessionPlayers = async (req: AuthenticatedRequest, res: Response) => {
    try {
       const { id } = req.params;
       const { players, currentStep, feeSettings } = req.body as {
@@ -115,7 +117,7 @@ export const updateSessionPlayers = async (req: Request, res: Response) => {
          feeSettings?: ISession["feeSettings"];
       };
 
-      const currentSession = await Session.findById(id);
+      const currentSession = await Session.findOne({ _id: String(id), userId: req.user!._id });
       if (!currentSession) {
          res.status(404).json({ success: false, message: "Không tìm thấy buổi host" });
          return;
@@ -140,12 +142,12 @@ export const updateSessionPlayers = async (req: Request, res: Response) => {
 // ================================================================
 // PUT /api/sessions/:id/complete — Chốt báo cáo tài chính
 // ================================================================
-export const completeSession = async (req: Request, res: Response) => {
+export const completeSession = async (req: AuthenticatedRequest, res: Response) => {
    try {
       const { id } = req.params;
       const { usedQuantity, notes } = req.body as { usedQuantity: number; notes?: string };
 
-      const currentSession = await Session.findById(id);
+      const currentSession = await Session.findOne({ _id: String(id), userId: req.user!._id });
       if (!currentSession) {
          res.status(404).json({ success: false, message: "Không tìm thấy buổi host" });
          return;
@@ -169,10 +171,10 @@ export const completeSession = async (req: Request, res: Response) => {
 // ================================================================
 // GET /api/sessions/:id — Lấy chi tiết buổi host
 // ================================================================
-export const getSessionById = async (req: Request, res: Response) => {
+export const getSessionById = async (req: AuthenticatedRequest, res: Response) => {
    try {
       const { id } = req.params;
-      const foundSession = await Session.findById(id);
+      const foundSession = await Session.findOne({ _id: String(id), userId: req.user!._id });
 
       if (!foundSession) {
          res.status(404).json({ success: false, message: "Không tìm thấy buổi host" });
@@ -188,9 +190,9 @@ export const getSessionById = async (req: Request, res: Response) => {
 // ================================================================
 // GET /api/sessions — Lấy toàn bộ danh sách buổi host
 // ================================================================
-export const getAllSessions = async (req: Request, res: Response) => {
+export const getAllSessions = async (req: AuthenticatedRequest, res: Response) => {
    try {
-      const sessions = await Session.find().sort({ createdAt: -1 });
+      const sessions = await Session.find({ userId: req.user!._id }).sort({ createdAt: -1 });
       res.status(200).json({ success: true, data: sessions });
    } catch (error) {
       res.status(500).json({ success: false, message: "Lỗi lấy danh sách buổi host", error: getErrorMessage(error) });

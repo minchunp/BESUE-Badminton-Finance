@@ -1,5 +1,7 @@
-import { type Request, type Response } from "express";
+import { type Response } from "express";
+import mongoose from "mongoose";
 import Session from "../models/session.js";
+import { type AuthenticatedRequest } from "../middlewares/auth.middleware.js";
 
 // ================================================================
 // Helpers
@@ -8,7 +10,7 @@ import Session from "../models/session.js";
 /** Parse query params `from` / `to` into Date objects.
  *  Defaults: to = now, from = 30 days ago.
  */
-const parseDateRange = (req: Request): { from: Date; to: Date } => {
+const parseDateRange = (req: AuthenticatedRequest): { from: Date; to: Date } => {
    const now = new Date();
    const to = req.query.to ? new Date(req.query.to as string) : now;
    // Default 30 days
@@ -35,19 +37,22 @@ const getPreviousPeriod = (from: Date, to: Date): { prevFrom: Date; prevTo: Date
 // 1. Overview — KPI tổng quan
 // ================================================================
 
-export const getOverview = async (req: Request, res: Response): Promise<void> => {
+export const getOverview = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
    try {
       const { from, to } = parseDateRange(req);
       const { prevFrom, prevTo } = getPreviousPeriod(from, to);
+      const userId = new mongoose.Types.ObjectId(String(req.user!._id));
 
       const matchCurrent = {
          status: "completed",
          date: { $gte: from, $lte: to },
+         userId,
       };
 
       const matchPrev = {
          status: "completed",
          date: { $gte: prevFrom, $lte: prevTo },
+         userId,
       };
 
       const aggregatePeriod = async (match: object) => {
@@ -116,10 +121,11 @@ export const getOverview = async (req: Request, res: Response): Promise<void> =>
 // 2. Revenue Trend — xu hướng thu/chi theo thời gian
 // ================================================================
 
-export const getRevenueTrend = async (req: Request, res: Response): Promise<void> => {
+export const getRevenueTrend = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
    try {
       const { from, to } = parseDateRange(req);
       const diffDays = Math.ceil((to.getTime() - from.getTime()) / (1000 * 60 * 60 * 24));
+      const userId = new mongoose.Types.ObjectId(String(req.user!._id));
 
       // Decide grouping format: daily ≤ 90 days, monthly otherwise
       const groupFormat = diffDays <= 90 ? "%Y-%m-%d" : "%Y-%m";
@@ -129,6 +135,7 @@ export const getRevenueTrend = async (req: Request, res: Response): Promise<void
             $match: {
                status: "completed",
                date: { $gte: from, $lte: to },
+               userId,
             },
          },
          {
@@ -167,15 +174,17 @@ export const getRevenueTrend = async (req: Request, res: Response): Promise<void
 // 3. Cost Breakdown — phân bổ chi phí
 // ================================================================
 
-export const getCostBreakdown = async (req: Request, res: Response): Promise<void> => {
+export const getCostBreakdown = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
    try {
       const { from, to } = parseDateRange(req);
+      const userId = new mongoose.Types.ObjectId(String(req.user!._id));
 
       const result = await Session.aggregate([
          {
             $match: {
                status: "completed",
                date: { $gte: from, $lte: to },
+               userId,
             },
          },
          {
@@ -209,13 +218,14 @@ export const getCostBreakdown = async (req: Request, res: Response): Promise<voi
 // 4. Sessions Table — bảng chi tiết từng buổi
 // ================================================================
 
-export const getSessionsTable = async (req: Request, res: Response): Promise<void> => {
+export const getSessionsTable = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
    try {
       const { from, to } = parseDateRange(req);
 
       const sessions = await Session.find({
          status: "completed",
          date: { $gte: from, $lte: to },
+         userId: req.user!._id,
       })
          .sort({ date: -1 })
          .select("date court shuttle players feeSettings summary notes")
@@ -270,11 +280,12 @@ export const getSessionsTable = async (req: Request, res: Response): Promise<voi
 // Legacy (kept for backward compat)
 // ================================================================
 
-export const getStatistics = async (req: Request, res: Response): Promise<void> => {
+export const getStatistics = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
    try {
       const { type } = req.query;
       const now = new Date();
       const startDate = new Date();
+      const userId = new mongoose.Types.ObjectId(String(req.user!._id));
 
       if (type === "weekly") {
          startDate.setDate(now.getDate() - 7);
@@ -283,7 +294,7 @@ export const getStatistics = async (req: Request, res: Response): Promise<void> 
       }
 
       const stats = await Session.aggregate([
-         { $match: { date: { $gte: startDate } } },
+         { $match: { date: { $gte: startDate }, userId } },
          {
             $group: {
                _id: type === "weekly" ? { $dateToString: { format: "%Y-%W", date: "$date" } } : { $dateToString: { format: "%Y-%m", date: "$date" } },

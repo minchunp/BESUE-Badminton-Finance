@@ -53,10 +53,12 @@ export interface ISession extends Document {
       shuttleCost: number;
       profit: number;
    };
+   userId: mongoose.Types.ObjectId;
 }
 
 const SessionSchema: Schema = new Schema(
    {
+      userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
       status: { type: String, enum: ["draft", "active", "completed"], default: "draft" },
       date: { type: Date, required: true },
       court: {

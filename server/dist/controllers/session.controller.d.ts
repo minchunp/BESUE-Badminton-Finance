@@ -1,7 +1,8 @@
-import type { Request, Response } from "express";
-export declare const createSession: (req: Request, res: Response) => Promise<void>;
-export declare const updateSessionPlayers: (req: Request, res: Response) => Promise<void>;
-export declare const completeSession: (req: Request, res: Response) => Promise<void>;
-export declare const getSessionById: (req: Request, res: Response) => Promise<void>;
-export declare const getAllSessions: (req: Request, res: Response) => Promise<void>;
+import type { Response } from "express";
+import { type AuthenticatedRequest } from "../middlewares/auth.middleware.js";
+export declare const createSession: (req: AuthenticatedRequest, res: Response) => Promise<void>;
+export declare const updateSessionPlayers: (req: AuthenticatedRequest, res: Response) => Promise<void>;
+export declare const completeSession: (req: AuthenticatedRequest, res: Response) => Promise<void>;
+export declare const getSessionById: (req: AuthenticatedRequest, res: Response) => Promise<void>;
+export declare const getAllSessions: (req: AuthenticatedRequest, res: Response) => Promise<void>;
 //# sourceMappingURL=session.controller.d.ts.map

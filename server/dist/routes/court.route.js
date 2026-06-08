@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { getCourts, getCourtById, createCourt, updateCourt, deleteCourt, } from "../controllers/court.controller.js";
+import { protect } from "../middlewares/auth.middleware.js";
 const router = Router();
+router.use(protect);
 router.get("/", getCourts);
 router.get("/:id", getCourtById);
 router.post("/", createCourt);

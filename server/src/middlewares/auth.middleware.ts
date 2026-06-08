@@ -1,24 +1,17 @@
 import { type Request, type Response, type NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import User, { type IUser } from "../models/user.js";
-import { config } from "../server.js";
+import { config } from "../configs/env.config.js";
 
 export interface AuthenticatedRequest extends Request {
    user?: IUser;
 }
 
-export const protect = async (
-   req: AuthenticatedRequest,
-   res: Response,
-   next: NextFunction
-): Promise<void> => {
+export const protect = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
    try {
       let token: string | undefined;
 
-      if (
-         req.headers.authorization &&
-         req.headers.authorization.startsWith("Bearer")
-      ) {
+      if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
          token = req.headers.authorization.split(" ")[1];
       }
 

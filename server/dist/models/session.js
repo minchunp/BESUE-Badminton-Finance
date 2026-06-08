@@ -1,5 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 const SessionSchema = new Schema({
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     status: { type: String, enum: ["draft", "active", "completed"], default: "draft" },
     date: { type: Date, required: true },
     court: {

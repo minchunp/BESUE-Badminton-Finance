@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { getStatistics, getOverview, getRevenueTrend, getCostBreakdown, getSessionsTable, } from "../controllers/stats.controller.js";
+import { protect } from "../middlewares/auth.middleware.js";
 const router = Router();
+router.use(protect);
 // Legacy endpoint
 router.get("/", getStatistics);
 // New stats endpoints (all support ?from=YYYY-MM-DD&to=YYYY-MM-DD)

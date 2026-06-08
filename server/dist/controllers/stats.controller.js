@@ -1,5 +1,7 @@
 import {} from "express";
+import mongoose from "mongoose";
 import Session from "../models/session.js";
+import {} from "../middlewares/auth.middleware.js";
 // ================================================================
 // Helpers
 // ================================================================
@@ -32,13 +34,16 @@ export const getOverview = async (req, res) => {
     try {
         const { from, to } = parseDateRange(req);
         const { prevFrom, prevTo } = getPreviousPeriod(from, to);
+        const userId = new mongoose.Types.ObjectId(String(req.user._id));
         const matchCurrent = {
             status: "completed",
             date: { $gte: from, $lte: to },
+            userId,
         };
         const matchPrev = {
             status: "completed",
             date: { $gte: prevFrom, $lte: prevTo },
+            userId,
         };
         const aggregatePeriod = async (match) => {
             const result = await Session.aggregate([
@@ -102,6 +107,7 @@ export const getRevenueTrend = async (req, res) => {
     try {
         const { from, to } = parseDateRange(req);
         const diffDays = Math.ceil((to.getTime() - from.getTime()) / (1000 * 60 * 60 * 24));
+        const userId = new mongoose.Types.ObjectId(String(req.user._id));
         // Decide grouping format: daily ≤ 90 days, monthly otherwise
         const groupFormat = diffDays <= 90 ? "%Y-%m-%d" : "%Y-%m";
         const trend = await Session.aggregate([
@@ -109,6 +115,7 @@ export const getRevenueTrend = async (req, res) => {
                 $match: {
                     status: "completed",
                     date: { $gte: from, $lte: to },
+                    userId,
                 },
             },
             {
@@ -148,11 +155,13 @@ export const getRevenueTrend = async (req, res) => {
 export const getCostBreakdown = async (req, res) => {
     try {
         const { from, to } = parseDateRange(req);
+        const userId = new mongoose.Types.ObjectId(String(req.user._id));
         const result = await Session.aggregate([
             {
                 $match: {
                     status: "completed",
                     date: { $gte: from, $lte: to },
+                    userId,
                 },
             },
             {
@@ -189,6 +198,7 @@ export const getSessionsTable = async (req, res) => {
         const sessions = await Session.find({
             status: "completed",
             date: { $gte: from, $lte: to },
+            userId: req.user._id,
         })
             .sort({ date: -1 })
             .select("date court shuttle players feeSettings summary notes")
@@ -227,6 +237,7 @@ export const getStatistics = async (req, res) => {
         const { type } = req.query;
         const now = new Date();
         const startDate = new Date();
+        const userId = new mongoose.Types.ObjectId(String(req.user._id));
         if (type === "weekly") {
             startDate.setDate(now.getDate() - 7);
         }
@@ -234,7 +245,7 @@ export const getStatistics = async (req, res) => {
             startDate.setMonth(now.getMonth() - 1);
         }
         const stats = await Session.aggregate([
-            { $match: { date: { $gte: startDate } } },
+            { $match: { date: { $gte: startDate }, userId } },
             {
                 $group: {
                     _id: type === "weekly" ? { $dateToString: { format: "%Y-%W", date: "$date" } } : { $dateToString: { format: "%Y-%m", date: "$date" } },

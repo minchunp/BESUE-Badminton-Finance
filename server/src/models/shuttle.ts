@@ -5,6 +5,7 @@ export interface IShuttle extends Document {
    pricePerTube: number;
    pricePerPiece: number;
    quantityPerTube: number;
+   userId: mongoose.Types.ObjectId;
 }
 
 const ShuttleSchema = new Schema<IShuttle>(
@@ -13,6 +14,7 @@ const ShuttleSchema = new Schema<IShuttle>(
       pricePerTube: { type: Number, required: true },
       pricePerPiece: { type: Number },
       quantityPerTube: { type: Number, required: true, default: 12 },
+      userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
    },
    { timestamps: true }
 );

@@ -9,6 +9,7 @@ export interface ICourt extends Document {
     address?: string;
     timeSlots: ITimeSlot[];
     description?: string;
+    userId: mongoose.Types.ObjectId;
 }
 declare const _default: mongoose.Model<ICourt, {}, {}, {}, mongoose.Document<unknown, {}, ICourt, {}, mongoose.DefaultSchemaOptions> & ICourt & Required<{
     _id: mongoose.Types.ObjectId;
