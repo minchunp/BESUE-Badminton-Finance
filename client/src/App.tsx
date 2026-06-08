@@ -37,11 +37,11 @@ const SHARED_TOKENS = {
    motionEaseInOut: "cubic-bezier(0.4, 0, 0.2, 1)",
    motionEaseOut: "cubic-bezier(0.0, 0, 0.2, 1)",
 
-   // Shape — Apple Squircle baseline
-   borderRadius: 16, // --radius-btn (buttons, items)
-   borderRadiusLG: 28, // --radius-card (modals, drawers, containers)
-   borderRadiusSM: 10, // --radius-chip (badges)
-   borderRadiusXS: 8,
+   // Shape — refined, modern baseline
+   borderRadius: 12, // --radius-btn (buttons, items)
+   borderRadiusLG: 20, // --radius-card (modals, drawers, containers)
+   borderRadiusSM: 8, // --radius-chip (badges)
+   borderRadiusXS: 6,
 
    // Line
    lineWidth: 1,
@@ -72,10 +72,10 @@ const LIGHT_TOKENS = {
    colorInfo: "#0A84FF", // systemBlue
 
    // Backgrounds
-   colorBgBase: "#F2F2F7",
+   colorBgBase: "#F0F0F5",
    colorBgContainer: "#FFFFFF",
    colorBgElevated: "#FFFFFF",
-   colorBgLayout: "#F2F2F7",
+   colorBgLayout: "#F0F0F5",
    colorBgSpotlight: "#FFFFFF",
    colorBgMask: "rgba(0, 0, 0, 0.28)",
 
@@ -175,35 +175,35 @@ const AppThemeWrapper = ({ children }: { children: React.ReactNode }) => {
                   BUTTON — Apple filled primary style
                   ────────────────────────────────────────────── */
                Button: {
-                  borderRadius: 14,
-                  borderRadiusLG: 14,
-                  borderRadiusSM: 10,
+                  borderRadius: 10,
+                  borderRadiusLG: 10,
+                  borderRadiusSM: 8,
                   controlHeight: 44, // Apple HIG minimum tap target
                   controlHeightLG: 50,
                   controlHeightSM: 36,
                   fontWeight: 600,
-                  primaryShadow: "none", // No colored shadows in Fitness style
+                  primaryShadow: "none",
                },
 
                /* ──────────────────────────────────────────────
                   INPUT / SELECT — Clean Apple text fields
                   ────────────────────────────────────────────── */
                Input: {
-                  borderRadius: 12,
-                  borderRadiusLG: 12,
+                  borderRadius: 10,
+                  borderRadiusLG: 10,
                   borderRadiusSM: 8,
                   controlHeight: 44,
                   paddingBlock: 10,
                   paddingInline: 14,
                },
                Select: {
-                  borderRadius: 12,
-                  borderRadiusLG: 12,
+                  borderRadius: 10,
+                  borderRadiusLG: 10,
                   controlHeight: 44,
-                  controlItemBgActive: isDarkMode ? "rgba(94, 92, 230, 0.15)" : "rgba(88, 86, 214, 0.08)",
+                  controlItemBgActive: isDarkMode ? "rgba(10, 132, 255, 0.15)" : "rgba(10, 132, 255, 0.08)",
                },
                DatePicker: {
-                  borderRadius: 12,
+                  borderRadius: 10,
                   controlHeight: 44,
                   cellWidth: 36,
                   cellHeight: 28,
@@ -217,7 +217,7 @@ const AppThemeWrapper = ({ children }: { children: React.ReactNode }) => {
                   • subtle backdrop blur
                   ────────────────────────────────────────────── */
                Modal: {
-                  borderRadiusLG: 28,
+                  borderRadiusLG: 20,
                   paddingMD: 24,
                   paddingContentHorizontalLG: 24,
                   headerBg: isDarkMode ? "#1C1C1E" : "#FFFFFF",
@@ -225,7 +225,7 @@ const AppThemeWrapper = ({ children }: { children: React.ReactNode }) => {
                   footerBg: isDarkMode ? "#1C1C1E" : "#FFFFFF",
                   titleFontSize: 17,
                   titleLineHeight: 1.4,
-                  boxShadow: isDarkMode ? "0 20px 60px rgba(0,0,0,0.55)" : "0 16px 48px rgba(0,0,0,0.12)",
+                  boxShadow: isDarkMode ? "0 20px 60px rgba(0,0,0,0.55)" : "0 16px 48px rgba(0,0,0,0.10)",
                },
 
                /* ──────────────────────────────────────────────
@@ -236,7 +236,7 @@ const AppThemeWrapper = ({ children }: { children: React.ReactNode }) => {
                   • destroyOnHide handled via component prop globally
                   ────────────────────────────────────────────── */
                Drawer: {
-                  borderRadiusLG: 32, // top corners round
+                  borderRadiusLG: 24, // top corners round
                   paddingLG: 24,
                   colorBgElevated: isDarkMode ? "#1C1C1E" : "#FFFFFF",
                },
@@ -275,18 +275,18 @@ const AppThemeWrapper = ({ children }: { children: React.ReactNode }) => {
                   TABLE — Clean Apple list style
                   ────────────────────────────────────────────── */
                Table: {
-                  borderRadius: 16,
-                  headerBg: isDarkMode ? "#2C2C2E" : "#F2F2F7",
+                  borderRadius: 12,
+                  headerBg: isDarkMode ? "#2C2C2E" : "#F0F0F5",
                   headerColor: isDarkMode ? "#FFFFFF" : "#000000",
                   rowHoverBg: isDarkMode ? "rgba(255, 255, 255, 0.04)" : "rgba(60, 60, 67, 0.03)",
-                  bodySortBg: isDarkMode ? "#2C2C2E" : "#F9F9F9",
+                  bodySortBg: isDarkMode ? "#2C2C2E" : "#F7F7FC",
                },
 
                /* ──────────────────────────────────────────────
                   CARD — Apple grouped card
                   ────────────────────────────────────────────── */
                Card: {
-                  borderRadius: 28,
+                  borderRadius: 16,
                   headerBg: "transparent",
                   colorBorderSecondary: isDarkMode ? "rgba(255, 255, 255, 0.08)" : "rgba(60, 60, 67, 0.12)",
                },
@@ -295,7 +295,7 @@ const AppThemeWrapper = ({ children }: { children: React.ReactNode }) => {
                   TAG / BADGE — Apple pill chips
                   ────────────────────────────────────────────── */
                Tag: {
-                  borderRadius: 10,
+                  borderRadius: 8,
                   fontSizeSM: 12,
                },
                Badge: {
@@ -306,12 +306,12 @@ const AppThemeWrapper = ({ children }: { children: React.ReactNode }) => {
                   NOTIFICATION / MESSAGE — Apple HUD style
                   ────────────────────────────────────────────── */
                Notification: {
-                  borderRadiusLG: 16,
+                  borderRadiusLG: 14,
                   colorBgElevated: isDarkMode ? "#2C2C2E" : "#FFFFFF",
                   width: 320,
                },
                Message: {
-                  borderRadius: 12,
+                  borderRadius: 10,
                   colorBgElevated: isDarkMode ? "#2C2C2E" : "#FFFFFF",
                },
 
@@ -319,11 +319,11 @@ const AppThemeWrapper = ({ children }: { children: React.ReactNode }) => {
                   TOOLTIP / POPOVER — Apple popover style
                   ────────────────────────────────────────────── */
                Tooltip: {
-                  borderRadius: 10,
+                  borderRadius: 8,
                   colorBgSpotlight: isDarkMode ? "#2C2C2E" : "#333333",
                },
                Popover: {
-                  borderRadiusLG: 16,
+                  borderRadiusLG: 14,
                   colorBgElevated: isDarkMode ? "#1C1C1E" : "#FFFFFF",
                },
 

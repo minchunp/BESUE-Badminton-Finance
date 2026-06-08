@@ -59,7 +59,7 @@ const StepBasicInfo = ({
          </div>
 
          {/* Date selection card */}
-         <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[20px] p-4 flex items-center justify-between">
+         <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[14px] p-4 flex items-center justify-between">
             <div className="flex items-center gap-3 w-full">
                <Calendar size={18} className="text-[#0A84FF] shrink-0" />
                <div className="flex-1 min-w-0">
@@ -89,7 +89,7 @@ const StepBasicInfo = ({
          </div>
 
          {/* Court selection card */}
-         <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[20px] p-4 space-y-2.5">
+         <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[14px] p-4 space-y-2.5">
             <div className="flex items-center gap-3">
                <MapPin size={18} className="text-[#0A84FF]" />
                <div className="font-sans text-[10px] font-bold text-black/35 dark:text-white/35 uppercase tracking-wider">Sân cầu lông</div>
@@ -115,7 +115,7 @@ const StepBasicInfo = ({
          </div>
 
          {/* Hours Stepper */}
-         <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[20px] p-4 flex items-center justify-between">
+         <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[14px] p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
                <Clock size={18} className="text-[#0A84FF]" />
                <span className="font-sans text-sm font-extrabold text-black dark:text-white">Số giờ chơi</span>
@@ -138,7 +138,7 @@ const StepBasicInfo = ({
          </div>
 
          {/* Court Quantity Stepper */}
-         <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[20px] p-4 flex items-center justify-between">
+         <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[14px] p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
                <Layers size={18} className="text-[#0A84FF]" />
                <span className="font-sans text-sm font-extrabold text-black dark:text-white">Số lượng sân</span>
@@ -161,7 +161,7 @@ const StepBasicInfo = ({
          </div>
 
          {/* Shuttle Selection */}
-         <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[20px] p-4 space-y-2.5">
+         <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[14px] p-4 space-y-2.5">
             <div className="flex items-center gap-3">
                <Sparkles size={18} className="text-[#0A84FF]" />
                <div className="font-sans text-[10px] font-bold text-black/35 dark:text-white/35 uppercase tracking-wider">Loại cầu sử dụng</div>
@@ -188,7 +188,7 @@ const StepBasicInfo = ({
          </div>
 
          {/* Player Pricing */}
-         <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[20px] p-4 space-y-4">
+         <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[14px] p-4 space-y-4">
             <div className="flex items-center gap-3">
                <Coins size={18} className="text-[#0A84FF]" />
                <span className="font-sans text-sm font-extrabold text-black dark:text-white">Phí tham gia dự kiến</span>

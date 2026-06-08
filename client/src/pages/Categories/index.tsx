@@ -155,7 +155,7 @@ const CategoriesPage = () => {
             algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
             token: {
                colorPrimary: "#0A84FF",
-               borderRadius: 20,
+               borderRadius: 12,
             },
          }}
       >
@@ -177,10 +177,10 @@ const CategoriesPage = () => {
 
             {/* iOS Segmented Tab Selector */}
             <div className="px-4 py-3 sticky top-16 z-30 bg-white/90 dark:bg-black/90 backdrop-blur-2xl border-b border-black/5 dark:border-white/6">
-               <div className="flex bg-[#F2F2F7] dark:bg-[#2C2C2E] p-1 rounded-2xl border border-black/4 dark:border-white/4">
+               <div className="flex bg-[#F0F0F5] dark:bg-[#2C2C2E] p-1 rounded-[12px] border border-black/4 dark:border-white/4">
                   <button
                      onClick={() => setActiveTab("shuttle")}
-                     className={`flex-1 relative flex items-center justify-center gap-2 py-2 rounded-xl font-sans text-xs font-bold whitespace-nowrap transition-all duration-300 select-none border-none cursor-pointer ${
+                     className={`flex-1 relative flex items-center justify-center gap-2 py-2 rounded-[10px] font-sans text-xs font-bold whitespace-nowrap transition-all duration-300 select-none border-none cursor-pointer ${
                         activeTab === "shuttle"
                            ? "bg-white dark:bg-[#1C1C1E] text-[#0A84FF] shadow-sm border border-black/4"
                            : "bg-transparent text-black/45 dark:text-white/45 hover:text-black/65 dark:hover:text-white/65"
@@ -193,7 +193,7 @@ const CategoriesPage = () => {
 
                   <button
                      onClick={() => setActiveTab("court")}
-                     className={`flex-1 relative flex items-center justify-center gap-2 py-2 rounded-xl font-sans text-xs font-bold whitespace-nowrap transition-all duration-300 select-none border-none cursor-pointer ${
+                     className={`flex-1 relative flex items-center justify-center gap-2 py-2 rounded-[10px] font-sans text-xs font-bold whitespace-nowrap transition-all duration-300 select-none border-none cursor-pointer ${
                         activeTab === "court"
                            ? "bg-white dark:bg-[#1C1C1E] text-[#0A84FF] shadow-sm border border-black/4"
                            : "bg-transparent text-black/45 dark:text-white/45 hover:text-black/65 dark:hover:text-white/65"
@@ -226,7 +226,7 @@ const CategoriesPage = () => {
                whileHover={{ scale: 1.05 }}
                whileTap={{ scale: 0.9 }}
                onClick={handleOpenCreate}
-               className="fixed bottom-24 right-5 w-14 h-14 rounded-2xl bg-[#0A84FF] border-none text-white flex items-center justify-center z-40 select-none cursor-pointer"
+               className="fixed bottom-24 right-5 w-14 h-14 rounded-[12px] bg-[#0A84FF] border-none text-white flex items-center justify-center z-40 select-none cursor-pointer"
             >
                <Plus size={28} strokeWidth={2.5} />
             </motion.button>

@@ -36,7 +36,7 @@ const SessionCard = ({ session, formatSessionDate, formatAmount, isToday, onCard
       <motion.article
          variants={cardVariants}
          onClick={() => onCardClick(session)}
-         className="bg-white dark:bg-[#1C1C1E] rounded-[20px] p-4 flex flex-col gap-3.5 cursor-pointer border border-black/5 dark:border-white/[0.07] active:bg-black/1 dark:active:bg-white/2 transition-colors"
+         className="bg-white dark:bg-[#1C1C1E] rounded-[14px] p-4 flex flex-col gap-3.5 cursor-pointer border border-black/5 dark:border-white/[0.07] active:bg-black/1 dark:active:bg-white/2 transition-colors"
       >
          {/* ── Top row: icon + title + status badge ── */}
          <div className="flex justify-between items-start">

@@ -40,13 +40,13 @@ const Login = () => {
    };
 
    return (
-      <div className="min-h-screen bg-[#F2F2F7] dark:bg-black font-sans flex items-center justify-center px-6 w-full select-none">
+      <div className="min-h-screen bg-[#F0F0F5] dark:bg-black font-sans flex items-center justify-center px-6 w-full select-none">
          {/* main Form container */}
          <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ type: "spring", stiffness: 80, damping: 15 }}
-            className="w-full max-w-sm bg-white dark:bg-[#1C1C1E] rounded-[28px] p-6 border border-black/[0.05] dark:border-white/[0.06] shadow-md flex flex-col items-center gap-6"
+            className="w-full max-w-sm bg-white dark:bg-[#1C1C1E] rounded-[20px] p-6 border border-black/[0.08] dark:border-white/[0.06] shadow-md flex flex-col items-center gap-6"
          >
             {/* Header logo / Brand info */}
             <div className="flex flex-col items-center gap-3 text-center">
@@ -76,7 +76,9 @@ const Login = () => {
             <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
                {/* 1. Tên đăng nhập hoặc Email */}
                <div className="flex flex-col gap-1.5 w-full">
-                  <label className="font-sans text-[10px] font-bold text-black/35 dark:text-white/35 uppercase tracking-wider pl-1">Tên đăng nhập / Email</label>
+                  <label className="font-sans text-[10px] font-bold text-black/35 dark:text-white/35 uppercase tracking-wider pl-1">
+                     Tên đăng nhập / Email
+                  </label>
                   <div className="relative w-full">
                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-black/35 dark:text-white/35 select-none">
                         <Mail size={16} />
@@ -119,7 +121,7 @@ const Login = () => {
                   disabled={isSubmitting}
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full h-[52px] bg-[#0A84FF] text-white rounded-2xl font-sans text-[15px] font-bold shadow-[0_4px_16px_rgba(88, 86, 214, 0.28)] mt-2 flex items-center justify-center cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed select-none"
+                  className="w-full h-[52px] bg-[#0A84FF] text-white rounded-[10px] font-sans text-[15px] font-bold mt-2 flex items-center justify-center cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed select-none"
                >
                   {isSubmitting ? <div className="w-5 h-5 rounded-full border-2 border-white border-t-transparent animate-spin" /> : "Đăng nhập"}
                </motion.button>

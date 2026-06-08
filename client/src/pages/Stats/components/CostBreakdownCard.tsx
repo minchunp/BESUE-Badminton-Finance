@@ -123,7 +123,7 @@ const CostBreakdownCard = ({ data, isLoading }: CostBreakdownCardProps) => {
          initial={{ opacity: 0, y: 16 }}
          animate={{ opacity: 1, y: 0 }}
          transition={{ delay: 0.15, type: "spring", stiffness: 100 }}
-         className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/[0.07] rounded-[20px] p-5 space-y-4"
+         className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/[0.07] rounded-[14px] p-5 space-y-4"
       >
          <div>
             <h3 className="font-sans text-sm font-black text-black dark:text-white">Phân tích chi phí</h3>

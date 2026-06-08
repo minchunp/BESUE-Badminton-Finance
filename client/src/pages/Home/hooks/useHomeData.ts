@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { sessionApi } from "../../../api/services/session.api";
-import type { HomePageData, QuickStatItem, RecentSession } from "../types";
+import type { HomePageData, QuickStatItem, RecentSession, ActiveSession } from "../types";
 import dayjs from "dayjs";
 
 export const useHomeData = () => {
@@ -21,7 +21,30 @@ export const useHomeData = () => {
             return dayjs(b.date).diff(dayjs(a.date));
          });
 
-         // 3. Calculate statistics
+         // 3. Active / draft sessions — find the most recent one to resume
+         const activeDraftSessions = sessions
+            .filter((s) => s.status === "active" || s.status === "draft")
+            .sort((a, b) => dayjs(b.date).diff(dayjs(a.date)));
+
+         // Pick the most recent active session (prefer "active" over "draft")
+         const activeSessionRaw = activeDraftSessions.find((s) => s.status === "active") ?? activeDraftSessions[0] ?? null;
+
+         let activeSession: ActiveSession | null = null;
+         if (activeSessionRaw) {
+            const playersCount = (activeSessionRaw.players ?? []).reduce((sum, p) => sum + (p.maleCount ?? 0) + (p.femaleCount ?? 0), 0);
+            // Determine the step to navigate to
+            const resumeStep = activeSessionRaw.currentStep ?? 2;
+            activeSession = {
+               id: activeSessionRaw._id ?? "",
+               date: dayjs(activeSessionRaw.date).format("DD [Tháng] MM, YYYY"),
+               courtName: activeSessionRaw.court?.name ?? "Sân Cầu Lông",
+               playersCount,
+               currentStep: resumeStep,
+               status: activeSessionRaw.status as "active" | "draft",
+            };
+         }
+
+         // 4. Calculate statistics
          const totalRevenue = completedSessions.reduce((sum, s) => sum + (s.summary?.totalRevenue ?? 0), 0);
 
          const totalHours = completedSessions.reduce((sum, s) => sum + (s.court?.hours ?? 0), 0);
@@ -62,7 +85,7 @@ export const useHomeData = () => {
             },
          ];
 
-         // 4. Map top 5 recent sessions
+         // 5. Map top 5 recent sessions
          const recentSessions: RecentSession[] = sortedCompleted.slice(0, 5).map((s) => {
             // Count total players slot
             const quantityPlayer = (s.players ?? []).reduce((sum, p) => sum + (p.maleCount ?? 0) + (p.femaleCount ?? 0), 0);
@@ -82,6 +105,7 @@ export const useHomeData = () => {
             scheduledHostsCount,
             stats,
             recentSessions,
+            activeSession,
          };
       },
       staleTime: 1000 * 60, // 1 minute

@@ -11,7 +11,7 @@ interface PaymentMethodCardProps {
 const PaymentMethodCard = ({ totalCash, totalTransfer, isLoading }: PaymentMethodCardProps) => {
    if (isLoading) {
       return (
-         <div className="bg-white dark:bg-[#1C1C1E] border border-black/[0.05] dark:border-white/[0.06] shadow-sm rounded-[24px] p-5 animate-pulse space-y-3">
+         <div className="bg-white dark:bg-[#1C1C1E] border border-black/[0.05] dark:border-white/[0.06] shadow-sm rounded-[14px] p-5 animate-pulse space-y-3">
             <div className="h-5 w-44 bg-black/[0.06] dark:bg-white/[0.06] rounded-full" />
             <div className="h-6 bg-black/[0.04] dark:bg-white/[0.04] rounded-full" />
             <div className="grid grid-cols-2 gap-3">
@@ -33,7 +33,7 @@ const PaymentMethodCard = ({ totalCash, totalTransfer, isLoading }: PaymentMetho
          initial={{ opacity: 0, y: 16 }}
          animate={{ opacity: 1, y: 0 }}
          transition={{ delay: 0.2, type: "spring", stiffness: 100 }}
-         className="bg-white dark:bg-[#1C1C1E] border border-black/[0.05] dark:border-white/[0.07] rounded-[20px] p-5 space-y-4"
+         className="bg-white dark:bg-[#1C1C1E] border border-black/[0.05] dark:border-white/[0.07] rounded-[14px] p-5 space-y-4"
       >
          <div>
             <h3 className="font-sans text-sm font-black text-black dark:text-white">Phương thức thanh toán</h3>

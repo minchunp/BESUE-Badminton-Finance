@@ -102,7 +102,7 @@ const CourtTab = ({ onEdit }: CourtTabProps) => {
          <section className="animate-fade-in">
             <h2 className="font-sans text-[13px] font-bold text-black/35 dark:text-white/35 uppercase tracking-wider mb-3 px-1">Tổng quan</h2>
             <div className="grid grid-cols-2 gap-4">
-               <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[20px] p-4 flex flex-col justify-between min-h-27.5 transition-all">
+               <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[14px] p-4 flex flex-col justify-between min-h-27.5 transition-all">
                   <span className="font-sans text-[10px] font-bold text-black/45 dark:text-white/45 uppercase tracking-wider flex items-center gap-1.5">
                      <Landmark size={14} className="text-[#0A84FF]" /> Tổng số sân
                   </span>
@@ -112,7 +112,7 @@ const CourtTab = ({ onEdit }: CourtTabProps) => {
                   </div>
                </div>
 
-               <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[20px] p-4 flex flex-col justify-between min-h-27.5 transition-all">
+               <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[14px] p-4 flex flex-col justify-between min-h-27.5 transition-all">
                   <span className="font-sans text-[10px] font-bold text-black/45 dark:text-white/45 uppercase tracking-wider flex items-center gap-1.5">
                      <Calendar size={14} className="text-[#30D158]" /> Giá trung bình
                   </span>
@@ -180,7 +180,7 @@ const CourtTab = ({ onEdit }: CourtTabProps) => {
                         key={court._id}
                         variants={cardVariants}
                         whileHover={{ y: -1 }}
-                        className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[20px] p-4 flex flex-col gap-3 group transition-all select-none"
+                        className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[14px] p-4 flex flex-col gap-3 group transition-all select-none"
                      >
                         <div className="flex items-center gap-4">
                            {/* Court Avatar Icon */}

@@ -54,7 +54,7 @@ const QuickStats = ({ stats }: QuickStatsProps) => {
                   key={stat.id}
                   variants={itemVariants}
                   whileTap={{ scale: 0.97 }}
-                  className="bg-white dark:bg-[#1C1C1E] rounded-[20px] p-4 flex flex-col justify-between min-h-25 border border-black/5 dark:border-white/[0.07]"
+                  className="bg-white dark:bg-[#1C1C1E] rounded-[14px] p-4 flex flex-col justify-between min-h-25 border border-black/5 dark:border-white/[0.07]"
                >
                   {/* Label row with dot indicator */}
                   <div className="flex items-center gap-2 mb-2.5">

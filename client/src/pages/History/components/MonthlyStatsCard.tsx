@@ -17,7 +17,7 @@ const MonthlyStatsCard = ({ completedCount, totalRevenue, totalProfit, monthLabe
          initial={{ opacity: 0, scale: 0.97 }}
          animate={{ opacity: 1, scale: 1 }}
          transition={{ type: "spring", stiffness: 120, damping: 16 }}
-         style={{ background: "#1C1C1E", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "20px", padding: "20px" }}
+         style={{ background: "#1C1C1E", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "14px", padding: "20px" }}
       >
          {/* Header */}
          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>

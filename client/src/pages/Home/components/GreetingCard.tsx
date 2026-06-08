@@ -11,7 +11,7 @@ const GreetingCard = ({ userName, scheduledHostsCount }: GreetingCardProps) => {
          initial={{ opacity: 0, y: -12 }}
          animate={{ opacity: 1, y: 0 }}
          transition={{ duration: 0.4, ease: "easeOut" }}
-         className="relative rounded-[20px] overflow-hidden flex items-center min-h-32"
+         className="relative rounded-[14px] overflow-hidden flex items-center min-h-32"
          style={{ background: "#1C1C1E", border: "1px solid rgba(255,255,255,0.08)" }}
       >
          {/* Content */}

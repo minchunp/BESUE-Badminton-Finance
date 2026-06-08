@@ -10,18 +10,18 @@
    1. Design Tokens
    ================================================================ */
 :root {
-   /* ── System Backgrounds (Apple Fitness light) ── */
-   --bg-system: #f2f2f7; /* Apple systemGroupedBackground */
-   --bg-card: #ffffff; /* Apple secondarySystemGroupedBackground */
-   --bg-card-hover: #f9f9f9;
-   --bg-secondary: #f2f2f7; /* Inner nested card */
-   --bg-header: rgba(242, 242, 247, 0.92);
+   /* ── System Backgrounds (Apple Fitness light) — improved Light Mode ── */
+   --bg-system: #f0f0f5; /* Slightly blue-tinted gray, less clinical than pure gray */
+   --bg-card: #ffffff;
+   --bg-card-hover: #f7f7fc;
+   --bg-secondary: #f0f0f5; /* Inner nested card */
+   --bg-header: rgba(255, 255, 255, 0.94);
    --bg-input: #ffffff;
 
-   /* ── Borders (NO box-shadow, use subtle border only) ── */
-   --border-card: rgba(60, 60, 67, 0.1); /* Very subtle separator */
-   --border-input: rgba(60, 60, 67, 0.18);
-   --border-divider: rgba(60, 60, 67, 0.06);
+   /* ── Borders ── */
+   --border-card: rgba(60, 60, 67, 0.13);
+   --border-input: rgba(60, 60, 67, 0.20);
+   --border-divider: rgba(60, 60, 67, 0.08);
 
    /* ── Typography ── */
    --text-primary: #000000;
@@ -31,16 +31,16 @@
    --text-placeholder: rgba(60, 60, 67, 0.28);
 
    /* ── Tint: Apple systemBlue (Fitness accent) ── */
-   --tint-primary: #0a84ff; /* Apple systemBlue — main accent */
-   --tint-soft: #5ac8fa; /* Apple systemTeal — softer variant */
+   --tint-primary: #0a84ff;
+   --tint-soft: #5ac8fa;
    --tint-bg: rgba(10, 132, 255, 0.1);
    --tint-border: rgba(10, 132, 255, 0.2);
 
    /* ── Functional / Financial Colors (Apple Fitness ring style) ── */
-   --color-income: #30d158; /* Apple systemGreen — Activity ring (Exercise) */
-   --color-expense: #ff375f; /* Apple systemPink  — Activity ring (Move)     */
-   --color-pending: #ff9f0a; /* Apple systemOrange — Stand                   */
-   --color-info: #0a84ff; /* Apple systemBlue  — Info                     */
+   --color-income: #30d158;
+   --color-expense: #ff375f;
+   --color-pending: #ff9f0a;
+   --color-info: #0a84ff;
 
    /* Pastel fills (for status chips) */
    --color-income-bg: rgba(48, 209, 88, 0.12);
@@ -48,16 +48,15 @@
    --color-pending-bg: rgba(255, 159, 10, 0.12);
    --color-info-bg: rgba(10, 132, 255, 0.1);
 
-   /* ── Corner Radius ── */
-   --radius-card: 20px; /* Cards, list rows */
-   --radius-sheet: 28px; /* Modals, drawers */
-   --radius-btn: 14px; /* Buttons */
-   --radius-chip: 8px; /* Status badges */
-   --radius-input: 12px; /* Form inputs */
+   /* ── Corner Radius — reduced for modern feel ── */
+   --radius-card: 14px;
+   --radius-sheet: 20px;
+   --radius-btn: 10px;
+   --radius-chip: 6px;
+   --radius-input: 10px;
 
    /* ── NO decorative card shadows in Apple Fitness style ── */
-   /* Only use for Modal/Sheet elevation */
-   --shadow-sheet: 0 20px 60px rgba(0, 0, 0, 0.15);
+   --shadow-sheet: 0 16px 48px rgba(0, 0, 0, 0.12);
    --shadow-fab: 0 4px 16px rgba(0, 0, 0, 0.15);
 
    /* ── Transitions ── */
@@ -526,7 +525,7 @@ h6 {
    border-radius: var(--radius-sheet) !important;
 }
 .dark .ant-drawer-content {
-   border-radius: var(--radius-sheet) var(--radius-sheet) 0 0 !important;
+   border-radius: 24px 24px 0 0 !important;
 }
 
 .dark .ant-modal-title,
@@ -708,12 +707,12 @@ h6 {
 
 /* Wrapper: round top corners */
 .ant-drawer-bottom .ant-drawer-content-wrapper {
-   border-radius: 28px 28px 0 0 !important;
+   border-radius: 24px 24px 0 0 !important;
    overflow: hidden;
 }
 
 .ant-drawer-bottom .ant-drawer-content {
-   border-radius: 28px 28px 0 0 !important;
+   border-radius: 24px 24px 0 0 !important;
    background-color: #ffffff !important;
 }
 
@@ -777,15 +776,15 @@ h6 {
 
 /* Light modal */
 .ant-modal-content {
-   border-radius: 28px !important;
+   border-radius: 20px !important;
    background-color: #ffffff !important;
-   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12) !important;
+   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.10) !important;
    overflow: hidden;
 }
 .ant-modal-header {
-   border-radius: 28px 28px 0 0 !important;
+   border-radius: 20px 20px 0 0 !important;
    background-color: #ffffff !important;
-   border-bottom: 1px solid rgba(60, 60, 67, 0.06) !important;
+   border-bottom: 1px solid rgba(60, 60, 67, 0.08) !important;
    padding: 20px 24px 16px !important;
 }
 .ant-modal-title {
@@ -812,14 +811,14 @@ h6 {
    padding: 0 !important;
    background-color: transparent !important;
    box-shadow: none !important;
-   border-radius: 28px !important;
+   border-radius: 20px !important;
    overflow: hidden !important;
 }
 .ant-modal-footer {
-   border-top: 1px solid rgba(60, 60, 67, 0.06) !important;
+   border-top: 1px solid rgba(60, 60, 67, 0.08) !important;
    background-color: #ffffff !important;
    padding: 16px 24px !important;
-   border-radius: 0 0 28px 28px !important;
+   border-radius: 0 0 20px 20px !important;
    display: flex;
    justify-content: flex-end;
    gap: 10px;

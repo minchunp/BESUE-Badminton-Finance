@@ -126,7 +126,7 @@ const LeaderboardView = ({ session }: { session: ISession }) => {
                         transition: { type: "spring", stiffness: 140, damping: 18 },
                      },
                   }}
-                  className="flex items-center gap-3 rounded-2xl px-3.5 py-3"
+                  className="flex items-center gap-3 rounded-xl px-3.5 py-3"
                   style={{
                      background: isTop ? "rgba(255,159,10,0.07)" : "rgba(120,120,128,0.06)",
                      border: isTop ? "1px solid rgba(255,159,10,0.2)" : "1px solid rgba(120,120,128,0.1)",
@@ -297,7 +297,7 @@ const MatchStatsModal = ({ session, onClose }: MatchStatsModalProps) => {
                         width: "100%",
                         maxWidth: 420,
                         background: isDarkMode ? "#1C1C1E" : "#FFFFFF",
-                        borderRadius: "24px 24px 0 0",
+                        borderRadius: "20px 20px 0 0",
                         boxShadow: isDarkMode ? "0 -8px 40px rgba(0,0,0,0.6)" : "0 -4px 32px rgba(0,0,0,0.14)",
                         overflow: "hidden",
                         maxHeight: "92dvh",
@@ -330,7 +330,7 @@ const MatchStatsModal = ({ session, onClose }: MatchStatsModalProps) => {
                               style={{
                                  width: 36,
                                  height: 36,
-                                 borderRadius: 12,
+                                 borderRadius: 10,
                                  background: "rgba(10,132,255,0.12)",
                                  display: "flex",
                                  alignItems: "center",

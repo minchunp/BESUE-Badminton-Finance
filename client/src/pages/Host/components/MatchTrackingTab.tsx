@@ -183,7 +183,7 @@ const MatchTrackingTab = ({ playersList, onUpdateMatches, readOnly = false }: Ma
                                  key={`${person.playerIdx}-${person.personIdx}`}
                                  variants={rowVariants}
                                  layout
-                                 className={`rounded-[18px] p-3.5 border overflow-hidden ${
+                                 className={`rounded-[12px] p-3.5 border overflow-hidden ${
                                     isTop
                                        ? "bg-[#FF9F0A]/5 dark:bg-[#FF9F0A]/8 border-[#FF9F0A]/20 dark:border-[#FF9F0A]/18"
                                        : "bg-white dark:bg-[#1C1C1E] border-black/4 dark:border-white/6"

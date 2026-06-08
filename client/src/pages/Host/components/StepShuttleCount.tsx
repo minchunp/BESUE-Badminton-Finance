@@ -44,7 +44,7 @@ const StepShuttleCount = ({
          </div>
 
          {/* Top overview bar */}
-         <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[20px] p-4 space-y-3.5">
+         <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[14px] p-4 space-y-3.5">
             <div className="flex items-center gap-2">
                <FileText size={16} className="text-[#0A84FF]" />
                <span className="font-sans text-md font-extrabold text-black dark:text-white">Tổng quan buổi host</span>
@@ -66,7 +66,7 @@ const StepShuttleCount = ({
          </div>
 
          {/* Shuttles calculation card */}
-         <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[20px] p-4 space-y-4">
+         <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[14px] p-4 space-y-4">
             {/* Stepper: Tubes quantity */}
             <div className="flex justify-between items-center">
                <label className="font-sans text-sm font-extrabold text-black dark:text-white">Nhập số ống dùng</label>
@@ -151,7 +151,7 @@ const StepShuttleCount = ({
                onChange={(e) => setNotes(e.target.value)}
                placeholder="Ví dụ: Mua thêm nước uống 50k, tiền gửi xe..."
                rows={3}
-               className="mt-2! w-full bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[20px] p-4 font-sans text-xs font-semibold text-black dark:text-white placeholder:text-black/35 focus:ring-1 focus:ring-[#0A84FF] focus:border-[#0A84FF] resize-none"
+               className="mt-2! w-full bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[14px] p-4 font-sans text-xs font-semibold text-black dark:text-white placeholder:text-black/35 focus:ring-1 focus:ring-[#0A84FF] focus:border-[#0A84FF] resize-none"
             />
          </div>
 

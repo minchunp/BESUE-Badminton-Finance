@@ -93,7 +93,7 @@ const MatchTableView = ({ playersList, columnCount, onAddColumn, onRemoveColumn,
    return (
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="match-table-container">
          {/* Outer wrapper — relative to allow sticky */}
-         <div className="relative overflow-hidden rounded-[18px] border border-black/6 dark:border-white/6 bg-white dark:bg-[#1C1C1E]">
+         <div className="relative overflow-hidden rounded-[12px] border border-black/6 dark:border-white/6 bg-white dark:bg-[#1C1C1E]">
             {/* Scroll container */}
             <div
                ref={scrollRef}

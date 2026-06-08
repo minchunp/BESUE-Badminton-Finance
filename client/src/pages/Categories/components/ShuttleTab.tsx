@@ -89,7 +89,7 @@ const ShuttleTab = ({ onEdit }: ShuttleTabProps) => {
          <section className="animate-fade-in">
             <h2 className="font-sans text-[13px] font-bold text-black/35 dark:text-white/35 uppercase tracking-wider mb-3 px-1">Tổng quan</h2>
             <div className="grid grid-cols-2 gap-4">
-               <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[20px] p-4 flex flex-col justify-between min-h-27.5 transition-all">
+               <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[14px] p-4 flex flex-col justify-between min-h-27.5 transition-all">
                   <span className="font-sans text-[10px] font-bold text-black/45 dark:text-white/45 uppercase tracking-wider flex items-center gap-1.5">
                      <Box size={14} className="text-[#0A84FF]" /> Tổng loại cầu
                   </span>
@@ -99,7 +99,7 @@ const ShuttleTab = ({ onEdit }: ShuttleTabProps) => {
                   </div>
                </div>
 
-               <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[20px] p-4 flex flex-col justify-between min-h-27.5 transition-all">
+               <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[14px] p-4 flex flex-col justify-between min-h-27.5 transition-all">
                   <span className="font-sans text-[10px] font-bold text-black/45 dark:text-white/45 uppercase tracking-wider flex items-center gap-1.5">
                      <TrendingUp size={14} className="text-[#30D158]" /> Giá trung bình
                   </span>
@@ -167,7 +167,7 @@ const ShuttleTab = ({ onEdit }: ShuttleTabProps) => {
                         key={shuttle._id}
                         variants={cardVariants}
                         whileHover={{ y: -1 }}
-                        className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[20px] p-4 flex items-center gap-4 group transition-all select-none"
+                        className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[14px] p-4 flex items-center gap-4 group transition-all select-none"
                      >
                         {/* Shuttle Avatar Icon */}
                         <div className="w-12 h-12 rounded-2xl bg-[#0A84FF]/10 flex items-center justify-center text-[#0A84FF] shrink-0">

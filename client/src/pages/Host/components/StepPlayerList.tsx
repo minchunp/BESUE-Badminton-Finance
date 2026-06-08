@@ -176,17 +176,17 @@ const StepPlayerList = ({
 
          {/* Stats bento grid */}
          <div className="grid grid-cols-3 gap-3">
-            <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[20px] p-3 flex flex-col items-center justify-center text-center">
+            <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[14px] p-3 flex flex-col items-center justify-center text-center">
                <span className="font-sans text-[10px] font-bold text-black/35 dark:text-white/35 uppercase tracking-wider mb-1">Tổng người</span>
                <span className="font-sans text-lg font-extrabold text-[#0A84FF] leading-none">{totalPlayersCount}</span>
             </div>
-            <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[20px] p-3 flex flex-col items-center justify-center text-center">
+            <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[14px] p-3 flex flex-col items-center justify-center text-center">
                <span className="font-sans text-[10px] font-bold text-black/35 dark:text-white/35 uppercase tracking-wider mb-1">Tổng tiền</span>
                <span className="font-sans text-lg font-extrabold text-[#0A84FF] leading-none">
                   {totalExpectedRevenue > 0 ? `${(totalExpectedRevenue / 1000).toFixed(0)}k` : "0đ"}
                </span>
             </div>
-            <div className="bg-[#30D158]/12 border border-[#30D158]/20 rounded-[20px] p-3 flex flex-col items-center justify-center text-center">
+            <div className="bg-[#30D158]/12 border border-[#30D158]/20 rounded-[14px] p-3 flex flex-col items-center justify-center text-center">
                <span className="font-sans text-[10px] font-bold text-[#30D158] uppercase tracking-wider mb-1">Đã thu</span>
                <span className="font-sans text-lg font-extrabold text-[#30D158] leading-none">
                   {totalCollectedRevenue > 0 ? `${(totalCollectedRevenue / 1000).toFixed(0)}k` : "0đ"}
@@ -379,8 +379,8 @@ const StepPlayerList = ({
             footer={null}
             centered
             closeIcon={false}
-            styles={{ body: { borderRadius: 24 } }}
-            className="rounded-[28px] overflow-hidden"
+            styles={{ body: { borderRadius: 16 } }}
+            className="rounded-[18px] overflow-hidden"
          >
             <div className="flex flex-col items-center justify-center pace-y-4 font-sans select-none">
                <div className="p-3 bg-[#0A84FF]/10 rounded-3xl border border-[#0A84FF]/20">

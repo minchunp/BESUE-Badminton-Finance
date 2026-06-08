@@ -57,7 +57,7 @@ const HeroMetricsCard = ({ overview, isLoading }: HeroMetricsCardProps) => {
          initial={{ opacity: 0, y: 16 }}
          animate={{ opacity: 1, y: 0 }}
          transition={{ type: "spring", stiffness: 110, damping: 15 }}
-         className="relative overflow-hidden rounded-[20px] p-6 border"
+         className="relative overflow-hidden rounded-[14px] p-6 border"
          style={{
             background: bgColor,
             borderColor: "rgba(255, 255, 255, 0.08)",

@@ -445,7 +445,7 @@ const HostPage = () => {
    // ==========================================
    if (isLoadingCourts || isLoadingShuttles || (activeId && isLoadingSession)) {
       return (
-         <div className="flex flex-col items-center justify-center min-h-screen gap-3 bg-[#F2F2F7] dark:bg-black">
+         <div className="flex flex-col items-center justify-center min-h-screen gap-3 bg-[#F0F0F5] dark:bg-black">
             <Spin size="large" />
             <span className="text-sm font-semibold text-black/40 dark:text-white/40">Đang tải thông tin buổi host...</span>
          </div>
@@ -462,7 +462,7 @@ const HostPage = () => {
             },
          }}
       >
-         <div className="w-full min-h-screen bg-[#F2F2F7] dark:bg-black relative overflow-x-hidden pb-20">
+         <div className="w-full min-h-screen bg-[#F0F0F5] dark:bg-black relative overflow-x-hidden pb-20">
             {/* ── Progress indicator ── */}
             {step < 5 && (
                <div className="w-full h-0.5 bg-black/6 dark:bg-white/6">

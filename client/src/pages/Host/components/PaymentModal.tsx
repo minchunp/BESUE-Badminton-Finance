@@ -145,7 +145,7 @@ const PaymentModal = ({ player, playerIdx, onConfirm, onClose, feeMale, feeFemal
       <ConfigProvider
          theme={{
             algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
-            token: { colorPrimary: "#0A84FF", borderRadius: 28 },
+            token: { colorPrimary: "#0A84FF", borderRadius: 18 },
          }}
       >
          <Modal
@@ -282,7 +282,7 @@ const PaymentModal = ({ player, playerIdx, onConfirm, onClose, feeMale, feeFemal
                            )}
 
                            {/* Status card */}
-                           <div className="rounded-[18px] p-3.5" style={{ background: bg, border: `1px solid ${border}` }}>
+                           <div className="rounded-[12px] p-3.5" style={{ background: bg, border: `1px solid ${border}` }}>
                               <p className="text-[10px] font-bold text-black/35 dark:text-white/35 uppercase tracking-widest mb-2.5">
                                  Trạng thái thanh toán
                               </p>
@@ -299,7 +299,7 @@ const PaymentModal = ({ player, playerIdx, onConfirm, onClose, feeMale, feeFemal
                                     transition={{ duration: 0.22 }}
                                     style={{ overflow: "hidden" }}
                                  >
-                                    <div className="rounded-[18px] p-3.5" style={{ background: bg, border: `1px solid ${border}` }}>
+                                    <div className="rounded-[12px] p-3.5" style={{ background: bg, border: `1px solid ${border}` }}>
                                        <p className="text-[10px] font-bold text-black/35 dark:text-white/35 uppercase tracking-widest mb-2.5">
                                           Hình thức thanh toán
                                        </p>
@@ -349,7 +349,7 @@ const PaymentModal = ({ player, playerIdx, onConfirm, onClose, feeMale, feeFemal
                               return (
                                  <div
                                     key={person.personIdx}
-                                    className="rounded-[18px] p-3.5 transition-all duration-200"
+                                    className="rounded-[12px] p-3.5 transition-all duration-200"
                                     style={{
                                        background: bg,
                                        border: payment.isPaid ? "1px solid rgba(48,209,88,0.25)" : `1px solid ${border}`,

@@ -9,7 +9,7 @@ interface MetricsPillRowProps {
 }
 
 const Shimmer = () => (
-   <div className="bg-white dark:bg-[#1C1C1E] border border-black/[0.05] dark:border-white/[0.06] shadow-sm rounded-[20px] p-4 flex flex-col gap-2 items-center text-center animate-pulse">
+   <div className="bg-white dark:bg-[#1C1C1E] border border-black/[0.05] dark:border-white/[0.06] shadow-sm rounded-[14px] p-4 flex flex-col gap-2 items-center text-center animate-pulse">
       <div className="w-9 h-9 bg-black/[0.06] dark:bg-white/[0.06] rounded-2xl" />
       <div className="h-3 w-14 bg-black/[0.06] dark:bg-white/[0.06] rounded-full" />
       <div className="h-4 w-16 bg-black/[0.06] dark:bg-white/[0.06] rounded-full" />
@@ -67,7 +67,7 @@ const MetricsPillRow = ({ overview, isLoading }: MetricsPillRowProps) => {
                initial={{ opacity: 0, y: 12 }}
                animate={{ opacity: 1, y: 0 }}
                transition={{ delay: i * 0.07, type: "spring", stiffness: 120, damping: 15 }}
-               className="bg-white dark:bg-[#1C1C1E] border border-black/[0.05] dark:border-white/[0.07] rounded-[20px] p-4 flex flex-col gap-2 items-center text-center"
+               className="bg-white dark:bg-[#1C1C1E] border border-black/[0.05] dark:border-white/[0.07] rounded-[14px] p-4 flex flex-col gap-2 items-center text-center"
             >
                <div className={`w-9 h-9 ${pill.bg} rounded-2xl flex items-center justify-center`}>{pill.icon}</div>
                <span className="font-sans text-[9px] font-bold text-black/35 dark:text-white/35 uppercase tracking-wider leading-none">{pill.label}</span>
