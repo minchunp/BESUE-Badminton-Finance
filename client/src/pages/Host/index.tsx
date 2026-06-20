@@ -78,7 +78,7 @@ const HostPage = () => {
       return today.toISOString().split("T")[0]!;
    });
    const [selectedCourtId, setSelectedCourtId] = useState<string>("");
-   const [numberOfCourts, setNumberOfCourts] = useState<number>(2);
+   const [numberOfCourts, setNumberOfCourts] = useState<number>(3);
    const [hours, setHours] = useState<number>(2);
    const [selectedShuttleId, setSelectedShuttleId] = useState<string>("");
    const [feeMale, setFeeMale] = useState<number>(65000);
@@ -207,7 +207,7 @@ const HostPage = () => {
    });
 
    const updatePlayersMutation = useMutation({
-      mutationFn: ({ id, players, feeSettings }: { id: string; players: Omit<IPlayer, "_id">[]; feeSettings?: ISession["feeSettings"] }) => 
+      mutationFn: ({ id, players, feeSettings }: { id: string; players: Omit<IPlayer, "_id">[]; feeSettings?: ISession["feeSettings"] }) =>
          sessionApi.updatePlayers(id, players, 3, feeSettings),
       onSuccess: (res) => {
          setSessionData(res.data);
@@ -219,7 +219,7 @@ const HostPage = () => {
    });
 
    const autoSavePlayersMutation = useMutation({
-      mutationFn: ({ id, players, feeSettings }: { id: string; players: Omit<IPlayer, "_id">[]; feeSettings?: ISession["feeSettings"] }) => 
+      mutationFn: ({ id, players, feeSettings }: { id: string; players: Omit<IPlayer, "_id">[]; feeSettings?: ISession["feeSettings"] }) =>
          sessionApi.updatePlayers(id, players, 2, feeSettings),
       onSuccess: (res) => {
          setSessionData(res.data);
@@ -406,7 +406,7 @@ const HostPage = () => {
 
          const payments = [...(player.individualPayments ?? [])];
          const total = player.maleCount + player.femaleCount;
-         
+
          if (payments.length < total) {
             const seeded = initIndividualPayments(player.maleCount, player.femaleCount);
             payments.push(...seeded.slice(payments.length));
@@ -464,27 +464,33 @@ const HostPage = () => {
       [playersList, sessionId, autoSavePlayersMutation, feeMale, feeFemale],
    );
 
-   const handleSetFeeMale = useCallback((fee: number) => {
-      setFeeMale(fee);
-      if (sessionId) {
-         autoSavePlayersMutation.mutate({
-            id: sessionId,
-            players: playersList,
-            feeSettings: { male: fee, female: feeFemale },
-         });
-      }
-   }, [sessionId, playersList, feeFemale, autoSavePlayersMutation]);
+   const handleSetFeeMale = useCallback(
+      (fee: number) => {
+         setFeeMale(fee);
+         if (sessionId) {
+            autoSavePlayersMutation.mutate({
+               id: sessionId,
+               players: playersList,
+               feeSettings: { male: fee, female: feeFemale },
+            });
+         }
+      },
+      [sessionId, playersList, feeFemale, autoSavePlayersMutation],
+   );
 
-   const handleSetFeeFemale = useCallback((fee: number) => {
-      setFeeFemale(fee);
-      if (sessionId) {
-         autoSavePlayersMutation.mutate({
-            id: sessionId,
-            players: playersList,
-            feeSettings: { male: feeMale, female: fee },
-         });
-      }
-   }, [sessionId, playersList, feeMale, autoSavePlayersMutation]);
+   const handleSetFeeFemale = useCallback(
+      (fee: number) => {
+         setFeeFemale(fee);
+         if (sessionId) {
+            autoSavePlayersMutation.mutate({
+               id: sessionId,
+               players: playersList,
+               feeSettings: { male: feeMale, female: fee },
+            });
+         }
+      },
+      [sessionId, playersList, feeMale, autoSavePlayersMutation],
+   );
 
    const handleNextStep2 = useCallback(() => {
       if (playersList.length === 0) {
@@ -525,13 +531,14 @@ const HostPage = () => {
    const totalCollectedRevenue = useMemo(() => calcCollectedRevenue(playersList, feeMale, feeFemale), [playersList, feeMale, feeFemale]);
 
    const selectedPlayersCount = useMemo(
-      () => playersList.reduce((acc, curr) => {
-         const payments = curr.individualPayments ?? [];
-         if (payments.length > 0) {
-            return acc + payments.filter((pay) => pay.isPresent).length;
-         }
-         return acc + (curr.isPresent ? (curr.maleCount + curr.femaleCount) : 0);
-      }, 0),
+      () =>
+         playersList.reduce((acc, curr) => {
+            const payments = curr.individualPayments ?? [];
+            if (payments.length > 0) {
+               return acc + payments.filter((pay) => pay.isPresent).length;
+            }
+            return acc + (curr.isPresent ? curr.maleCount + curr.femaleCount : 0);
+         }, 0),
       [playersList],
    );
 

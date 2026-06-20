@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { DatePicker, InputNumber, ConfigProvider, theme } from "antd";
+import { DatePicker, InputNumber, ConfigProvider, theme, Tag } from "antd";
 import dayjs from "dayjs";
 import { Calendar, MapPin, Layers, Plus, Minus, Sparkles, Coins, Clock, ChevronRight } from "lucide-react";
 import type { StepBasicInfoProps } from "../types";
@@ -99,52 +99,6 @@ const StepBasicInfo = ({
             )}
          </div>
 
-         {/* Hours Stepper */}
-         <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[14px] p-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-               <Clock size={18} className="text-[#0A84FF]" />
-               <span className="font-sans text-sm font-extrabold text-black dark:text-white">Số giờ chơi</span>
-            </div>
-            <div className="flex items-center gap-3 bg-black/4 dark:bg-white/4 rounded-full p-1 select-none">
-               <button
-                  onClick={() => setHours(Math.max(1, hours - 1))}
-                  className="w-8 h-8 rounded-full bg-white dark:bg-[#2C2C2E] flex items-center justify-center text-[#FF375F] shadow-sm hover:opacity-80 active:scale-90 transition-transform cursor-pointer"
-               >
-                  <Minus size={12} strokeWidth={2.5} />
-               </button>
-               <span className="font-sans text-sm font-extrabold w-8 text-center text-black dark:text-white">{hours}</span>
-               <button
-                  onClick={() => setHours(hours + 1)}
-                  className="w-8 h-8 rounded-full bg-[#0A84FF] flex items-center justify-center text-white shadow-sm hover:opacity-90 active:scale-90 transition-transform cursor-pointer"
-               >
-                  <Plus size={12} strokeWidth={2.5} />
-               </button>
-            </div>
-         </div>
-
-         {/* Court Quantity Stepper */}
-         <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[14px] p-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-               <Layers size={18} className="text-[#0A84FF]" />
-               <span className="font-sans text-sm font-extrabold text-black dark:text-white">Số lượng sân</span>
-            </div>
-            <div className="flex items-center gap-3 bg-black/4 dark:bg-white/4 rounded-full p-1 select-none">
-               <button
-                  onClick={() => setNumberOfCourts(Math.max(1, numberOfCourts - 1))}
-                  className="w-8 h-8 rounded-full bg-white dark:bg-[#2C2C2E] flex items-center justify-center text-[#FF375F] shadow-sm hover:opacity-80 active:scale-90 transition-transform cursor-pointer"
-               >
-                  <Minus size={12} strokeWidth={2.5} />
-               </button>
-               <span className="font-sans text-sm font-extrabold w-8 text-center text-black dark:text-white">{numberOfCourts}</span>
-               <button
-                  onClick={() => setNumberOfCourts(numberOfCourts + 1)}
-                  className="w-8 h-8 rounded-full bg-[#0A84FF] flex items-center justify-center text-white shadow-sm hover:opacity-90 active:scale-90 transition-transform cursor-pointer"
-               >
-                  <Plus size={12} strokeWidth={2.5} />
-               </button>
-            </div>
-         </div>
-
          {/* Shuttle Selection */}
          <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[14px] p-4 space-y-2.5">
             <div className="flex items-center gap-3">
@@ -172,38 +126,91 @@ const StepBasicInfo = ({
             )}
          </div>
 
-         {/* Player Pricing */}
-         <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[14px] p-4 space-y-4">
-            <div className="flex items-center gap-3">
-               <Coins size={18} className="text-[#0A84FF]" />
-               <span className="font-sans text-sm font-extrabold text-black dark:text-white">Phí tham gia dự kiến</span>
+         <div className="p-2.5 pt-5 relative flex flex-col gap-3 border-2 border-[#0A84FF] rounded-2xl">
+            <div className="absolute -top-3">
+               <Tag color="#0A84FF" className="font-bold py-1!">
+                  Quan trọng
+               </Tag>
             </div>
-            <div className="grid grid-cols-2 gap-3.5">
-               <div>
-                  <label className="block text-[10px] font-bold text-black/35 dark:text-white/35 uppercase tracking-wider mb-1 px-0.5">
-                     Vãng lai Nam (VNĐ)
-                  </label>
-                  <InputNumber
-                     value={feeMale}
-                     onChange={(val) => setFeeMale(val || 0)}
-                     formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                     parser={(value) => Number(value?.replace(/\$\s?|(,*)/g, "") || 0)}
-                     controls={false}
-                     className="w-full h-11 flex items-center bg-black/4 dark:bg-white/4 rounded-xl! border border-black/5 dark:border-white/6 font-sans text-xs font-bold text-black dark:text-white"
-                  />
+            {/* Hours Stepper */}
+            <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[14px] p-4 flex items-center justify-between">
+               <div className="flex items-center gap-3">
+                  <Clock size={18} className="text-[#0A84FF]" />
+                  <span className="font-sans text-sm font-extrabold text-black dark:text-white">Số giờ chơi</span>
                </div>
-               <div>
-                  <label className="block text-[10px] font-bold text-black/35 dark:text-white/35 uppercase tracking-wider mb-1 px-0.5">
-                     Vãng lai Nữ (VNĐ)
-                  </label>
-                  <InputNumber
-                     value={feeFemale}
-                     onChange={(val) => setFeeFemale(val || 0)}
-                     formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                     parser={(value) => Number(value?.replace(/\$\s?|(,*)/g, "") || 0)}
-                     controls={false}
-                     className="w-full h-11 flex items-center bg-black/4 dark:bg-white/4 rounded-xl! border border-black/5 dark:border-white/6 font-sans text-xs font-bold text-black dark:text-white"
-                  />
+               <div className="flex items-center gap-3 bg-black/4 dark:bg-white/4 rounded-full p-1 select-none">
+                  <button
+                     onClick={() => setHours(Math.max(1, hours - 1))}
+                     className="w-8 h-8 rounded-full bg-white dark:bg-[#2C2C2E] flex items-center justify-center text-[#FF375F] shadow-sm hover:opacity-80 active:scale-90 transition-transform cursor-pointer"
+                  >
+                     <Minus size={12} strokeWidth={2.5} />
+                  </button>
+                  <span className="font-sans text-sm font-extrabold w-8 text-center text-black dark:text-white">{hours}</span>
+                  <button
+                     onClick={() => setHours(hours + 1)}
+                     className="w-8 h-8 rounded-full bg-[#0A84FF] flex items-center justify-center text-white shadow-sm hover:opacity-90 active:scale-90 transition-transform cursor-pointer"
+                  >
+                     <Plus size={12} strokeWidth={2.5} />
+                  </button>
+               </div>
+            </div>
+
+            {/* Court Quantity Stepper */}
+            <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[14px] p-4 flex items-center justify-between">
+               <div className="flex items-center gap-3">
+                  <Layers size={18} className="text-[#0A84FF]" />
+                  <span className="font-sans text-sm font-extrabold text-black dark:text-white">Số lượng sân</span>
+               </div>
+               <div className="flex items-center gap-3 bg-black/4 dark:bg-white/4 rounded-full p-1 select-none">
+                  <button
+                     onClick={() => setNumberOfCourts(Math.max(1, numberOfCourts - 1))}
+                     className="w-8 h-8 rounded-full bg-white dark:bg-[#2C2C2E] flex items-center justify-center text-[#FF375F] shadow-sm hover:opacity-80 active:scale-90 transition-transform cursor-pointer"
+                  >
+                     <Minus size={12} strokeWidth={2.5} />
+                  </button>
+                  <span className="font-sans text-sm font-extrabold w-8 text-center text-black dark:text-white">{numberOfCourts}</span>
+                  <button
+                     onClick={() => setNumberOfCourts(numberOfCourts + 1)}
+                     className="w-8 h-8 rounded-full bg-[#0A84FF] flex items-center justify-center text-white shadow-sm hover:opacity-90 active:scale-90 transition-transform cursor-pointer"
+                  >
+                     <Plus size={12} strokeWidth={2.5} />
+                  </button>
+               </div>
+            </div>
+
+            {/* Player Pricing */}
+            <div className="bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/6 rounded-[14px] p-4 space-y-4">
+               <div className="flex items-center gap-3">
+                  <Coins size={18} className="text-[#0A84FF]" />
+                  <span className="font-sans text-sm font-extrabold text-black dark:text-white">Phí tham gia dự kiến</span>
+               </div>
+               <div className="grid grid-cols-2 gap-3.5">
+                  <div>
+                     <label className="block text-[10px] font-bold text-black/35 dark:text-white/35 uppercase tracking-wider mb-1 px-0.5">
+                        Vãng lai Nam (VNĐ)
+                     </label>
+                     <InputNumber
+                        value={feeMale}
+                        onChange={(val) => setFeeMale(val || 0)}
+                        formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                        parser={(value) => Number(value?.replace(/\$\s?|(,*)/g, "") || 0)}
+                        controls={false}
+                        className="w-full h-11 flex items-center bg-black/4 dark:bg-white/4 rounded-xl! border border-black/5 dark:border-white/6 font-sans text-xs font-bold text-black dark:text-white"
+                     />
+                  </div>
+                  <div>
+                     <label className="block text-[10px] font-bold text-black/35 dark:text-white/35 uppercase tracking-wider mb-1 px-0.5">
+                        Vãng lai Nữ (VNĐ)
+                     </label>
+                     <InputNumber
+                        value={feeFemale}
+                        onChange={(val) => setFeeFemale(val || 0)}
+                        formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                        parser={(value) => Number(value?.replace(/\$\s?|(,*)/g, "") || 0)}
+                        controls={false}
+                        className="w-full h-11 flex items-center bg-black/4 dark:bg-white/4 rounded-xl! border border-black/5 dark:border-white/6 font-sans text-xs font-bold text-black dark:text-white"
+                     />
+                  </div>
                </div>
             </div>
          </div>
